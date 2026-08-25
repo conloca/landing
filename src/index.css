@@ -1,12 +1,35 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-@import "@fontsource-variable/geist";
+/* opsz.css alone covers both weight and optical-size axes — a plain `@fontsource-variable/inter` import registers the same @font-face descriptors and would only shadow it. */
+@import "@fontsource-variable/inter/opsz.css";
+@import "@fontsource/roboto-mono/400.css";
+@import "@fontsource/roboto-mono/500.css";
 
 @custom-variant dark (&:is(.dark *));
 
+/*
+ * Inter Variable exposes the Display cut through the `opsz` axis rather than
+ * a separate family, so "Inter Display" from the design is this same font
+ * file at a high optical size — see `.font-display` below, not a second
+ * font-family token.
+ */
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Roboto Mono", ui-monospace, monospace;
+
+  /* Custom warm "sand" neutral family from the Figma frame — not a Tailwind default. */
+  --color-sand-50: #f8f8f5;
+  --color-sand-100: #f6f7f1;
+  --color-sand-200: #f5f6ef;
+  --color-sand-300: #f5f4ee;
+  --color-sand-400: #eaecdb;
+  --color-sand-500: #d6dbbd;
+  --color-sand-600: #d5dabc;
+  --color-sand-700: #9fab70;
+  --color-sand-800: #4f5833;
+  --color-sand-900: #40472d;
+  --color-sand-950: #1c2013;
 }
 
 :root {
@@ -102,7 +125,6 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
   --font-heading: var(--font-sans);
-  --font-sans: 'Geist Variable', sans-serif;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -131,6 +153,63 @@
   html {
     @apply font-sans;
   }
+}
+
+/*
+ * "Inter Display" in the design is the same variable font file at a high
+ * optical size, not a second family — `font-optical-sizing: auto` plus a
+ * high `font-size` lets the browser pick the display-cut glyphs on its own.
+ */
+@utility font-display {
+  font-optical-sizing: auto;
+  font-variation-settings: "opsz" 32;
+}
+
+/*
+ * Bento grid (S3): single column on mobile per the Figma responsive intent,
+ * a spanning "big" card plus two stacked cards at sm+. Kept as a real CSS
+ * rule rather than a Tailwind arbitrary-value class — grid-template-areas
+ * needs literal quoted strings that don't survive Tailwind's bracket syntax
+ * cleanly.
+ */
+.bento-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-areas: "big" "r1" "r2" "c1" "c2" "c3" "c4";
+}
+
+@media (min-width: 640px) {
+  .bento-grid {
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: minmax(11rem, auto) minmax(11rem, auto) minmax(14rem, auto);
+    grid-template-areas:
+      "big big r1 r1"
+      "big big r2 r2"
+      "c1 c2 c3 c4";
+  }
+}
+
+/* Cards are placed by document order, matching the fixed 7-card layout above. */
+.bento-grid > :nth-child(1) {
+  grid-area: big;
+}
+.bento-grid > :nth-child(2) {
+  grid-area: r1;
+}
+.bento-grid > :nth-child(3) {
+  grid-area: r2;
+}
+.bento-grid > :nth-child(4) {
+  grid-area: c1;
+}
+.bento-grid > :nth-child(5) {
+  grid-area: c2;
+}
+.bento-grid > :nth-child(6) {
+  grid-area: c3;
+}
+.bento-grid > :nth-child(7) {
+  grid-area: c4;
 }
 
 /*

@@ -6,12 +6,26 @@
  * browser. Components that need browser APIs must defer them to an effect —
  * see LottieBanner for the pattern.
  */
+import { Header } from '@/components/layout/Header'
 import { Hero } from '@/components/sections/Hero'
+import { ThreeFeatures } from '@/components/sections/ThreeFeatures'
+import { Statement } from '@/components/sections/Statement'
+import { FeatureGrid } from '@/components/sections/FeatureGrid'
+import { Pricing } from '@/components/sections/Pricing'
+import { Footer } from '@/components/layout/Footer'
 
 export function App() {
   return (
-    <main className="min-h-dvh">
-      <Hero />
-    </main>
+    <>
+      <Header />
+      <main className="min-h-dvh">
+        <Hero />
+        <ThreeFeatures />
+        <Statement />
+        <FeatureGrid />
+        <Pricing />
+      </main>
+      <Footer />
+    </>
   )
 }

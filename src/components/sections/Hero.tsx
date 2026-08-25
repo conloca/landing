@@ -1,35 +1,37 @@
 import { Button } from '@/components/ui/button'
-import { LottieBanner } from '@/components/LottieBanner'
+import { AUDIENCE_OPTIONS, SegmentedControl } from '@/components/ui/segmented-control'
 import { Reveal } from '@/components/motion/Reveal'
+import { AstroBadge } from '@/components/sections/hero/AstroBadge'
+import { CarouselRail } from '@/components/sections/hero/CarouselRail'
+import { HeroVisual } from '@/components/sections/hero/HeroVisual'
 
-/**
- * PLACEHOLDER SECTION — copy and layout are stand-ins until the Figma frame is
- * transcribed. Only the scaffolding contract it demonstrates is final:
- * everything readable is in the prerendered HTML, and motion is additive.
- */
+/** Figma S0 — "Homepage - Developers" hero (node 40002427:16388). */
 export function Hero() {
   return (
-    <section className="mx-auto flex max-w-5xl flex-col items-center gap-10 px-6 py-24 text-center">
-      <Reveal direction="up">
-        <h1 className="text-5xl font-semibold tracking-tight text-balance sm:text-7xl">
-          Conloca
+    <section className="mx-auto grid max-w-[1440px] grid-cols-1 items-center gap-12 px-8 py-16 lg:grid-cols-[506px_1fr] lg:py-0">
+      <Reveal direction="up" className="flex flex-col gap-8 py-8 lg:py-[60px]">
+        <SegmentedControl options={AUDIENCE_OPTIONS} activeIndex={0} />
+
+        <h1 className="font-display max-w-[432px] text-5xl leading-[1] font-bold text-stone-900">
+          Keep content in your repo. Give editors a visual editing interface
         </h1>
+
+        <AstroBadge />
+
+        <div className="flex flex-col gap-6">
+          <CarouselRail />
+          <div className="flex gap-3">
+            <Button size="lg">Get started</Button>
+            <Button size="lg" variant="outline">
+              Try Demo
+            </Button>
+          </div>
+        </div>
       </Reveal>
 
-      <Reveal direction="up" delay={0.1}>
-        <p className="max-w-xl text-lg text-muted-foreground text-pretty">
-          Placeholder subline — replaced once the Figma design is transcribed.
-        </p>
+      <Reveal direction="left" delay={0.15} className="flex justify-end">
+        <HeroVisual />
       </Reveal>
-
-      <Reveal direction="up" delay={0.2}>
-        <Button size="lg">Placeholder call to action</Button>
-      </Reveal>
-
-      <LottieBanner
-        className="aspect-video w-full max-w-3xl"
-        label="Conloca animated banner"
-      />
     </section>
   )
 }
