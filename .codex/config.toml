@@ -1,0 +1,10 @@
+# >>> rig managed: haft mcp
+[mcp_servers.haft]
+command = "haft"
+args = ["serve"]
+startup_timeout_sec = 10
+tool_timeout_sec = 60
+
+[mcp_servers.haft.env]
+HAFT_PROJECT_ROOT = "."
+# <<< rig managed: haft mcp

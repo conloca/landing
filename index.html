@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Conloca</title>
+    <script>
+      /*
+       * Entrance-animation gate, deliberately inline and render-blocking.
+       *
+       * Adding `js-ready` here rather than after hydration means reveal targets
+       * are hidden before first paint, so there is no flash of the final layout.
+       * The timeout is the safety valve: if the module bundle never executes
+       * (network failure, unsupported browser, blocked script), the class is
+       * pulled back off and every reveal target returns to its visible state
+       * instead of leaving the page blank. entry-client.tsx cancels it on boot.
+       */
+      document.documentElement.classList.add('js-ready')
+      window.__revealFailsafe = window.setTimeout(function () {
+        document.documentElement.classList.remove('js-ready')
+      }, 2500)
+    </script>
+    <!--app-head-->
+  </head>
+  <body>
+    <div id="root"><!--app-html--></div>
+    <script type="module" src="/src/entry-client.tsx"></script>
+  </body>
+</html>

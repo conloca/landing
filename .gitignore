@@ -1,0 +1,18 @@
+node_modules
+dist
+dist-ssr
+.DS_Store
+*.local
+.vite
+
+# Local secrets
+.env
+.env.*
+!.env.example
+
+# rig writes timestamped backups next to the config it rewrites
+rig.yaml.rig-bak-*
+
+# local agent caches
+.serena/
+.haft/
