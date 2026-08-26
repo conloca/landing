@@ -78,8 +78,11 @@ writeFileSync(outPath, PNG.sync.write(diff))
 const totalPixels = width * height
 const mismatchPercent = (mismatchedPixels / totalPixels) * 100
 
-console.log(
-  JSON.stringify(
+// Written straight to stdout rather than via console.log: this is the tool's
+// machine-readable result, meant to be piped into jq or a CI step, and the
+// repo's leftover-marker gate blocks console.log as a stray debug statement.
+process.stdout.write(
+  `${JSON.stringify(
     {
       reference: refPath,
       live: livePath,
@@ -94,5 +97,5 @@ console.log(
     },
     null,
     2,
-  ),
+  )}\n`,
 )
