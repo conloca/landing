@@ -433,9 +433,22 @@ bottom-right of the card, still clipped.
 
 ## 7. Assets to export
 
-**Not yet exported.** The Figma image endpoint returned HTTP 429 (rate limit) after the four
-full-page renders; the budget is cost-based and did not recover within this session. Node ids
-are recorded so the build can export them directly:
+**The raster assets are now exported** into `src/assets/figma/`, with
+`src/assets/figma/manifest.json` describing each one. Run `bun run figma:export` to refresh
+them; see "Figma asset export" in `AGENTS.md`.
+
+The original extraction failed here with HTTP 429 because it rendered each node individually
+through `GET /v1/images`, the most rate-limited endpoint in the API. The export now takes the
+image-fill URLs for the whole file in a single request instead, which is why it completes
+without hitting the limit at all.
+
+**One correction that matters for implementation:** the hero's product-dashboard panel is a
+single screenshot (`hero-panel.webp`), not a composition to rebuild in markup. It already
+contains the sidebar, the four stat cards, the full seven-entry activity list, and the video
+still. Section 2's description of that panel describes what is *inside the image*.
+
+The vector assets in the table below (logo, glyphs, tiles) are still un-exported — they need
+`GET /v1/images?format=svg`, which is a per-node render rather than a fill:
 
 | Asset | Node id | Format |
 | --- | --- | --- |
@@ -479,7 +492,8 @@ gradient plus noise reproduces them closely enough. Question 14.
 
 **Gaps, stated plainly:**
 
-1. **No assets exported** — the image endpoint is rate-limited. Node ids recorded above.
+1. **Raster assets: resolved.** Exported to `src/assets/figma/` via `bun run figma:export`.
+   The vector assets listed in section 7 still need an SVG render pass.
 2. **Node trees for the 640 / 1024 / 393 frames were not fetched** (same rate limit).
    Responsive behaviour above is read from the renders: reliable for layout intent, not for
    exact padding values. Re-fetch before implementing those breakpoints precisely.
