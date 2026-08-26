@@ -165,26 +165,43 @@ widths — 1440, 1024, 640, and 393 pixels.
     section above (banner, open question 7) — both places in the layout and the banner
     use the exact same color, so this only needs answering once.
 
+11. The product dashboard panel in the hero section couldn't be exported as an image or
+    video — the design file's image-export service was rate-limited during our
+    extraction, so we never received the actual screenshot or video thumbnail, only the
+    layout around them. We rebuilt the panel as plain HTML at a narrower width, with a
+    color-gradient placeholder standing in for the video. Three specific things we
+    weren't able to reproduce without the real assets: (a) in the design, the panel is
+    much wider than ours and is deliberately cropped by the edge of the screen rather
+    than shrinking to fit; (b) the design has a left sidebar with Dashboard, Pages,
+    Media, Fragments, and Data links that our version doesn't have at all; (c) the
+    design's activity list has seven two-line entries (a title plus a file path
+    underneath, like `/saba-test`), sitting beside the video thumbnail rather than above
+    it — our narrower version only fits four single-line entries stacked above the
+    placeholder. Could you send the actual panel screenshot and video thumbnail (or
+    confirm the plain-HTML rebuild is fine as a placeholder), tell us whether the panel
+    should crop off the screen edge the way it does in the design, and let us know
+    whether the sidebar and the fuller seven-entry list should be built out?
+
 ### We built it this way — please confirm
 
-11. **The "for developers / for editors" toggle disappears entirely below a 640-pixel
+12. **The "for developers / for editors" toggle disappears entirely below a 640-pixel
     screen width in the design.** We did it differently — showing it at every screen
     width, since a working control that disappears on mobile looks more like an
     oversight than a deliberate choice. Keep it that way, or does it genuinely need to
     be hidden on mobile?
 
-12. **There's no content at all for the mobile hamburger menu, at any width, in the
+13. **There's no content at all for the mobile hamburger menu, at any width, in the
     design.** We built a standard dropdown menu with the same links as the desktop
     header — an ordinary engineering default for this pattern, not your actual design.
     Is that look acceptable, or will you send a dedicated screen showing the menu open?
 
-13. **There was about 270 pixels of empty space in the design**, between the "Built for
+14. **There was about 270 pixels of empty space in the design**, between the "Built for
     Astro" badge and the carousel text in the hero section. Our build doesn't reproduce
     that large a gap — we used normal spacing instead. If that space was meant as
     breathing room for future content, it's moot in our version; if a specific element
     was meant to go there, let us know what's missing.
 
-14. **The background of the three large feature-block cards in the design is heavy,
+15. **The background of the three large feature-block cards in the design is heavy,
     blurred photographs spanning the card's full width.** We replaced them with a CSS
     gradient plus noise — visually similar effect, with almost none of the loading
     weight. Does that swap work, or are the photographs important to keep?
@@ -224,10 +241,10 @@ don't end up having to edit the same thing in two places later).
 2. The frame shown under "reduce motion" (banner, question 11).
 3. Screen-reader text (banner, question 12).
 4. Compressed flags (banner, question 13).
-5. "For developers / for editors" toggle shown at every width (layout, question 11).
-6. Mobile menu content (layout, question 12).
-7. The layout's empty gap isn't reproduced (layout, question 13).
-8. CSS gradient instead of photos behind the cards (layout, question 14).
+5. "For developers / for editors" toggle shown at every width (layout, question 12).
+6. Mobile menu content (layout, question 13).
+7. The layout's empty gap isn't reproduced (layout, question 14).
+8. CSS gradient instead of photos behind the cards (layout, question 15).
 
 Separately, not a confirmation item but a fact: the site's main UI palette — grays plus
 a lime accent color — comes from the landing page design and is used to color every
