@@ -197,7 +197,11 @@ function assertSchemeModesAgree(tree: TokenNode): void {
     if (typeof group !== "object" || group === null || isLeaf(group)) {
       throw new Error(`scheme.${mode} is missing from ${SOURCE}`);
     }
-    return Object.keys(group as TokenNode).toSorted();
+    // `$description` / `$type` / `$extensions` are legal DTCG group metadata,
+    // not roles; counting them would fail a build for annotating one mode.
+    return Object.keys(group as TokenNode)
+      .filter((key) => !key.startsWith("$"))
+      .toSorted();
   };
   const light = keysOf("light");
   const dark = keysOf("dark");
