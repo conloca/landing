@@ -151,3 +151,17 @@ at launch and runs with `FIGMA_API_KEY` in its environment. A caret range would
 auto-execute any future patch or minor release — including a compromised one —
 with a live Figma credential handed to it. Bump this deliberately, after checking
 the release.
+
+## Design tokens
+
+The palette, font families, the light/dark semantic scheme and the radius base
+are **generated**, not hand-written. `tokens/tokens.json` (W3C DTCG format) is
+the source of truth; `bun run tokens` regenerates `src/tokens.generated.css`,
+and both `dev` and `build` run it first.
+
+`src/tokens.generated.css` is a build artifact and is gitignored — never edit it
+directly. To change a design value, edit the token and regenerate.
+
+[`DESIGN.md`](DESIGN.md) documents the palette, type ramp, geometry and the
+pipeline itself, including one known wart in how Tailwind scans the generated
+file.
