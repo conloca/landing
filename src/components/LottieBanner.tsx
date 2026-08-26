@@ -19,15 +19,24 @@ import { DotLottieReact, setWasmUrl } from '@lottiefiles/dotlottie-react'
 import type { DotLottie } from '@lottiefiles/dotlottie-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useHydrated } from '@/components/motion/Reveal'
+import { publicUrl } from '@/lib/publicUrl'
 
 // Served from public/, copied from node_modules at scaffold time. Keep in sync
 // with the @lottiefiles/dotlottie-web version in package.json.
-setWasmUrl('/dotlottie-player.wasm')
+//
+// Resolved via publicUrl(), not a bare `'/name'` literal: Vite only rewrites
+// asset references it recognizes in HTML/CSS/JS import graphs for the
+// configured `base`, not a plain absolute-root string like that — it would
+// 404 once base is a GitHub Pages subpath. See src/lib/publicUrl.ts.
+setWasmUrl(publicUrl('dotlottie-player.wasm'))
 
 // Hoisted so the prop identity is stable across renders.
 const RENDER_CONFIG = { autoResize: true } as const
 
 export interface LottieBannerProps {
+  /** A `public/` filename (e.g. `'banner-2.lottie'`), or a full URL — the
+   * component resolves it through `publicUrl()` itself, so callers never
+   * need to think about the deploy base path. */
   src?: string
   className?: string
   /** Accessible description; the canvas is otherwise opaque to screen readers. */
@@ -35,13 +44,15 @@ export interface LottieBannerProps {
 }
 
 export function LottieBanner({
-  src = '/banner-2.lottie',
+  src = 'banner-2.lottie',
   className,
   label,
 }: LottieBannerProps) {
   const hydrated = useHydrated()
   const containerRef = useRef<HTMLDivElement>(null)
   const [player, setPlayer] = useState<DotLottie | null>(null)
+  // Resolved once here, not by the caller — see the `src` doc comment above.
+  const resolvedSrc = publicUrl(src)
 
   useInViewPlayback(containerRef, player)
 
@@ -59,7 +70,7 @@ export function LottieBanner({
     >
       {hydrated ? (
         <DotLottieReact
-          src={src}
+          src={resolvedSrc}
           dotLottieRefCallback={handleRef}
           // Playback is owned by the observer below, not by the player.
           autoplay={false}
