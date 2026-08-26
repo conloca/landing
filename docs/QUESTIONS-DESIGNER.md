@@ -182,29 +182,58 @@ widths — 1440, 1024, 640, and 393 pixels.
     should crop off the screen edge the way it does in the design, and let us know
     whether the sidebar and the fuller seven-entry list should be built out?
 
+12. There's no color anywhere in the design for an error state — the message that appears
+    under a form field when something has been filled in wrong, and anything like it. The
+    only red in the whole file (`#fe3434`) is content inside the version-comparison
+    mockup: a deleted line of code, not an interface color. We deliberately didn't reuse
+    it, because against a white background it's too faint to read comfortably — its
+    measured contrast is 3.65 to 1, where the accessibility standard asks for at least
+    4.5 to 1 for regular text. Nothing on the page needs an error color today, but the
+    first form we add — a signup, a contact form — will. What should that color be?
+
+13. Your design file has a page called "Colors", which almost certainly holds your own
+    names for the palette. We weren't able to read it: the design service kept refusing
+    our requests, and the separate route for reading design variables needs a permission
+    our access token doesn't currently have. So the color *values* we're using are right
+    — we counted them directly in the design file — but the *names* we gave them are our
+    own invention. Could you either send us your names for these colors, or confirm ours
+    are fine to keep? We may be able to fix the permission on our side by reissuing the
+    token, so this one may resolve without you.
+
 ### We built it this way — please confirm
 
-12. **The "for developers / for editors" toggle disappears entirely below a 640-pixel
+14. **The "for developers / for editors" toggle disappears entirely below a 640-pixel
     screen width in the design.** We did it differently — showing it at every screen
     width, since a working control that disappears on mobile looks more like an
     oversight than a deliberate choice. Keep it that way, or does it genuinely need to
     be hidden on mobile?
 
-13. **There's no content at all for the mobile hamburger menu, at any width, in the
+15. **There's no content at all for the mobile hamburger menu, at any width, in the
     design.** We built a standard dropdown menu with the same links as the desktop
     header — an ordinary engineering default for this pattern, not your actual design.
     Is that look acceptable, or will you send a dedicated screen showing the menu open?
 
-14. **There was about 270 pixels of empty space in the design**, between the "Built for
+16. **There was about 270 pixels of empty space in the design**, between the "Built for
     Astro" badge and the carousel text in the hero section. Our build doesn't reproduce
     that large a gap — we used normal spacing instead. If that space was meant as
     breathing room for future content, it's moot in our version; if a specific element
     was meant to go there, let us know what's missing.
 
-15. **The background of the three large feature-block cards in the design is heavy,
+17. **The background of the three large feature-block cards in the design is heavy,
     blurred photographs spanning the card's full width.** We replaced them with a CSS
     gradient plus noise — visually similar effect, with almost none of the loading
     weight. Does that swap work, or are the photographs important to keep?
+
+18. **When someone moves through the page with the keyboard instead of a mouse**, the
+    button or field they're currently on needs a visible outline so they can see where
+    they are. The design doesn't show that state anywhere. We used the lime accent color
+    (`#9AE600`) for that outline. Does that work, or should it be a different color?
+
+19. **The design has no dark version of the page.** We built one anyway, taking its
+    colors from the dark product panel in the hero section. It's currently switched off
+    — nothing on the live site uses it, so dropping it costs nothing. Do you want a dark
+    theme at all? And if you do, is borrowing the hero panel's colors a reasonable
+    starting point?
 
 ### Already resolved, no need to answer
 
@@ -241,10 +270,12 @@ don't end up having to edit the same thing in two places later).
 2. The frame shown under "reduce motion" (banner, question 11).
 3. Screen-reader text (banner, question 12).
 4. Compressed flags (banner, question 13).
-5. "For developers / for editors" toggle shown at every width (layout, question 12).
-6. Mobile menu content (layout, question 13).
-7. The layout's empty gap isn't reproduced (layout, question 14).
-8. CSS gradient instead of photos behind the cards (layout, question 15).
+5. "For developers / for editors" toggle shown at every width (layout, question 14).
+6. Mobile menu content (layout, question 15).
+7. The layout's empty gap isn't reproduced (layout, question 16).
+8. CSS gradient instead of photos behind the cards (layout, question 17).
+9. Lime accent used for the keyboard focus outline (layout, question 18).
+10. A dark theme built but switched off (layout, question 19).
 
 Separately, not a confirmation item but a fact: the site's main UI palette — grays plus
 a lime accent color — comes from the landing page design and is used to color every
