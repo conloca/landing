@@ -43,7 +43,10 @@ Two details of that spec are easy to get wrong:
 - The semantic scheme is stored in `srgb` with the hex the colour carries in the
   Figma frame, so every role token is traceable to a fill that exists in the
   design. It previously held `oklch` values inherited from the shadcn starter,
-  which were pure-neutral greys unrelated to this palette.
+  which were pure-neutral greys unrelated to this palette. Two entries are the
+  exception and stay `oklch`: the dark scheme's `border` and `input` are
+  translucent white, and the generator only honours `alpha` on `oklch` — its
+  `srgb` branch returns a plain hex and would drop the transparency silently.
 
 ### What is emitted, and what is only recorded
 
@@ -157,10 +160,14 @@ not specify them, and all three are queued for the designer:
 - **`destructive`.** `#fe3434` is the only red in the file, and it is content
   inside a product screenshot — the removed-line colour of a diff — not a UI
   role the page itself uses. It is also thin for text: on white it measures
-  about 3.65:1, under the 4.5:1 WCAG AA needs for normal text. Nothing on the
-  page renders it today (no destructive button or badge is used), so this is a
-  latent trap rather than a live defect, and it wants a real error colour from
-  the designer rather than one invented here.
+  about 3.65:1, under the 4.5:1 WCAG AA needs for normal text. Only `button`
+  and `badge` reference it, both solely through their `destructive` variant and
+  an `aria-invalid` state; the page uses neither, and the form components that
+  would otherwise reach it through validation — `input`, `textarea`, `select`,
+  `form`, `alert` — are not in `src/components/ui` at all. So this is a latent
+  trap rather than a live defect. **Adding any form to this page makes it
+  live**, and it wants a real error colour from the designer rather than one
+  invented here.
 - **The whole dark scheme**, mirrored from the dark product mockup in the hero
   because no dark theme was designed. `.dark` is never applied, so none of it
   ships; it exists so the shadcn primitives' `dark:` variants resolve. Its
@@ -168,18 +175,24 @@ not specify them, and all three are queued for the designer:
   step: a solid value equal to `muted` would erase the border on any muted
   surface, and translucency composites correctly over all of them.
 
-**Known gap: the role values are literals, not aliases.** Every hex above also
-exists in the `color.stone` / `color.lime` palette, and DTCG can express the
-relationship — `"$value": "{color.stone.800}"`. The generator rejects aliases
-rather than resolving them, so the roles repeat the literal instead. The cost is
-real: nudge the brand lime in the palette and `ring` silently keeps the old
-value, because the link lives only in this table. Teaching the generator to
-resolve `{…}` references, then rewriting the roles as aliases, is the fix.
+**Known gap: the role values are literals, not aliases.** Most of the hexes
+above also exist in the `color.stone` / `color.lime` palette, and DTCG can
+express the relationship — `"$value": "{color.stone.800}"`. The generator
+rejects aliases rather than resolving them, so the roles repeat the literal
+instead. The cost is real: nudge the brand lime in the palette and `ring`
+silently keeps the old value, because the link lives only in this table.
+The fix is to teach the generator to resolve `{…}` references and then rewrite
+the roles as aliases — which also needs two new palette entries first, since
+`#ffffff` and the `destructive` red belong to no scale yet.
 
 `chart-1`–`chart-5` and the `sidebar-*` family came from the shadcn starter.
-This is a marketing page with neither charts nor a sidebar, nothing referenced
-them, and leaving them in meant anyone inspecting the running site saw a dozen
-variables that had nothing to do with Conloca — so they are gone.
+This is a marketing page with neither charts nor a sidebar. `src/components/ui`
+holds only `badge`, `button`, `segmented-control` and `sheet` — shadcn's
+`chart.tsx` and `sidebar.tsx`, which are what would consume those variables,
+were never added — and a search for `bg-sidebar*` / `chart-[1-5]` utilities
+across `src/` returns nothing. Leaving them in meant anyone inspecting the
+running site saw a dozen variables with nothing to do with Conloca, so they are
+gone.
 
 ## Typography
 
