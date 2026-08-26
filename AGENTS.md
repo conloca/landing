@@ -142,6 +142,17 @@ computed `opacity` back — it flips to `1`). A blank region in a `--full` diff
 near the fold is worth checking with a real `scroll` command before treating it
 as a fidelity bug.
 
+**A second capture caveat, equally empirical:** `agent-browser open --width <w>
+--height <h>` silently ignores those flags and opens at the default viewport.
+Size the window first with `agent-browser set viewport <w> <h>`, then `open`.
+Missing this is expensive on any breakpoint-dependent defect: several captures
+during the fidelity pass were taken as 1024px but were really 1280px, and since
+the bug under investigation only reproduced below the `xl` breakpoint, it seemed
+to appear and vanish at random. Where a screenshot is the evidence for a fix,
+re-capture after the final edit and confirm the image reflects the revision you
+are actually proposing — a screenshot of an intermediate attempt that review
+later rejected looks exactly as convincing.
+
 ## Figma MCP servers
 
 Three servers are registered in `.mcp.json` (project scope, so every agent on the
