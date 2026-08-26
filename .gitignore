@@ -5,6 +5,11 @@ dist-ssr
 *.local
 .vite
 
+# Generated from tokens/tokens.json by `bun run tokens`, which both `dev` and
+# `build` run first. Ignoring it also keeps Tailwind's content detection from
+# scanning it and mistaking semantic token names for utility class names.
+src/tokens.generated.css
+
 # Local secrets
 .env
 .env.*
