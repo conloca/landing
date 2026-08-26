@@ -17,10 +17,20 @@ const ACTIVITY = [
  * Approximation of the dashboard screenshot fill on `Video frame` — the real
  * screenshot was never exported (rate-limited), so this reconstructs its
  * structure in DOM rather than shipping a missing/broken image.
+ *
+ * The Figma frame's 932:782 crop only has room for every element below at
+ * widths from `xl` up — narrower than that the same content needs more
+ * height than that ratio gives it. Rather than deleting content to fit a
+ * ratio meant for a fixed-crop photo (which a real screenshot could satisfy
+ * by cropping pixels, not by dropping rows of text), the container keeps
+ * the Figma ratio only from `xl` and is intrinsic-height below it, and the
+ * picture-in-picture thumbnail is a normal flow child instead of
+ * absolutely positioned, so nothing can overlap the activity list at any
+ * width.
  */
 export function HeroVisual() {
   return (
-    <div className="relative aspect-[932/782] w-full max-w-[932px] overflow-hidden rounded-tl-[20px] rounded-bl-[20px] bg-stone-900 text-stone-50 shadow-2xl">
+    <div className="relative w-full max-w-[932px] overflow-hidden rounded-tl-[20px] rounded-bl-[20px] bg-stone-900 text-stone-50 shadow-2xl xl:aspect-[932/782]">
       <div className="flex items-center justify-between border-b border-white/10 px-5 py-3 text-xs text-stone-400">
         <span>staging-conloca / corpos-staging / main</span>
         <span>Unsaved changes</span>
@@ -53,7 +63,7 @@ export function HeroVisual() {
         <Play className="size-6 translate-x-0.5 fill-stone-50 text-stone-50" />
       </span>
       <div
-        className="absolute bottom-4 left-4 h-24 w-32 rounded-lg bg-gradient-to-br from-indigo-400 to-lime-400"
+        className="mx-5 my-4 h-24 w-32 rounded-lg bg-gradient-to-br from-indigo-400 to-lime-400"
         data-placeholder="hero-visual-pip-photo"
       />
     </div>
