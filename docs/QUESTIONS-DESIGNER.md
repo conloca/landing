@@ -1,261 +1,235 @@
-# Questions for the designer
+# Вопросы дизайнеру
 
-This is where every spot accumulates where the mockup or the assets don't give an
-unambiguous answer, forcing development to either guess or make a design decision
-itself. This file is living: it grows as the landing page gets built, so it's worth
-revisiting rather than treating it as closed after one pass.
+Здесь копятся места, где макет или ассеты не дают однозначного ответа. Вопросы разбиты
+на три группы:
 
-You can answer directly in this file — one line under each question. Every question is
-phrased so that one sentence is enough to answer it.
+- **Открытые вопросы** — ответ реально знает только дизайнер: недостающий контент,
+  недостающие ассеты или вопрос авторского замысла. Без ответа тут не обойтись.
+- **Мы сделали так — подтвердите** — места, где однозначного правильного ответа не было,
+  и мы приняли решение сами, чтобы не останавливать сборку. Решение уже реализовано на
+  сайте, вопрос — «то, что нужно, или переделать?». Достаточно да/нет.
+- **Технически решено, отвечать не нужно** — чистые факты: то, что уже было понятно из
+  самого макета или является однозначной опечаткой, без развилки в решении.
 
----
-
-## Banner animation
-
-This is about the file `Banner 2 animation.lottie` — an animated panel showing the
-product's language-management UI (title "Locales", rows English / Deutsch / Français /
-Español / 日本語, a caption at the bottom reading "2 locales need updates", a colleague's
-cursor labeled "Kyle" at the top). Below is everything we worked out about it by
-inspecting the file, and what we couldn't resolve without you.
-
-### Where the banner lives on the page
-
-1. The animation canvas is 849 by 1334 pixels — a **vertical rectangle**, not a wide
-   strip. Is this a side image inside a section, the mobile first screen, or something
-   else entirely?
-
-2. What's the banner's maximum width on a large screen? Should it fit entirely within
-   the window's height, or is it fine for it to extend past the bottom edge on scroll?
-
-3. What happens with it on a phone? At a 375px screen width, this aspect ratio gives a
-   height of about 590 pixels — almost the whole screen taken up by one image. Do we
-   shrink it, crop it at the edges, or do you have a separate mobile variant?
-
-4. The name "Banner 2" hints at a series. Is there a "Banner 1" and others that are
-   also going on the landing page? If so, please send all of them at once so we don't
-   have to rework the layout for each one separately.
-
-### Playback and looping
-
-5. The animation **does not loop**: the last frame doesn't match the first. The column
-   of cards in the background shifts 224 pixels upward over the course of the clip and
-   never returns, and the highlighting on the Français and Deutsch rows swaps places.
-   If it's set to repeat, the viewer will see a jarring jump-cut.
-   **Our recommendation:** play it once when the banner enters the visible part of the
-   screen, then freeze on the final frame — this matches the clip's own intent, since it
-   deliberately settles on the "2 locales need updates" caption. Do you agree?
-
-6. If a repeat is needed after all — will you re-export the clip so it returns to its
-   starting state, or should we insert a three-to-four-second pause between plays?
-
-7. The clip runs exactly two seconds, but the motion only occupies 0.62 seconds of
-   that: the first 0.6 seconds the frame is static, and so are the last 0.78 seconds.
-   Is the starting pause meant as a "breath" before the action, or is it a side effect
-   of the export that can be trimmed?
-
-8. Should playback start the moment the banner enters the viewport, or immediately when
-   the page loads, even if the user hasn't scrolled down to it yet?
-
-### Accessibility and low-powered devices
-
-9. What should we show people who have "reduce motion" enabled in their system
-   settings? **Our recommendation:** show the final frame immediately, with no motion.
-   Does that work?
-
-10. The panel in the banner is essentially a screenshot of the product's interface.
-    Does it need an accompanying text caption, and what should a screen-reader user
-    hear instead of the image?
-
-### Defects found inside the file
-
-11. The "+ Button" at the bottom of the panel is visible for **exactly one frame out of
-    one hundred twenty** and then disappears entirely. Is this an export error or is it
-    intentional?
-
-12. That same button is literally labeled "Button". Is that placeholder text? What
-    should the actual label be?
-
-13. The Spanish-language row is labeled "Español (en)", even though Spanish's language
-    code is `es`. Is that a typo?
-
-14. The fills contain pure red `#FF0000` five times, and it's not visible anywhere in
-    the frame. It looks like a forgotten guide or an internal marker. Can it be cleaned
-    up on the next export?
-
-### Colors
-
-15. Almost the entire palette of the clip falls within grey-beige and amber tones, but
-    two colors stand out: the colleague's cursor in light blue `#00BFFF` and the
-    "Up to date" status dot in lime green `#C3F13C`. Are these deliberate accents or
-    arbitrarily chosen values? If deliberate — what are they called in your palette, so
-    we can register them as proper system colors instead of one-off numbers in the
-    code.
-
-### Text and file weight
-
-16. All the text inside the animation has been converted to vector outlines — there are
-    zero text layers in the file. For a product about translating interfaces, that
-    means the banner itself can't be translated into another language without
-    re-exporting from Figma. Is the landing page planned to be English-only, or will
-    there be localized versions?
-
-17. Five flags inside the clip are embedded as huge images — the British flag, for
-    example, is 1200 by 600 pixels — but they're drawn as circles roughly 22 pixels
-    across. Because of this, 137 of the file's 142 kilobytes are spent on the flags. Can
-    we compress them down to 64 by 64? There would be no visible difference, and the
-    weight would drop roughly fivefold. Or will you send a re-export with reasonable
-    sizes?
-
-18. Is the cursor labeled "Kyle" advertising real-time collaborative translation as an
-    existing product feature, or is it just decorative flourish? The answer determines
-    whether we need to back up that promise with text next to the banner.
+Отвечать можно прямо в этом файле — одной строкой под вопросом.
 
 ---
 
-## Landing page mockup
+## Анимация-баннер
 
-We now have access to the mockup — below are the questions about Conloca's main page
-itself (the product stores the site's content directly in the client's Git repository;
-developers edit it in an IDE, non-technical editors use a visual interface, and both
-write to the same files). The developer variant is drawn at four screen widths — 1440,
-1024, 640, and 393 pixels. The questions below are what the static screens don't
-explain on their own.
+Речь про файл `Banner 2 animation.lottie` — анимированная панель управления языками
+продукта (заголовок «Locales», строки English / Deutsch / Français / Español / 日本語,
+внизу надпись «2 locales update needed», сверху курсор коллеги с именем «Kyle»).
 
-### What's missing from the mockup
+### Открытые вопросы
 
-1. Judging by the switcher in the hero section's header, the product has two entry
-   points — for developers and for non-technical content editors. The editors' screen
-   exists in the file, but it's only drawn at one width, not the other three. Is it
-   needed in this same landing-page release, or are we only building the developer
-   version for now?
+1. Название «Banner 2» намекает на серию. Есть ли «Banner 1» и другие ролики, которые
+   тоже пойдут на лендинг? Если да — пришлите сразу все, чтобы не переделывать вёрстку
+   под каждый по отдельности.
 
-2. In the "Single source of truth" feature card, one of the blocks is a placeholder the
-   size of an entire second animation — a JSON-schema editor next to a visual page
-   builder — but we weren't given the actual file for that animation. Same question for
-   all the other mockup images inside the cards (the Git version-comparison panel, the
-   publishing scheduler, the branch diagram, and the rest): which of these will be a
-   separate Lottie clip like the banner we already have, which will be a static image,
-   and which should be built as a real, working HTML interface?
+2. Ролик длится ровно две секунды, но движение занимает в нём только 0.62 секунды:
+   первые 0.6 секунды кадр стоит неподвижно, последние 0.78 секунды — тоже. Стартовая
+   пауза задумана как «выдох» перед действием, или это побочный эффект экспорта и её
+   можно срезать при следующем экспорте?
 
-3. On narrow screens, the header collapses into a hamburger button, but the dropdown
-   menu's contents aren't drawn at any width. Can you send a separate screen showing
-   the open mobile menu?
+3. Кнопка «+ Button» в нижней части панели видна ровно один кадр из ста двадцати и
+   дальше исчезает совсем. Это ошибка экспорта или задумано?
 
-4. The landing page's footer currently only has the logo, four links, and a "Get
-   Started" button — no privacy policy or terms-of-use links, no copyright notice, no
-   social links. Is this the final footer, or will you still be adding to it?
+4. Эта же кнопка подписана буквально словом «Button». Это текст-заглушка? Какая надпись
+   должна быть на самом деле?
 
-### Switches, states, and behavior that a static screen doesn't show
+5. Строка испанского языка помечена как «Español (en)», хотя код испанского — `es`.
+   Опечатка?
 
-5. The "for developers / for editors" switcher in the hero section's header disappears
-   at screen widths below 1024 pixels (it used to be below 640 — the range widened when
-   the mobile hero was rebuilt in #86, but the question wasn't discussed or resolved as
-   part of that task). The question remains open: is it a deliberate decision to only
-   show the developer version on phone and tablet, or has the switcher simply not been
-   carried over to those screens yet?
+6. В заливках пять раз встречается чистый красный `#FF0000`, которого в кадре не видно.
+   Похоже на забытую направляющую или служебный маркер. Можно вычистить при следующем
+   экспорте?
 
-6. Next to the text in the hero section there's a three-bar indicator — a clear hint at
-   a three-slide carousel — but text has only been written for one of them. Will you
-   send text for the other two, or should there actually be fewer bars?
+7. Голубой курсор коллеги `#00BFFF` и салатовая точка статуса «Up to date» `#C3F13C` не
+   входят в серо-бежевую и янтарную гамму остального ролика. Это осознанные акценты?
+   Если да — как они называются в вашей палитре, чтобы завести их как полноценные цвета
+   системы, а не разовые числа в коде? Пока используем эти значения как есть, без
+   названия.
 
-7. There's a play button on top of the video preview in the hero section, but what
-   happens after it's clicked isn't drawn anywhere. Is it a video embedded directly in
-   the page, a link to an external service like YouTube, or does it open a separate
-   overlay window?
+8. Весь текст внутри анимации переведён в векторные контуры — текстовых слоёв в файле
+   ноль. Для продукта про перевод интерфейсов это означает, что сам баннер нельзя
+   перевести на другой язык без переэкспорта из Figma. Лендинг планируется только на
+   английском, или языковые версии будут?
 
-8. Below the three pricing cards there's a "Compare plans" button with no indication of
-   where it leads. Does it open a separate plan-comparison page, expand a table in
-   place, or something else?
+9. Курсор с именем «Kyle» — это реклама совместной работы над переводами в реальном
+   времени как существующей функции продукта, или просто оживляж? От ответа зависит,
+   надо ли подкреплять это обещание текстом рядом с баннером.
 
-9. At a 1024px screen width, the video in the hero section deliberately extends past
-   the right edge of the screen instead of shrinking along with the rest of the
-   content. Is this frame-cropping at this width a deliberate technique, or is the
-   mockup at this width not yet finished?
+### Мы сделали так — подтвердите
 
-### Typos and text inconsistencies in the mockup itself
+10. **Ролик физически не зацикливается** — последний кадр не совпадает с первым (колонка
+    карточек на фоне уезжает на 224 пикселя вверх и не возвращается, подсветка строк
+    Français и Deutsch меняется местами). Мы сделали так: баннер проигрывается один раз
+    при появлении в поле зрения и замирает на финальном кадре — это совпадает с
+    задумкой ролика, который специально останавливается на надписи «2 locales update
+    needed». Так и оставить, или нужен настоящий повтор — тогда придётся или
+    переэкспортировать ролик с возвратом в исходное состояние, или мы сделаем паузу
+    в несколько секунд между проигрываниями?
 
-10. Two feature-block cards have typos in their text: "Sceduled Publishing" instead of
-    "Scheduled Publishing", and "Makrdown" instead of "Markdown". Do we carry the text
-    into the build exactly as it is in the mockup, or are these mistakes that should be
-    corrected along the way?
+11. **При включённой в системе настройке «уменьшить движение»** мы решили сразу
+    показывать тот же финальный кадр, на котором останавливается обычное
+    проигрывание, — а не первый кадр и не анимацию целиком. Подходит?
 
-11. Two neighboring cards in the same block appear to have their text swapped: the
-    "Reusable fragments" card (about reusable content fragments) describes version
-    history, while the "Full version history" card describes reusable fragments. Should
-    the labels be swapped?
+12. **Подпись для программ чтения с экрана.** Панель — по сути скриншот интерфейса
+    продукта, картинка сама по себе не несёт смысла для незрячего пользователя. Мы
+    написали короткое описание того, что на ней происходит: «Locales panel showing
+    sync status across five languages». Устроит такая формулировка, или нужна другая?
 
-12. There's about 270 pixels of empty space with no element in it between the "Built
-    for Astro" badge and the carousel text in the hero section. Is this deliberate
-    breathing room for future content, or should something else be there?
-
-### Typography and color
-
-13. The same visual text style (bold, 16 pixels) is labeled in different places in the
-    mockup as either the "Inter" font or its separately named "Inter Variable" weight —
-    effectively the same typeface under two different names. Is this a deliberate
-    distinction, or should the same font be used everywhere?
-
-14. The colleague cursor labeled "Kyle" in the localization banner we already received
-    is drawn in `#00BFFF` — the standard web color "deepskyblue" — rather than one of
-    the site's other palette colors. Is this a brand color specifically representing
-    this person, or can any free shade from the site's palette be used?
-
-15. The feature-block cards and some of the illustrations inside them are colored in a
-    warm sandy-olive tone — eleven different values, none of which belong to the site's
-    main palette (grey shades and the lime accent color). What is this color range
-    called in your system, so we can register it as a proper set of system colors
-    rather than one-off numbers in the layout code?
-
-16. In the section headed "Everything you need, nothing you don't", four small elements
-    float around the text — status badges, Git and Astro icons — each rotated a few
-    degrees. Should they move on page scroll (a parallax effect), or is this a static
-    decoration?
-
-17. The feature block's three large cards use full-width blurred photographs as
-    backgrounds — heavy files to load on the landing page. **Our recommendation:**
-    replace them with a CSS gradient plus light noise, which visually gives a similar
-    effect at almost no weight. Would that substitution work, or are the photographs
-    non-negotiable for you?
-
-### Scroll-linked animation timing
-
-18. The exported Figma frame data (`docs/figma/anim.json`, node `40002450:2700`)
-    names the "Everything you need" feature block's scrolling wrapper "Scrolling"
-    and groups the three feature cards inside it, but Figma's prototype export only
-    ever records click/hover interactions — it has no field for a scroll-scrubbed
-    animation, so this name is a label, not a timeline. In code, `ScrollStack`
-    pins that block and drives each card's arrival (scale 0.94 → 1, a 24px rise,
-    and a 0.7 → 1 opacity ramp over the first half of its window) off scroll
-    position, but those exact numbers, their easing, and how much of the scroll
-    range each card should occupy are a developer guess, not a spec (see the
-    "Placeholder reveal" comment in `src/components/motion/ScrollStack.tsx`). What
-    we need: the exact per-card scale/position/opacity keyframes and easing curve
-    for this reveal, or confirmation that the current guess is close enough to
-    ship as-is.
+13. **Пять флагов внутри баннера мы пережали** до 64×64 пикселей (были размером до
+    1200×600 при видимом размере около 22 пикселей) — вес ролика упал со 145 КБ до
+    42 КБ, на глаз разницы нет. Так и оставить, или пришлёте переэкспорт с изначально
+    небольшими флагами?
 
 ---
 
-## Open decisions made on the designer's behalf
+## Макет лендинга
 
-To avoid stalling the build, we made the call ourselves on a few points. Each one is
-easy to reverse — but better to reverse it now than to discover it on the finished
-page.
+Доступ к макету появился, ниже — вопросы по главной странице Conloca (сервис хранит
+контент сайта прямо в Git-репозитории клиента; разработчики правят его в IDE,
+нетехнические редакторы — в визуальном интерфейсе, оба пишут в одни и те же файлы).
+Отрисован вариант для разработчиков на четырёх ширинах экрана — 1440, 1024, 640 и 393
+пикселя.
 
-1. **The banner plays once** when it enters the viewport and stays on its final frame.
-   Reason: the clip physically can't loop without a jump-cut (see question 5).
+### Открытые вопросы
 
-2. **When the system's "reduce motion" setting is enabled**, animations don't play at
-   all — the final frame is shown immediately instead of the banner.
+1. У продукта, судя по переключателю в шапке героического блока, два входа — для
+   разработчиков и для нетехнических редакторов контента. Экран для редакторов в файле
+   есть, но нарисован только на одной ширине, без остальных трёх. Он нужен в этом же
+   релизе лендинга, или пока делаем только версию для разработчиков?
 
-3. **The palette was taken from the animation itself** — grey-beige and amber tones —
-   and set up as a set of color tokens. Once the mockup is available, the palette will
-   be checked against it, and any discrepancies will be listed here separately.
+2. В карточке функции «Один источник правды» на месте одного из блоков стоит
+   макет-заглушка размером с целую вторую анимацию — редактор JSON-схемы рядом с
+   визуальным конструктором страницы, а самого файла с этой анимацией нам не передали.
+   Такой же вопрос по всем остальным картинкам-макетам в карточках (панель сравнения
+   версий Git, планировщик публикаций, диаграмма веток и остальные): что из них будет
+   отдельным Lottie-роликом вроде уже переданного баннера, что — статичной картинкой, а
+   что стоит собрать как настоящий работающий интерфейс на HTML? Пока собрали все такие
+   места как условные, стилизованные под сайт HTML-мокапы, а не настоящие ассеты — это
+   заглушка, не финальный вид. (Рядом с этим же заголовком в макете плавают ещё четыре
+   мелких элемента — плашки со статусами, значки Git и Astro; когда дойдёт очередь до
+   них, по умолчанию сделаем их статичными, без эффекта параллакса при прокрутке, если
+   вы отдельно не попросите иначе.)
 
-4. **All of the landing page's text is present in the static HTML and visible without
-   JavaScript.** Entrance animations only attach once the scripts have loaded. That
-   means a section designed to "slide in" is already in its final position at the very
-   first paint — otherwise the page would be blank for search-engine crawlers and for
-   users whose scripts failed to load.
+3. В подвале лендинга сейчас только логотип, четыре ссылки и кнопка «Get Started» — нет
+   ни ссылок на политику конфиденциальности и условия использования, ни авторских прав,
+   ни соцсетей. Это финальный вид подвала, или его ещё дорисуете?
 
-5. **We plan to compress the flags inside the banner** down to a reasonable size (see
-   question 17). Until we get an answer, we're working with the original file as is.
+4. Рядом с текстом в героическом блоке стоит индикатор из трёх полосок — явный намёк на
+   карусель из трёх слайдов, — но текст написан только для одного из них. Пришлёте текст
+   для оставшихся двух, или полосок на самом деле должно быть меньше? Пока индикатор
+   показан статично, без придуманного текста для несуществующих слайдов.
+
+5. Поверх видео-превью в героическом блоке стоит кнопка воспроизведения, но что
+   происходит после клика — не нарисовано, и самого видео нам не передали. Это видео,
+   встроенное прямо в страницу, ссылка на внешний сервис вроде YouTube, или открытие
+   отдельного окна поверх страницы? Пока кнопка декоративная и никуда не ведёт.
+
+6. Под тремя карточками тарифов стоит кнопка «Compare plans» без указания, куда она
+   ведёт. Открывает отдельную страницу сравнения тарифов, разворачивает таблицу прямо на
+   месте, или что-то третье?
+
+7. На ширине экрана 1024 пикселя видео в героическом блоке в макете специально уезжает
+   за правый край экрана вместо того, чтобы уменьшиться вместе с остальным контентом.
+   Пока это неприменимо — самого видео у нас нет, блок собран как статичная реконструкция
+   интерфейса продукта. Вопрос актуален, когда появится реальное видео: обрезка кадром на
+   этой ширине — осознанный приём, или макет на этой ширине ещё не доведён до конца?
+
+8. В карточке функции «Full version history» (полная история версий) текст на самом деле
+   описывает не историю версий, а переиспользуемые блоки контента — «Build a block once,
+   reuse it across every page». Соседняя карточка «Reusable fragments» при этом описывает
+   именно себя правильно, так что это не чистая перестановка местами двух подписей, а,
+   похоже, просто не тот текст под одним заголовком в самом макете. Пришлёте текст,
+   который на самом деле должен объяснять историю версий?
+
+9. У продукта, судя по всему, есть отдельная фирменная гамма — одиннадцать тёплых
+   песочно-оливковых оттенков — для карточек блока функций и части иллюстраций внутри
+   них. Ни один из них не входит в основную палитру сайта (оттенки серого и салатовый
+   акцентный цвет). Это осознанная отдельная гамма для этого блока? Если да — как она
+   называется в вашей системе, чтобы завести её как полноценный набор цветов? Пока эти
+   карточки собраны в основной серо-салатовой палитре сайта, без песочных тонов — если
+   нужна отдельная гамма, добавим её отдельным проходом, зная реальные названия
+   значений.
+
+10. О том же курсоре коллеги «Kyle», который встречается в макете тем же голубым цветом
+    `#00BFFF` — это фирменный цвет конкретно для обозначения этого человека, или можно
+    взять любой свободный оттенок из палитры сайта? Тот же вопрос, что и в разделе про
+    баннер выше (баннер, открытый вопрос 7) — эти два места в макете и в баннере
+    используют один и тот же цвет, отвечать нужно один раз.
+
+### Мы сделали так — подтвердите
+
+11. **Переключатель «для разработчиков / для редакторов» в макете на ширине экрана
+    меньше 640 пикселей пропадает совсем.** Мы сделали иначе — показываем его на всех
+    ширинах экрана, поскольку рабочий элемент управления, пропадающий на мобильном,
+    выглядит скорее недоработкой макета, чем осознанным решением. Так и оставить, или
+    правда нужно прятать на мобильном?
+
+12. **Содержимого мобильного меню-гамбургера в макете нет ни на одной ширине.** Мы
+    собрали стандартное выпадающее меню с теми же ссылками, что и в шапке на широком
+    экране — обычный инженерный дефолт для такого паттерна, не по вашему дизайну.
+    Устроит такой вид, или пришлёте отдельный экран с открытым меню?
+
+13. **Между значком «Built for Astro» и текстом карусели в макете было около
+    270 пикселей пустого пространства.** В нашей вёрстке такого большого разрыва нет —
+    использованы обычные отступы. Если задумывался воздух под будущий контент, в нашей
+    версии это неактуально; если туда должен был встать конкретный элемент, дайте знать,
+    чего не хватает.
+
+14. **Фон трёх больших карточек блока функций в макете — тяжёлые размытые фотографии на
+    всю ширину карточки.** Мы заменили их на CSS-градиент с шумом — визуально похожий
+    эффект почти без веса на загрузку страницы. Устроит такая замена, или фотографии для
+    вас принципиальны?
+
+### Технически решено, отвечать не нужно
+
+- **Опечатки в тексте карточек блока функций.** «Sceduled Publishing» и «Makrdown»
+  исправлены на «Scheduled Publishing» и «Markdown» — однозначные опечатки, не требующие
+  подтверждения.
+- **Опечатка в тексте героического блока.** Отдельно нашли ещё одну: «MDS blocks»
+  исправлено на «MDX blocks» — MDX это реальный формат файлов, которым сам продукт
+  оперирует (см. описание продукта в начале этого документа), «MDS» нигде не встречается.
+- **Inter vs Inter Variable.** Это действительно одна и та же гарнитура — вариативный
+  файл шрифта покрывает и обычное, и крупное начертание через ось оптического размера.
+  В коде используется один файл шрифта на все случаи, разделение в макете не влияет на
+  вёрстку.
+- **Где баннер локализации живёт на странице.** Уже видно по самому макету, без
+  развилки в решении: это визуал внутри карточки функции «Localization without manual
+  syncing» (карточка 2 в блоке из трёх функций), не отдельный полноэкранный баннер.
+  Контейнер карточки — 687×721 пикселей, холст ролика — 849×1334, то есть ролик
+  заведомо больше контейнера и обрезается по всем четырём сторонам с небольшим
+  смещением вверх, чтобы в видимом окне помещалась именно панель «Locales» — так и
+  реализовано.
+
+---
+
+## Открытые решения, принятые за дизайнера — сводка
+
+Указатель на все пункты «Мы сделали так — подтвердите» из обоих разделов, чтобы не
+листать оба целиком. Полный текст каждого — в самом разделе по ссылке, здесь только
+название темы, без повтора формулировки (чтобы не пришлось потом править одно и то же в
+двух местах).
+
+1. Проигрывание баннера — один раз, без цикла (баннер, вопрос 10).
+2. Кадр при «уменьшить движение» (баннер, вопрос 11).
+3. Текст для программ чтения с экрана (баннер, вопрос 12).
+4. Пережатые флаги (баннер, вопрос 13).
+5. Переключатель «для разработчиков / для редакторов» на всех ширинах (макет,
+   вопрос 11).
+6. Содержимое мобильного меню (макет, вопрос 12).
+7. Пустой промежуток из макета не воспроизведён (макет, вопрос 13).
+8. CSS-градиент вместо фотографий на фоне карточек (макет, вопрос 14).
+
+Отдельно, не пункт на подтверждение, а факт: основная палитра интерфейса сайта — оттенки
+серого и салатовый акцентный цвет из макета лендинга, ею покрашены все секции. Это не то
+же самое, что серо-бежевая и янтарная гамма внутри самой Lottie-анимации баннера — два
+разных набора цветов, не один.
+
+И ещё один факт, техническое ограничение платформы, а не решение на усмотрение: весь
+текст лендинга присутствует в статическом HTML и виден без JavaScript, анимации
+появления навешиваются только после загрузки скриптов — иначе страница была бы пустой
+для поисковых роботов и для пользователей с отвалившимся скриптом.
