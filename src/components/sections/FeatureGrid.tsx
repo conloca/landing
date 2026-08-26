@@ -21,7 +21,7 @@ const VERSION_HISTORY_ILLUSTRATION = <VersionHistoryIllustration />
 const CARDS = [
   {
     tall: true,
-    title: 'Sceduled Publishing', // verbatim Figma copy — likely a typo for "Scheduled", see docs/QUESTIONS-DESIGNER.md
+    title: 'Scheduled Publishing',
     body: 'Set a date and time for content to go live automatically',
     illustration: SCHEDULED_ILLUSTRATION,
   },
@@ -32,7 +32,7 @@ const CARDS = [
   },
   {
     title: 'Type content in Markdown',
-    body: 'Just type the page contents in Makrdown. Conloca will render it', // verbatim Figma copy — likely a typo for "Markdown", see docs/QUESTIONS-DESIGNER.md
+    body: 'Just type the page contents in Markdown. Conloca will render it',
     illustration: MARKDOWN_ILLUSTRATION,
   },
   {
@@ -58,8 +58,10 @@ const CARDS = [
 ]
 
 /**
- * Card 6/7 body copy looks swapped in the Figma file (card 7's body describes
- * fragments, not version history) — kept verbatim, see docs/QUESTIONS-DESIGNER.md.
+ * "Full version history"'s body ("Build a block once, reuse it across every
+ * page") describes reusable blocks, not version history — a content bug in
+ * the Figma source, not a build error. Kept verbatim pending real copy from
+ * the designer, see docs/QUESTIONS-DESIGNER.md.
  */
 export function FeatureGrid() {
   return (
