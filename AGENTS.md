@@ -189,3 +189,26 @@ at launch and runs with `FIGMA_API_KEY` in its environment. A caret range would
 auto-execute any future patch or minor release — including a compromised one —
 with a live Figma credential handed to it. Bump this deliberately, after checking
 the release.
+
+## Language: English only, everywhere in the repository
+
+Everything committed to this repository is written in English — source code,
+identifiers, comments, commit messages, `README.md`, `DESIGN.md`, and every file
+under `docs/`, including the designer-facing ones. No Cyrillic in committed
+files.
+
+This covers documents whose reader is not an engineer. A designer-facing
+question list is still written in English; write it in plain, jargon-free
+English rather than switching language.
+
+Conversation outside the repository — chat, Telegram, pull request discussion
+with a Russian-speaking teammate — is unaffected. The rule is about what lands
+in version control, which is read by contributors and agents who may not share
+a first language.
+
+To check before committing:
+
+```bash
+git ls-files | grep -vE 'node_modules|bun.lock' \
+  | xargs grep -lP '[\x{0400}-\x{04FF}]' 2>/dev/null
+```
