@@ -13,11 +13,6 @@
  * See DESIGN.md.
  */
 @import "./tokens.generated.css";
-/*
- * Tailwind's automatic content detection would otherwise scan the generated
- * file as a source of class names and mistake semantic token names for
- * utilities, emitting phantom rules for them. Excluded explicitly.
- */
 
 @custom-variant dark (&:is(.dark *));
 

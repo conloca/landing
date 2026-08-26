@@ -56,13 +56,18 @@ them would shadow Tailwind's defaults for no benefit.
 
 ### Known wart
 
-Tailwind v4 scans project files for class-name candidates. Because the generated
-stylesheet contains semantic custom-property names, Tailwind reads some of them
-as utility candidates and emits one unused rule into the bundle
-(`accent-color` keyed off the foreground token, roughly 50 bytes). No element
-carries that class, so there is no visual effect. `@source not` does not exclude
-it; ignoring the file in git does not either. Documented rather than papered
-over.
+Tailwind v4 scans project files for class-name candidates. The entry stylesheet
+it is compiling is exempt, but a stylesheet reached through `@import` is not, so
+Tailwind reads some of the generated semantic custom-property names as utility
+candidates and emits one unused rule into the bundle (`accent-color` keyed off
+the foreground token, roughly 50 bytes). No element carries that class, so there
+is no visual effect.
+
+Three things were tried and none suppressed it: `@source not` pointed at the
+file, `@source not` as a glob, and moving the file out of `src/`. Adding it to
+`.gitignore` did not suppress it either — it is ignored because it is a build
+artifact, not as a workaround. Documented rather than papered over; the cost is
+50 bytes of dead CSS.
 
 ## Colour
 

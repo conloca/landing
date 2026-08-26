@@ -6,8 +6,8 @@ dist-ssr
 .vite
 
 # Generated from tokens/tokens.json by `bun run tokens`, which both `dev` and
-# `build` run first. Ignoring it also keeps Tailwind's content detection from
-# scanning it and mistaking semantic token names for utility class names.
+# `build` run first. Ignored because it is a build artifact, the same reason
+# dist/ is — not as a Tailwind workaround (see the "Known wart" in DESIGN.md).
 src/tokens.generated.css
 
 # Local secrets

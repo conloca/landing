@@ -5,8 +5,15 @@
  * this file has to land byte-identical to the hand-written CSS it replaced, so
  * the exact block structure (`@theme` vs `:root` vs `.dark`), the comment, the
  * blank lines, and the `oklch(... / 10%)` alpha spelling all matter. Style
- * Dictionary still does the real work — parsing DTCG, validating, resolving
- * aliases — we only own the serialisation.
+ * Dictionary parses the file and applies DTCG `$type` inheritance; it does NOT
+ * validate value shapes here, and with no platforms configured it never runs
+ * alias resolution. Every shape check below is therefore ours to make, and a
+ * malformed token has to fail loudly rather than reach the stylesheet.
+ *
+ * Aliases (`"$value": "{color.sand.200}"`) are consequently rejected rather
+ * than silently mis-serialised. Emitting one would mean running a Style
+ * Dictionary platform export; until a token needs it, refusing is the honest
+ * contract.
  *
  * Only the tokens this project actually declares are emitted. `color.lime`,
  * `color.stone`, `color.cursor`, `layout.*` and the typography ramp are recorded
@@ -23,7 +30,8 @@ const OUT = "src/tokens.generated.css";
 type SrgbColor = {
   colorSpace: "srgb";
   components: [number, number, number];
-  hex: string;
+  /** Optional per the DTCG spec — a fallback, never the authoritative value. */
+  hex?: string;
 };
 type OklchColor = {
   colorSpace: "oklch";
@@ -59,28 +67,73 @@ function lookup(tree: TokenNode, path: string): unknown {
   return cursor.$value;
 }
 
+/** The colour spaces this generator can serialise. Anything else must fail. */
+const SUPPORTED_COLOR_SPACES = ["srgb", "oklch"] as const;
+
 function isColorValue(value: unknown): value is ColorValue {
+  if (typeof value !== "object" || value === null) return false;
+  if (!("colorSpace" in value) || !("components" in value)) return false;
+  const { colorSpace, components } = value as {
+    colorSpace: unknown;
+    components: unknown;
+  };
   return (
-    typeof value === "object" &&
-    value !== null &&
-    "colorSpace" in value &&
-    "components" in value
+    typeof colorSpace === "string" &&
+    Array.isArray(components) &&
+    components.length === 3 &&
+    components.every((component) => typeof component === "number")
   );
+}
+
+const hexChannel = (value: number): string =>
+  Math.round(Math.min(1, Math.max(0, value)) * 255)
+    .toString(16)
+    .padStart(2, "0");
+
+/** `components` is the authoritative value per DTCG; `hex` is only a fallback. */
+function hexFromComponents(components: readonly number[]): string {
+  return `#${components.map(hexChannel).join("")}`;
 }
 
 /**
  * Alpha is written as a percentage because that is how the shipped stylesheet
  * spells it; `oklch(1 0 0 / 0.1)` renders identically but would make the
- * generated file differ from its hand-written predecessor for no reason.
+ * generated file differ from its hand-written predecessor for no reason. It is
+ * rounded because `0.29 * 100` is `28.999999999999996` in IEEE 754, which would
+ * silently break the byte-stability this generator exists to guarantee.
  */
 function formatColor(value: unknown, path: string): string {
-  if (!isColorValue(value)) throw new Error(`token "${path}" is not a colour`);
-  if (value.colorSpace === "srgb") return value.hex;
+  if (typeof value === "string" && value.startsWith("{")) {
+    throw new Error(
+      `token "${path}" is an alias (${value}); this generator does not resolve aliases — inline the value`,
+    );
+  }
+  if (!isColorValue(value)) {
+    throw new Error(
+      `token "${path}" is not a DTCG colour object with a 3-number components array`,
+    );
+  }
+  if (!SUPPORTED_COLOR_SPACES.includes(value.colorSpace)) {
+    throw new Error(
+      `token "${path}" uses colour space "${value.colorSpace}"; this generator supports only ${SUPPORTED_COLOR_SPACES.join(", ")}`,
+    );
+  }
+  if (value.colorSpace === "srgb") {
+    const derived = hexFromComponents(value.components);
+    // A hand-edited or round-tripped token can carry a hex that no longer agrees
+    // with components; shipping either one silently would be a wrong colour.
+    if (value.hex !== undefined && value.hex.toLowerCase() !== derived) {
+      throw new Error(
+        `token "${path}" has hex ${value.hex} but components resolve to ${derived}`,
+      );
+    }
+    return derived;
+  }
   const [l, c, h] = value.components;
   const base = `${l} ${c} ${h}`;
-  return value.alpha === undefined
-    ? `oklch(${base})`
-    : `oklch(${base} / ${value.alpha * 100}%)`;
+  if (value.alpha === undefined) return `oklch(${base})`;
+  const alphaPercent = Number((value.alpha * 100).toFixed(4));
+  return `oklch(${base} / ${alphaPercent}%)`;
 }
 
 function formatFontFamily(value: unknown, path: string): string {
