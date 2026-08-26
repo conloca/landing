@@ -104,6 +104,44 @@ These are read by a human, not another agent, so optimize for being understood:
 - When a message exceeds the channel's length limit, cut secondary content — drop whole
   points — rather than compressing the wording of what remains.
 
+## Visual fidelity checks against Figma
+
+`scripts/visual-diff.ts` pixel-diffs a Figma reference render against a live
+screenshot at the same width, using `pixelmatch` + `pngjs`:
+
+```bash
+bun run visual-diff <reference.png> <live.png> <diff-output.png>
+```
+
+**Reference renders are not committed to this repo** — they're a byproduct of the
+Figma extraction pass (see Figma MCP servers below), regenerated from the source
+file rather than checked in, to keep the repo lean. Export all four breakpoint
+frames (393/640/1024/1440) and, for finer-grained diffing, per-section crops of the
+desktop frame, at 1x scale (device pixel ratio 1 — this script has no notion of
+scale and a 2x export will silently compare against the wrong breakpoint's
+layout). Capture the live equivalents with `agent-browser` against `bun run
+preview`, at the reference frame's exact CSS width.
+
+Both inputs must be the same width or the script refuses to compare them. Height
+mismatches (real content vs. placeholder assets) are reported, not silently
+cropped or padded — only the top overlapping region is compared. That makes a
+**full-page run a sanity check, not the reliable signal**: a height difference in
+an early section (expected wherever an asset Figma's export never gave us renders
+as a placeholder) shifts everything below it out of alignment, so the mismatch
+percentage there reflects misalignment, not fidelity. Diff **per-section crops**
+for a comparison you can actually act on. The diff image highlights mismatched
+pixels in red; treat placeholder-asset regions as expected noise, not a fidelity
+bug to chase to zero.
+
+**A capture caveat, confirmed empirically:** `agent-browser screenshot --full`
+does not reliably fire the scroll events `Reveal`'s `whileInView` gating depends
+on for content that starts below the initial viewport fold — captured this way,
+such an element can be stuck at its pre-reveal `opacity: 0` even though a real
+scrolling visitor sees it correctly (verified by scrolling to it and reading its
+computed `opacity` back — it flips to `1`). A blank region in a `--full` diff
+near the fold is worth checking with a real `scroll` command before treating it
+as a fidelity bug.
+
 ## Figma MCP servers
 
 Three servers are registered in `.mcp.json` (project scope, so every agent on the
