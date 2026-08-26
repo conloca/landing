@@ -43,8 +43,7 @@ export function CarouselRail() {
         ))}
       </div>
       <p className="order-1 max-w-[337px] text-center text-base leading-[1.7] font-bold text-stone-700 italic sm:max-w-[576px] lg:order-2 lg:max-w-[432px] lg:text-left lg:leading-normal lg:not-italic">
-        {/* "MDS" is verbatim from the Figma copy — likely a typo for "MDX", see docs/QUESTIONS-DESIGNER.md */}
-        Map your React components to typed schemas and MDS blocks in the IDE.
+        Map your React components to typed schemas and MDX blocks in the IDE.
         Visual edits respect the structure you define and stay in Git.
       </p>
     </div>
