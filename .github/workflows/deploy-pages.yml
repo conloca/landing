@@ -1,0 +1,127 @@
+# Build and deploy the static site to GitHub Pages.
+#
+# This repo builds to `dist/` with no server at runtime (see AGENTS.md — a client
+# build, an SSR build, and a prerender pass spliced together by `bun run build`).
+# Pages just needs to serve that directory, so this uses the modern
+# upload-pages-artifact + deploy-pages flow (deploy FROM Actions), not the legacy
+# approach of pushing a `gh-pages` branch.
+#
+# `vite.config.ts` reads `BASE_PATH` from the environment (falling back to `/`,
+# always trailing-slash-normalized there); this workflow is the only place that
+# sets it, from `configure-pages`' own `base_path` output, run BEFORE the build
+# so the value is actually used. See the comment in vite.config.ts for why this
+# isn't a bare `GITHUB_ACTIONS` check.
+#
+# Actions are pinned to commit SHAs (not mutable tags): the build job runs with
+# `pages: write` + `id-token: write` on the deploy job, and a compromised/retagged
+# action in that path could exfiltrate the OIDC token or ship malicious content.
+# Bump these deliberately after checking the release, same policy as the pinned
+# figma-developer-mcp version in .mcp.json.
+#
+# PR runs get their own concurrency group (cancelled on every new push, since
+# only the latest PR commit matters). Anything that can actually reach
+# production — a push to main, or a manual dispatch run FROM main — shares the
+# `pages-deploy` group so they queue in order instead of racing to publish
+# (two deploy jobs hitting the github-pages environment for different commits
+# is not just wasteful, it can leave the OLDER one's content live if it
+# happens to finish last). A dispatch from any OTHER branch gets its own
+# isolated group: it still builds and asserts (useful for testing the
+# workflow itself), but `deploy`'s `github.ref == 'refs/heads/main'` check
+# means it can never publish, so there is nothing for it to race against.
+
+name: Deploy Pages
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch: {}
+
+env:
+  # Stand-in base path used ONLY to verify the BASE_PATH plumbing on PR builds,
+  # where Pages hasn't assigned a real one yet. It does not need to match the
+  # repo's actual Pages subpath — the assertion below checks that whatever
+  # BASE_PATH is set, the build's asset references honor it consistently, not
+  # that this specific value is correct.
+  PR_VERIFICATION_BASE_PATH: /landing/
+
+concurrency:
+  group: ${{ github.event_name == 'pull_request' && format('pages-pr-{0}', github.event.pull_request.number) || (github.event_name == 'workflow_dispatch' && github.ref != 'refs/heads/main') && format('pages-dispatch-{0}', github.ref) || 'pages-deploy' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      # configure-pages calls GET /repos/{owner}/{repo}/pages, which a
+      # contents-only token can't reach on a private repo ("Resource not
+      # accessible by integration") — this is the least-privilege grant that
+      # step needs; pages:write stays scoped to the deploy job alone.
+      pages: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version: '1.4.0'
+      - run: bun install --frozen-lockfile
+      - name: Configure Pages
+        id: pages
+        if: github.event_name != 'pull_request'
+        uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
+      - name: Build
+        env:
+          BASE_PATH: ${{ github.event_name == 'pull_request' && env.PR_VERIFICATION_BASE_PATH || steps.pages.outputs.base_path }}
+        run: bun run build
+      - name: Assert Vite's own asset URLs honor BASE_PATH
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_PATH: ${{ env.PR_VERIFICATION_BASE_PATH }}
+        run: |
+          set -euo pipefail
+          if ! grep -q "\"${BASE_PATH}assets/" dist/index.html; then
+            echo "::error::dist/index.html does not reference ${BASE_PATH}assets/ — base-path resolution regressed."
+            exit 1
+          fi
+      - name: Assert no public/ asset is referenced by a bare absolute-root literal
+        # Source-level, not build-output-level: publicUrl()'s BASE_URL + name
+        # concatenation happens at RUNTIME in the browser, so the finished
+        # `/landing/dotlottie-player.wasm` string never exists as a literal
+        # substring in the built bundle for a grep to find — only the source
+        # call site (`publicUrl('dotlottie-player.wasm')`) is inspectable
+        # statically, and only before minification touches it. Runs on every
+        # trigger, not just PRs — it doesn't need a build at all.
+        run: |
+          set -euo pipefail
+          fail=0
+          for f in public/*; do
+            name=$(basename "$f")
+            # A literal `/name` immediately after a quote/backtick is the bug
+            # this check exists to catch (`setWasmUrl('/dotlottie-player.wasm')`).
+            # `publicUrl('name')` and `${BASE_URL}name` never produce that
+            # adjacency, so neither is a false positive.
+            if grep -rnE "[\"'\`]/${name}\b" src/; then
+              echo "::error::src/ references /${name} as a bare absolute-root literal — should go through publicUrl(), see src/lib/publicUrl.ts"
+              fail=1
+            fi
+          done
+          exit $fail
+      - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
+        if: github.event_name != 'pull_request'
+        with:
+          path: dist
+
+  deploy:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4
