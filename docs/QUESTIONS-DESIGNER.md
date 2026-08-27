@@ -263,42 +263,39 @@ widths — 1440, 1024, 640, and 393 pixels.
 
 These come from the new plan proposal rather than from the design file, so they're for
 whoever owns pricing rather than for the designer — they're collected here so that every
-open question lives in one place. The three plans on the page (Starter, Pro, Business)
-are built exactly as proposed: each plan carries its own monthly price and its own yearly
-price, and the site works the discount out from those two numbers.
+open question lives in one place. The three plans on the page (Simple, Pro, Business) are
+built from one shared rule: a year is charged as ten months, so two months come free.
+Each plan stores only its monthly price, and the site works the yearly price out from it.
 
 ### Open questions
 
-1. **Pro's yearly price and its per-month figure don't agree.** The proposal lists $144 a
-   year alongside "$12.5 Month", but $144 divided by twelve is exactly $12.00 — $12.50 a
-   month would make the year $150. The site currently shows $12, treating the yearly
-   total as the real number. Which of the two is the intended one? Starter ($84 a year →
-   $7 a month) and Business ($2,220 a year → $185 a month) both divide out exactly; Pro
-   is the only one that doesn't.
-
-2. **The bigger the plan, the smaller its yearly discount.** Paying yearly saves 12.5% on
-   Starter, 20% on Pro, and 7.5% on Business. Pro's 20% clearly serves the stated goal of
-   making Pro the best value for the money. But Business ends up with the smallest
-   discount of the three, even though the argument for offering yearly billing at all was
-   that larger organisations prefer it — fewer invoices to process. Is 7.5% on Business
-   deliberate?
+1. **The yearly discount is now the same on every plan — is that what you want?** Under
+   the ten-month rule every plan saves the same 16.7%, so the earlier concern about
+   Business getting a smaller discount than Pro no longer applies: there is no longer a
+   ladder to be uneven. Flagging it only because the original proposal deliberately gave
+   Pro the largest discount to make it look like the best value for the money, and a
+   single shared rate removes that lever. If you still want Pro to stand out on price
+   rather than only on what's included, that needs a per-plan rate instead.
 
 ### We built it this way — please confirm
 
-3. **Each plan's yearly price is its own number, not one shared discount rate.** There is
-   no single percentage applied across all three; the discounts simply come out at 12.5%,
-   20% and 7.5%. We built it that way on purpose, because a percentage can't express
-   every price — Business at $2,220 a year would need 8.333…%, and no rounded percentage
-   lands on it. If you'd rather have one fixed rate across all plans, say so and we'll
-   turn it around.
-
-4. **On the yearly option we show the price per month, noting that it's billed yearly** —
-   so "$12 / month, billed annually" as the large number rather than "$144 / year". That
-   keeps the two states of the switch directly comparable at a glance. Would you rather
-   lead with the yearly total instead?
+2. **On the yearly option we show the price per month, noting that it's billed yearly** —
+   so "$12.50 / month, billed annually" as the large number rather than "$150 / year".
+   That keeps the two states of the switch directly comparable at a glance. Would you
+   rather lead with the yearly total instead?
 
 ### Already resolved, no need to answer
 
+- **Pro's yearly price is $150, and the per-month figure is $12.50.** The proposal listed
+  $144 a year beside "$12.5 Month", and the two didn't agree. Denny settled it: a year is
+  ten months' payment, so $15 a month makes $150 a year, which divides out to exactly
+  $12.50. The $144 was the slip, not the $12.50 — the site had it the other way round
+  until this was confirmed. The same rule moved Simple to $80 a year (from $84) and
+  Business to $2,000 (from $2,220).
+- **There is one shared discount rate, not a separate yearly price per plan.** Ten months
+  charged per year, on every plan. The site stores the rule once and derives each yearly
+  price from the monthly one, so the two can't drift apart — which is exactly how the
+  $144-versus-$12.50 disagreement arose in the first place.
 - **Plan features now distinguish what's included from what isn't.** Every line in a
   plan's feature list used to be drawn with a green tick, so a limitation like "no access
   control" read as though it were a feature. Lines that aren't included now show a muted
@@ -326,8 +323,7 @@ don't end up having to edit the same thing in two places later).
 8. CSS gradient instead of photos behind the cards (layout, question 17).
 9. Lime accent used for the keyboard focus outline (layout, question 18).
 10. A dark theme built but switched off (layout, question 19).
-11. Each plan's yearly price is its own number, not one shared rate (pricing, question 3).
-12. The yearly price shown as a per-month figure (pricing, question 4).
+11. The yearly price shown as a per-month figure (pricing, question 2).
 
 Separately, not a confirmation item but a fact: the site's main UI palette — grays plus
 a lime accent color — comes from the landing page design and is used to color every
