@@ -23,12 +23,15 @@ import dashboardUrl from '@/assets/figma/hero-dashboard.webp'
  */
 export function HeroVisual() {
   return (
-    <div className="relative aspect-[800/838] w-full rounded-[28px]">
+    <div className="relative aspect-[3398/2337] w-full rounded-[20px] lg:aspect-[800/838] lg:rounded-[28px]">
+      {/* Below `lg` the shot is not sitting on the blurred colour field — that
+          field is the hero card's own backdrop there (see HeroBackdrop), and
+          drawing it twice would double the vignette behind the panel. */}
       <img
         src={backdropUrl}
         alt=""
         aria-hidden
-        className="absolute inset-0 size-full rounded-[28px] object-cover"
+        className="absolute inset-0 hidden size-full rounded-[28px] object-cover lg:block"
       />
       <DashboardShot />
     </div>
@@ -55,11 +58,17 @@ export function HeroVisual() {
  */
 function DashboardShot() {
   return (
-    <div className="absolute top-[4.773%] left-[4%] h-[90.453%] w-[92%] -rotate-[1.5deg] rounded-[20px] shadow-[0_4px_6px_rgba(16,24,40,0.03),0_12px_16px_rgba(16,24,40,0.08),0_4px_64px_rgba(0,0,0,0.15)] @min-[800px]:-left-[15.221%] @min-[800px]:w-[114%] @min-[800px]:rounded-r-none">
+    <div className="absolute top-0 left-0 size-full rounded-[20px] shadow-[0_4px_6px_rgba(16,24,40,0.03),0_12px_16px_rgba(16,24,40,0.08),0_4px_64px_rgba(0,0,0,0.15)] lg:top-[4.773%] lg:left-[4%] lg:h-[90.453%] lg:w-[92%] lg:-rotate-[1.5deg] @min-[800px]:-left-[15.221%] @min-[800px]:w-[114%] @min-[800px]:rounded-r-none">
       <img
         src={dashboardUrl}
         alt="Conloca dashboard showing recent content activity for a staging site"
         fetchPriority="high"
+        // Figma's fill is `scaleMode: FILL`, whose crop is nominally centred,
+        // but the image is only ~3% wider than the box at either composition,
+        // so the two differ by a handful of pixels. Measured against the
+        // reference render the left anchor is the closer match at both sizes
+        // (mean error 15.45 against 15.87 over the panel), so it stays shared
+        // rather than being overridden per breakpoint.
         className="size-full rounded-[20px] object-cover object-left @min-[800px]:rounded-r-none"
       />
       <PlayBadge />
