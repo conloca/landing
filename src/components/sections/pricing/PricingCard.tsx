@@ -3,16 +3,54 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 
+export type BillingPeriod = 'monthly' | 'annual'
+
 export interface Plan {
   name: string
-  price: string
+  /**
+   * Monthly is always known; annual is `null` until the design supplies figures.
+   * Narrower than `Record<BillingPeriod, string | null>` on purpose — that shape
+   * would let a monthly-less plan through and the null branch below would then
+   * claim the wrong period was unannounced.
+   */
+  price: { monthly: string; annual: string | null }
   pitch: string
   cta: string
   features: string[]
   highlighted?: boolean
 }
 
-export function PricingCard({ plan }: { plan: Plan }) {
+const PERIOD_SUFFIX: Record<BillingPeriod, string> = {
+  monthly: '/ Month',
+  annual: '/ Year',
+}
+
+/**
+ * Renders the figure for the selected period, or says so plainly when the design
+ * never supplied one. Inventing a price here would be worse than showing the gap.
+ */
+function Price({ plan, billing }: { plan: Plan; billing: BillingPeriod }) {
+  const amount = plan.price[billing]
+
+  if (amount === null) {
+    return (
+      <p className="mt-6 text-base font-medium text-stone-500">
+        Annual pricing not announced yet
+      </p>
+    )
+  }
+
+  return (
+    <p className="mt-6 text-3xl font-black text-stone-900">
+      {amount} <span className="text-base font-normal text-stone-500">{PERIOD_SUFFIX[billing]}</span>
+    </p>
+  )
+}
+
+export function PricingCard({ plan, billing }: { plan: Plan; billing: BillingPeriod }) {
+  /** No figure means nothing to buy yet — the call to action must not invite the click. */
+  const unpriced = plan.price[billing] === null
+
   return (
     <div
       className={cn(
@@ -25,14 +63,13 @@ export function PricingCard({ plan }: { plan: Plan }) {
           <h3 className="text-2xl font-medium text-stone-900">{plan.name}</h3>
           {plan.highlighted ? <Badge className="bg-lime-400 text-stone-900">Best value</Badge> : null}
         </div>
-        <p className="mt-6 text-3xl font-black text-stone-900">
-          {plan.price} <span className="text-base font-normal text-stone-500">/ Month</span>
-        </p>
+        <Price plan={plan} billing={billing} />
         <p className="mt-2 text-sm text-stone-500">{plan.pitch}</p>
         <Button
           size="lg"
           variant={plan.highlighted ? 'default' : 'outline'}
           className="mt-6 w-full"
+          disabled={unpriced}
         >
           {plan.cta}
         </Button>
