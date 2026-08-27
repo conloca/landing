@@ -97,17 +97,23 @@ export function ScrollStackRoot({ children }: { children: ReactNode }) {
   // every frame regardless of when scroll events arrive. Tuned to be quick
   // rather than floaty: over-damping here trades visible stepping for visible
   // lag behind the scroll, which reads as broken in a different way.
-  const smoothProgress = useSpring(scrollYProgress, {
-    stiffness: 260,
-    damping: 38,
-    restDelta: 0.00005,
-  })
-
   // Reduced motion gets the raw value. A spring keeps emitting after scroll
   // input stops — inertia is precisely what the preference asks us not to do —
   // and while today's reduced-motion path unpins the cards and never reads
   // `progress`, that is a property of the current markup rather than a contract.
+  //
+  // The spring is fed an inert source rather than skipped, because hooks cannot
+  // be conditional. Selecting away from its output would leave it attached and
+  // still integrating a rAF loop on every scroll burst — burning main-thread
+  // work, for the users who asked for less of it, to produce a value nobody
+  // reads. A source that never changes means it never animates at all.
   const reducedMotion = useReducedMotion()
+  const inertSource = useMotionValue(0)
+  const smoothProgress = useSpring(reducedMotion ? inertSource : scrollYProgress, {
+    stiffness: 260,
+    damping: 38,
+    restDelta: 0.00005,
+  })
   const progress = reducedMotion ? scrollYProgress : smoothProgress
 
   // Two mount-time syncs against the already-measured scroll position, both for

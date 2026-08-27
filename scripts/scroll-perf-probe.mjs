@@ -108,7 +108,10 @@ await evaluate(`(() => {
   // frame timings this probe reports alongside the values.
   const readScale = () => {
     const t = card.style.transform;
-    if (!t) return 1;
+    // motion writes the literal string "none" when every transform is at its
+    // default, so treating only the empty string as scale 1 would drop those
+    // frames entirely — and they are exactly the held frames this metric counts.
+    if (!t || t === 'none') return 1;
     const scale = t.match(/scale(?:X)?\\(([^,)]+)/);
     if (scale) return Math.round(parseFloat(scale[1]) * 100000) / 100000;
     const matrix = t.match(/matrix(?:3d)?\\(([^,]+),/);
