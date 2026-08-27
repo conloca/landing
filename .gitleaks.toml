@@ -1,15 +1,46 @@
-# Repository-specific secret-scanning allowlist.
+# Secret-scanning config. gitleaks reads this automatically from the repo root.
 #
-# Extends the global rules rather than replacing them, so every default
-# detector stays active.
+# Starts from the stock ruleset — `useDefault` keeps every upstream rule active, so this file only
+# ever *narrows* by exception. Nothing here disables a rule.
 [extend]
 useDefault = true
 
-[allowlist]
+# `[[allowlists]]` (plural, array-of-tables), not `[[allowlist]]` — gitleaks 8.30.1 rejects the
+# singular form with "AllowList expected a map, got a slice" when there is more than one entry.
+# Verified empirically before landing this: a bare `[allowlist]` table only ever holds the LAST
+# one written, silently discarding the other with no error.
+
+# ---------------------------------------------------------------------------------------------
+# Exception: the Figma file key is a public document identifier, not a credential.
+#
+# The key appears in the design's share URL (figma.com/design/OxxksZFS8hzKoFTeSRdFGs/Conloca), in
+# docs/figma/DESIGN-SPEC.md, and in scripts/figma-export.ts. It identifies which file to read;
+# access is granted by FIGMA_PAT, which lives in the gitignored .env and is never committed. The
+# generic-api-key rule matches it purely on shape.
+[[allowlists]]
 description = "Figma file key — a public document identifier, not a credential"
-# The key appears in the design's share URL
-# (figma.com/design/OxxksZFS8hzKoFTeSRdFGs/Conloca), in docs/figma/DESIGN-SPEC.md,
-# and in scripts/figma-export.ts. It identifies which file to read; access is
-# granted by FIGMA_PAT, which lives in the gitignored .env and is never
-# committed. The generic-api-key rule matches it purely on shape.
 regexes = ['''OxxksZFS8hzKoFTeSRdFGs''']
+
+# ---------------------------------------------------------------------------------------------
+# Exception: Figma `imageRef` handles look like generic API keys.
+#
+# The archived Figma node trees address every image fill by a content hash — a 40-character
+# lowercase hex string. gitleaks' `generic-api-key` rule matches those on shape alone and reports
+# 49 findings across `docs/figma/anim.json` and `docs/figma/nodes.json`. They are public content
+# addresses from a design file, carry no authorisation, and are meaningless without the file key
+# (which is itself public — it sits in the Figma URL).
+#
+# Scoped by SHAPE, deliberately not by path. gitleaks ORs allowlist criteria, so adding a `paths`
+# entry here would suppress *every* secret anywhere in those files — including a real `figd_`
+# token pasted into one. Matching only an exact 40-hex string keeps the exception to the shape
+# that is actually a false positive: every credential format that matters carries a distinctive
+# prefix (`figd_`, `ghp_`, `sk-`, `AKIA`) and is caught by its own rule regardless — a `figd_`
+# token can never satisfy this anchored all-hex pattern, since `f`/`i`/`g`/`d`/`_` include three
+# characters ('i', 'g', '_') outside [a-f0-9].
+#
+# `regexTarget = "secret"` matches the captured value, not the surrounding line — the `match`
+# would be `key":"<hash>"` and would never satisfy these anchors.
+[[allowlists]]
+description = "Figma imageRef content hashes (40-hex content addresses, not credentials)"
+regexes = ['''^[a-f0-9]{40}$''']
+regexTarget = "secret"
