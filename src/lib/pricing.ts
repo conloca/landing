@@ -60,6 +60,101 @@ function fullYearAtMonthlyRate(pricing: PlanPricing): number {
 }
 
 /**
+ * Above this, an annual discount is likelier to be a mistyped total than a decision.
+ * Set well clear of any plausible promotion — half off a year is aggressive but real,
+ * so the threshold only catches figures that are wrong by an order of magnitude, such
+ * as $220 typed where $2,200 was meant. Raise it if a genuine offer ever needs to.
+ */
+const MAX_PLAUSIBLE_ANNUAL_DISCOUNT_PERCENT = 75
+
+/**
+ * Rejects plan prices that cannot be true, at the point the figures first reach code
+ * that reasons about them.
+ *
+ * Every derivation below routes through this, so a bad price throws while React is
+ * rendering — and because the page is prerendered at build time, that throw fails
+ * `bun run build` rather than reaching a visitor. There is no code path that renders
+ * a plan without deriving something from its price, which is what makes this a gate
+ * rather than a lint.
+ *
+ * Comparisons run in whole cents. A discount expressed in dollars can leave a
+ * remainder that floating point represents approximately, and `2199.9999999999995 >
+ * 2200` is exactly the kind of false alarm a guard must not raise.
+ */
+function assertSanePricing(pricing: PlanPricing): void {
+  const { monthlyRate, annualTotal } = pricing
+
+  if (!Number.isFinite(monthlyRate) || !Number.isFinite(annualTotal)) {
+    throw new Error(
+      `Invalid plan pricing: monthly rate ${String(monthlyRate)} and annual total ` +
+        `${String(annualTotal)} must both be finite numbers. ` +
+        `Plan prices are defined in src/components/sections/Pricing.tsx.`,
+    )
+  }
+
+  if (monthlyRate <= 0 || annualTotal <= 0) {
+    throw new Error(
+      `Invalid plan pricing: the plan at ${formatUsd(monthlyRate)} per month with an ` +
+        `annual total of ${formatUsd(annualTotal)} has a price at or below zero. ` +
+        `Plan prices are defined in src/components/sections/Pricing.tsx.`,
+    )
+  }
+
+  const fullYearCents = toCents(fullYearAtMonthlyRate(pricing))
+  const annualCents = toCents(annualTotal)
+
+  // Both derived figures are checked, not just the inputs they came from. A finite
+  // rate can still overflow once multiplied out — `Number.MAX_VALUE` a month is a
+  // finite number whose year is `Infinity` — and every comparison below silently
+  // yields `false` or `NaN` against that, so an unchecked overflow would pass the
+  // whole guard. At the other end, any amount under half a cent rounds to zero and
+  // would render as free while `0 / 0` slips a `NaN` discount past the bound.
+  // The per-month figure is derived here rather than through `monthlyEquivalent`,
+  // which asserts and would recurse. An annual total can clear a cent on its own and
+  // still divide into twelve sub-cent months, which is the "renders as free" case
+  // reaching the headline instead of the yearly line.
+  const monthlyEquivalentCents = Math.round(annualCents / MONTHS_PER_YEAR)
+
+  if (
+    !Number.isFinite(fullYearCents) ||
+    !Number.isFinite(annualCents) ||
+    fullYearCents < 1 ||
+    annualCents < 1 ||
+    monthlyEquivalentCents < 1
+  ) {
+    throw new Error(
+      `Invalid plan pricing: the plan at ${formatUsd(monthlyRate)} per month with an ` +
+        `annual total of ${formatUsd(annualTotal)} does not resolve to a chargeable ` +
+        `amount — each price must be at least one cent and small enough that a year ` +
+        `of it is still a finite number. ` +
+        `Plan prices are defined in src/components/sections/Pricing.tsx.`,
+    )
+  }
+
+  if (annualCents > fullYearCents) {
+    throw new Error(
+      `Invalid plan pricing: the plan at ${formatUsd(monthlyRate)} per month has an ` +
+        `annual total of ${formatUsd(annualTotal)}, which is more than twelve monthly ` +
+        `payments (${formatUsd(fullYearAtMonthlyRate(pricing))}). Paying yearly would ` +
+        `cost more than paying monthly, so the card would show a negative saving. ` +
+        `Plan prices are defined in src/components/sections/Pricing.tsx.`,
+    )
+  }
+
+  const discountPercent = ((fullYearCents - annualCents) / fullYearCents) * PERCENT_SCALE
+  if (discountPercent > MAX_PLAUSIBLE_ANNUAL_DISCOUNT_PERCENT) {
+    throw new Error(
+      `Implausible plan pricing: the plan at ${formatUsd(monthlyRate)} per month has an ` +
+        `annual total of ${formatUsd(annualTotal)}, a ${discountPercent.toFixed(1)}% ` +
+        `discount — past the ${String(MAX_PLAUSIBLE_ANNUAL_DISCOUNT_PERCENT)}% we treat ` +
+        `as a likely typo. If the offer is real, raise ` +
+        `MAX_PLAUSIBLE_ANNUAL_DISCOUNT_PERCENT in src/lib/pricing.ts. ` +
+        `Plan prices are defined in src/components/sections/Pricing.tsx.`,
+    )
+  }
+}
+
+/**
  * What the annual plan works out to per month.
  *
  * Rounded to whole cents, because a headline carrying a fraction of a cent is not a
@@ -67,6 +162,7 @@ function fullYearAtMonthlyRate(pricing: PlanPricing): number {
  * summary of it rather than a second amount anyone is charged.
  */
 export function monthlyEquivalent(pricing: PlanPricing): number {
+  assertSanePricing(pricing)
   return Math.round(toCents(pricing.annualTotal) / MONTHS_PER_YEAR) / CENTS_PER_DOLLAR
 }
 
@@ -79,8 +175,10 @@ export function monthlyEquivalent(pricing: PlanPricing): number {
  * should read the figure from here rather than have someone recompute it in markup.
  */
 export function annualDiscountPercent(pricing: PlanPricing): number {
+  assertSanePricing(pricing)
+  // No divide-by-zero branch: the assertion above rejects a monthly rate of zero, so
+  // a full year of it cannot be zero either.
   const fullYear = fullYearAtMonthlyRate(pricing)
-  if (fullYear === 0) return 0
   const exact = ((fullYear - pricing.annualTotal) / fullYear) * PERCENT_SCALE
   // To one decimal, for the same reason money rounds to cents: a raw ratio prints
   // as 22.22222222222222, and rounding it at the call site is what this exists to avoid.
@@ -89,6 +187,7 @@ export function annualDiscountPercent(pricing: PlanPricing): number {
 
 /** Dollars saved over a year by paying up front. Same rationale as above. */
 export function annualSaving(pricing: PlanPricing): number {
+  assertSanePricing(pricing)
   return (toCents(fullYearAtMonthlyRate(pricing)) - toCents(pricing.annualTotal)) / CENTS_PER_DOLLAR
 }
 
@@ -108,5 +207,6 @@ export const HEADLINE_PERIOD_LABEL = '/ Month'
  * `HEADLINE_PERIOD_LABEL` with it.
  */
 export function headlineAmount(pricing: PlanPricing, billing: BillingPeriod): number {
+  assertSanePricing(pricing)
   return billing === 'monthly' ? pricing.monthlyRate : monthlyEquivalent(pricing)
 }
