@@ -35,6 +35,7 @@ import {
   useMotionValueEvent,
   useReducedMotion,
   useScroll,
+  useSpring,
   useTransform,
   type MotionValue,
 } from 'motion/react'
@@ -83,18 +84,73 @@ export function ScrollStackRoot({ children }: { children: ReactNode }) {
   // then the covered cards' `inert` gate (which exists specifically to keep
   // their buttons out of the Tab order while hidden — see the file header)
   // stays open. Sync once against the real measured value after mount.
+  // Scroll input is discrete, so a transform bound straight to `scrollYProgress`
+  // reproduces the input's chunkiness exactly: measured over a scripted sweep,
+  // the card's scale changed on only 21 of 213 frames, every change an identical
+  // 0.003 jump, while frame timing stayed clean (no long tasks, nothing over
+  // 50ms). Even frames, stepped motion — a discontinuity in the value, not a
+  // shortage of frames, and no amount of making rendering cheaper addresses it.
+  // A real mouse wheel is far chunkier than this sweep, so the effect is worse
+  // in practice than in the measurement.
+  //
+  // The spring interpolates between those discrete updates, emitting a value
+  // every frame regardless of when scroll events arrive. Tuned to be quick
+  // rather than floaty: over-damping here trades visible stepping for visible
+  // lag behind the scroll, which reads as broken in a different way.
+  // Reduced motion gets the raw value. A spring keeps emitting after scroll
+  // input stops — inertia is precisely what the preference asks us not to do —
+  // and while today's reduced-motion path unpins the cards and never reads
+  // `progress`, that is a property of the current markup rather than a contract.
+  //
+  // The spring is fed an inert source rather than skipped, because hooks cannot
+  // be conditional. Selecting away from its output would leave it attached and
+  // still integrating a rAF loop on every scroll burst — burning main-thread
+  // work, for the users who asked for less of it, to produce a value nobody
+  // reads. A source that never changes means it never animates at all.
+  const reducedMotion = useReducedMotion()
+  const inertSource = useMotionValue(0)
+  const smoothProgress = useSpring(reducedMotion ? inertSource : scrollYProgress, {
+    stiffness: 260,
+    damping: 38,
+    restDelta: 0.00005,
+  })
+  const progress = reducedMotion ? scrollYProgress : smoothProgress
+
+  // Two mount-time syncs against the already-measured scroll position, both for
+  // loads that start inside or past this section — a deep link to `#pricing`,
+  // a restored scroll position, a back-navigation.
+  //
+  // `activeIndex`: `useMotionValueEvent`'s 'change' callback only fires on
+  // *subsequent* updates, so without this the covered cards' `inert` gate (which
+  // keeps their buttons out of the Tab order while hidden — see the file header)
+  // stays open until the user's first scroll tick.
+  //
+  // `smoothProgress`: the spring would otherwise treat that first measurement as
+  // a change to animate towards, so the cards would visibly slide into place
+  // over a few hundred milliseconds on every such load. `jump` sets the value
+  // without animating.
   useEffect(() => {
-    syncActiveIndex(scrollYProgress.get())
+    const measured = scrollYProgress.get()
+    syncActiveIndex(measured)
+    smoothProgress.jump(measured)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- one-time sync against the mounted measurement, not a reactive dependency
   }, [])
 
+  // Deliberately two different progress values. The visual transform follows the
+  // smoothed one; `activeIndex` above is driven by the raw one, because it gates
+  // `inert` — the covered cards' keyboard focusability — and that should track
+  // the true scroll position rather than lag a spring's settle behind it.
   const state = useMemo(
-    () => ({ progress: scrollYProgress, activeIndex, count }),
-    [scrollYProgress, activeIndex, count],
+    () => ({ progress, activeIndex, count }),
+    [progress, activeIndex, count],
   )
 
   return (
-    <div ref={sectionRef}>
+    // `data-scroll-stack` is a stable hook for tooling, not styling:
+    // scripts/scroll-perf-probe.mjs needs to find this section's scroll range,
+    // and keying that off the `.sticky` utility class would silently retarget
+    // the measurement at any other sticky element the page later grows.
+    <div ref={sectionRef} data-scroll-stack>
       <ScrollStackContext.Provider value={state}>{children}</ScrollStackContext.Provider>
     </div>
   )
@@ -177,7 +233,16 @@ function MotionCard({
   )
 
   return (
-    <motion.div className="h-full max-h-[46rem] w-full" style={style}>
+    // `data-scroll-stack-card` carries the index so tooling can address a
+    // specific card; scripts/scroll-perf-probe.mjs samples card 0's transform
+    // per frame. Same reasoning as `data-scroll-stack` on the root: a probe that
+    // navigates by element position instead silently measures the wrong node
+    // when the markup shifts, and reports confident numbers about it.
+    <motion.div
+      className="h-full max-h-[46rem] w-full"
+      style={style}
+      data-scroll-stack-card={index}
+    >
       {children}
     </motion.div>
   )
