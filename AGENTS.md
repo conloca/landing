@@ -212,3 +212,17 @@ To check before committing:
 git ls-files | grep -vE 'node_modules|bun.lock' \
   | xargs grep -lP '[\x{0400}-\x{04FF}]' 2>/dev/null
 ```
+
+## Design tokens
+
+The palette, font families, the light/dark semantic scheme and the radius base
+are **generated**, not hand-written. `tokens/tokens.json` (W3C DTCG format) is
+the source of truth; `bun run tokens` regenerates `src/tokens.generated.css`,
+and both `dev` and `build` run it first.
+
+`src/tokens.generated.css` is a build artifact and is gitignored — never edit it
+directly. To change a design value, edit the token and regenerate.
+
+[`DESIGN.md`](DESIGN.md) documents the palette, type ramp, geometry and the
+pipeline itself, including one known wart in how Tailwind scans the generated
+file.
