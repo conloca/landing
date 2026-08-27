@@ -85,6 +85,29 @@ anyone whose JavaScript fails.
   constructed-but-unloaded player is silently dropped and the banner freezes on
   frame 0.
 
+## Pricing figures come from the business, not the design file
+
+The pricing section is the one part of this page whose numbers are **not** governed by
+Figma. Plan names, seat counts, monthly rates, and the rule that a year is charged as
+ten months (so two months come free) all come from business input — Denny owns them.
+The pricing frame in the design file predates those decisions and its numbers are
+stale.
+
+A visual-fidelity or pixel-convergence pass must therefore **not** "correct" the
+pricing figures or the pricing section's copy to match the design frame. A mismatch
+between the rendered prices and the Figma prices in that section is expected and
+correct; treat it as a known exception rather than a defect to close. Layout, spacing,
+and typography in that section are still design-governed and should converge as usual.
+
+The figures have a single home, and a price is changed there and nowhere else: the
+pricing model in `src/lib/pricing.ts`, which stores each plan's monthly rate and
+derives the yearly total, the per-month-billed-annually figure, and the discount from
+one constant. Until that module reaches `main` they are string literals in the `PLANS`
+array in `src/components/sections/Pricing.tsx`.
+
+The reasoning behind each figure, and the questions still open with the designer, are
+recorded in `docs/QUESTIONS-DESIGNER.md`.
+
 ## Conventions
 
 - Conventional commits, one logical change each.
