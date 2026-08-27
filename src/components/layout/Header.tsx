@@ -14,7 +14,11 @@ import {
 
 export function Header() {
   return (
-    <header className="mx-auto flex h-[82px] max-w-[1440px] items-center px-8">
+    // Three sizes, all drawn: 66 tall with 16px gutters at 393, 82 with 24 at
+    // 640, 82 with 32 from 1024. Only the phone frame shortens the bar, so the
+    // height steps at `sm` while the gutter keeps widening at `lg`. This is
+    // not cosmetic — the header's height sets where every section below starts.
+    <header className="mx-auto flex h-[66px] max-w-[1440px] items-center px-4 sm:h-[82px] sm:px-6 lg:px-8">
       <div className="flex w-full items-center justify-between">
         <Logo />
         <nav className="hidden items-center gap-8 md:flex" aria-label="Primary">
