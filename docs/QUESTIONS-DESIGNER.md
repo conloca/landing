@@ -259,10 +259,60 @@ widths — 1440, 1024, 640, and 393 pixels.
 
 ---
 
+## Pricing plans
+
+These come from the new plan proposal rather than from the design file, so they're for
+whoever owns pricing rather than for the designer — they're collected here so that every
+open question lives in one place. The three plans on the page (Starter, Pro, Business)
+are built exactly as proposed: each plan carries its own monthly price and its own yearly
+price, and the site works the discount out from those two numbers.
+
+### Open questions
+
+1. **Pro's yearly price and its per-month figure don't agree.** The proposal lists $144 a
+   year alongside "$12.5 Month", but $144 divided by twelve is exactly $12.00 — $12.50 a
+   month would make the year $150. The site currently shows $12, treating the yearly
+   total as the real number. Which of the two is the intended one? Starter ($84 a year →
+   $7 a month) and Business ($2,220 a year → $185 a month) both divide out exactly; Pro
+   is the only one that doesn't.
+
+2. **The bigger the plan, the smaller its yearly discount.** Paying yearly saves 12.5% on
+   Starter, 20% on Pro, and 7.5% on Business. Pro's 20% clearly serves the stated goal of
+   making Pro the best value for the money. But Business ends up with the smallest
+   discount of the three, even though the argument for offering yearly billing at all was
+   that larger organisations prefer it — fewer invoices to process. Is 7.5% on Business
+   deliberate?
+
+### We built it this way — please confirm
+
+3. **Each plan's yearly price is its own number, not one shared discount rate.** There is
+   no single percentage applied across all three; the discounts simply come out at 12.5%,
+   20% and 7.5%. We built it that way on purpose, because a percentage can't express
+   every price — Business at $2,220 a year would need 8.333…%, and no rounded percentage
+   lands on it. If you'd rather have one fixed rate across all plans, say so and we'll
+   turn it around.
+
+4. **On the yearly option we show the price per month, noting that it's billed yearly** —
+   so "$12 / month, billed annually" as the large number rather than "$144 / year". That
+   keeps the two states of the switch directly comparable at a glance. Would you rather
+   lead with the yearly total instead?
+
+### Already resolved, no need to answer
+
+- **Plan features now distinguish what's included from what isn't.** Every line in a
+  plan's feature list used to be drawn with a green tick, so a limitation like "no access
+  control" read as though it were a feature. Lines that aren't included now show a muted
+  dash instead, and a screen reader announces "not included" before the item.
+- **The buttons on the pricing cards don't lead anywhere yet.** That isn't a pricing
+  question — no destinations exist for any of the page's buttons yet, and it's tracked
+  separately as issue #1.
+
+---
+
 ## Decisions made on the designer's behalf — summary
 
-A pointer to every "we built it this way — please confirm" item from both sections, so
-you don't have to scroll through both in full. The complete wording for each lives at
+A pointer to every "we built it this way — please confirm" item from all three sections,
+so you don't have to scroll through them in full. The complete wording for each lives at
 its actual entry; this list gives only the topic, without repeating the wording (so we
 don't end up having to edit the same thing in two places later).
 
@@ -276,6 +326,8 @@ don't end up having to edit the same thing in two places later).
 8. CSS gradient instead of photos behind the cards (layout, question 17).
 9. Lime accent used for the keyboard focus outline (layout, question 18).
 10. A dark theme built but switched off (layout, question 19).
+11. Each plan's yearly price is its own number, not one shared rate (pricing, question 3).
+12. The yearly price shown as a per-month figure (pricing, question 4).
 
 Separately, not a confirmation item but a fact: the site's main UI palette — grays plus
 a lime accent color — comes from the landing page design and is used to color every
