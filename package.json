@@ -10,8 +10,8 @@
     "preview": "vite preview",
     "lint": "oxlint",
     "typecheck": "tsc --noEmit",
+    "test": "bun test",
     "visual-diff": "bun run scripts/visual-diff.ts",
-    "test": "bun test scripts/",
     "figma:export": "bun run scripts/figma-export.ts",
     "figma:node": "bun run scripts/figma-fetch-node.ts"
   },
