@@ -133,14 +133,114 @@ for a comparison you can actually act on. The diff image highlights mismatched
 pixels in red; treat placeholder-asset regions as expected noise, not a fidelity
 bug to chase to zero.
 
-**A capture caveat, confirmed empirically:** `agent-browser screenshot --full`
-does not reliably fire the scroll events `Reveal`'s `whileInView` gating depends
-on for content that starts below the initial viewport fold — captured this way,
-such an element can be stuck at its pre-reveal `opacity: 0` even though a real
-scrolling visitor sees it correctly (verified by scrolling to it and reading its
-computed `opacity` back — it flips to `1`). A blank region in a `--full` diff
-near the fold is worth checking with a real `scroll` command before treating it
-as a fidelity bug.
+### `agent-browser` caveats
+
+Every one of these cost an agent on this project real time, and none of them is
+visible from the tool's own `--help`. They are listed here so the next agent
+reads them instead of rediscovering them.
+
+**`--full` capture does not fire reveal gating.** `agent-browser screenshot
+--full` does not reliably fire the scroll events `Reveal`'s `whileInView` gating
+depends on for content that starts below the initial viewport fold — captured
+this way, such an element can be stuck at its pre-reveal `opacity: 0` even
+though a real scrolling visitor sees it correctly (verified by scrolling to it
+and reading its computed `opacity` back — it flips to `1`). A blank region in a
+`--full` diff near the fold is worth checking with a real `scroll` command
+before treating it as a fidelity bug.
+
+**Set the viewport with `set viewport`, never with flags on `open`.** `open`
+has no `--width` / `--height` options — they appear nowhere in its flag list, so
+a run started that way is left at the default size, and a fidelity comparison
+made against it comes out measuring the wrong breakpoint while still looking
+valid. Size the page explicitly:
+
+```bash
+agent-browser set viewport 1440 900 1   # third argument is deviceScaleFactor
+```
+
+Pass a scale of `1` for anything feeding `scripts/visual-diff.ts`, for the same
+reason the reference exports are 1x — the script has no notion of scale.
+
+**`eval` is refused outright inside an isolated agent worktree.** The isolation
+guard rejects any command containing the word `eval`, so `agent-browser eval
+'...'` never runs for a worktree-isolated agent. The refusal is easy to
+misdiagnose because it talks about *git*: "this command runs a string through
+eval, which can't be verified to stay inside the worktree ... a worktree-isolated
+agent's git operations must target its own worktree". That is the guard, not
+`agent-browser`, and no amount of rewriting the JavaScript will get past it.
+Two separate agents lost time to this independently.
+
+Use the structured readers instead — they cover most of what `eval` was reached
+for, and return parsed values rather than strings to re-parse:
+
+| Instead of `eval` | Use |
+| --- | --- |
+| Reading geometry (`getBoundingClientRect`) | `agent-browser get box <selector>` |
+| Reading computed style | `agent-browser get styles <selector>` |
+| Reading text content | `agent-browser get text <selector>` |
+| Counting matches | `agent-browser get count <selector>` |
+| Structure of the page | `agent-browser snapshot` |
+
+For anything genuinely beyond those, capture a screenshot and read it back, or
+hand the measurement to a non-isolated agent.
+
+**Screenshot capture can hang machine-wide.** Chrome for Testing's
+`Page.captureScreenshot` has hung on this host while `eval`, `open`, `get title`
+and even PDF capture all succeeded on the same session — every screenshot call
+timing out with exit code 124, with a macOS hang report logged against the
+binary. It is not a page problem, a network problem, or your code. The working
+path is the dedicated headless binary:
+
+```bash
+export AGENT_BROWSER_EXECUTABLE_PATH=/path/to/puppeteer-cache/chrome-headless-shell/.../chrome-headless-shell
+```
+
+Rebooting is the likely full cure — uptime was 44 days when this was found.
+
+**Name your session, or you are sharing one.** With no `--session`, every
+command lands in the session literally called `default` — shared by every agent
+on the machine that also omitted the flag. Two agents then drive the same
+browser: one navigates out from under the other's capture, and either one's
+plain `agent-browser close` kills the other's work. Claim your own name on the
+first command and keep using it:
+
+```bash
+export AGENT_BROWSER_SESSION=hero-fidelity   # or pass --session on every command
+```
+
+Check who is already out there before you start, and confirm your own name:
+
+```bash
+agent-browser session list   # active sessions, with the current one arrowed
+agent-browser session        # the name this shell is using
+```
+
+**Close your own session; never `close --all`.** The `--all` form closes *every*
+session on the machine, including other agents' live browsers — one agent's
+cleanup killed a peer's session mid-run. Orphaned daemons accumulate at roughly
+11 Chrome processes each, and five orphans reached 55 processes during this
+project, so skipping cleanup entirely is not the alternative either. Close the
+session you named, `agent-browser close --session <yours>`, and leave the rest
+alone.
+
+**Serialize capture work across agents — the dispatcher owns this.** All agents
+share one daemon and one Chrome pool. Four parallel visual-fidelity agents
+produced 79 concurrent Chrome processes here; the daemon's IPC socket started
+returning `EAGAIN` and no stable frame could be produced for anybody — including
+agents that needed a single screenshot. There is no host-wide lock, so this
+cannot be enforced from inside an agent: whoever *dispatches* the agents decides
+which ones may capture, and holds the rest until those report back. Non-browser
+work (extraction, token generation, docs) parallelises freely; capture work does
+not. If you are an agent rather than the dispatcher, run `agent-browser session
+list` first — a peer's session already open is a reason to check in, not to
+start a second capture beside it.
+
+**Confirm a capture is not blank before you measure against it.** A capture that
+silently came back empty scores as a huge, plausible-looking mismatch, and every
+number derived from it is meaningless — this project once attested a whole batch
+of section fidelity figures against an image whose changed regions were a blank
+band. Look at the PNG, or check it for a large uniform area, before trusting any
+percentage computed from it.
 
 **A second capture caveat, equally empirical:** `agent-browser open --width <w>
 --height <h>` silently ignores those flags and opens at the default viewport.
