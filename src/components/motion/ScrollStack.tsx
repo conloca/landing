@@ -94,7 +94,11 @@ export function ScrollStackRoot({ children }: { children: ReactNode }) {
   )
 
   return (
-    <div ref={sectionRef}>
+    // `data-scroll-stack` is a stable hook for tooling, not styling:
+    // scripts/scroll-perf-probe.mjs needs to find this section's scroll range,
+    // and keying that off the `.sticky` utility class would silently retarget
+    // the measurement at any other sticky element the page later grows.
+    <div ref={sectionRef} data-scroll-stack>
       <ScrollStackContext.Provider value={state}>{children}</ScrollStackContext.Provider>
     </div>
   )

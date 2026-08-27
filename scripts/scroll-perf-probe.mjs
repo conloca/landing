@@ -1,0 +1,178 @@
+/**
+ * Scroll-performance probe for the pinned ScrollStack section.
+ *
+ * Drives a real Chrome over CDP: a scripted wheel-scroll through the pinned
+ * range while recording per-frame timings and Blink's own layout/paint
+ * counters, so a regression shows up as numbers rather than an impression.
+ *
+ * Open the page first (`agent-browser open <url>`), then point this at the
+ * browser's WebSocket endpoint, which `agent-browser get cdp-url` prints:
+ *
+ *   agent-browser get cdp-url > /tmp/cdp.txt
+ *   node scripts/scroll-perf-probe.mjs /tmp/cdp.txt <url> [label] [mode] [dpr]
+ *
+ *   label  free-text tag echoed in the output, to keep runs apart
+ *   mode   `asis` (default) or `nolottie`, which removes the Lottie banners
+ *          before measuring, to separate their cost from everything else
+ *   dpr    device pixel ratio to emulate, default 1. Pass 2 for a Retina
+ *          machine: anything canvas-backed costs four times as much there, so
+ *          a default-ratio run understates it badly.
+ *
+ * The URL is passed as a file rather than an argument because the endpoint
+ * contains characters that shells and command guards handle inconsistently.
+ */
+import { attachToPage, connect, makeEvaluate, readBrowserWsUrl, sleep } from './lib/cdp.mjs'
+
+const [, , wsFile, pageUrl, label = 'run', mode = 'asis', dpr = '1'] = process.argv
+if (!wsFile || !pageUrl) {
+  process.stderr.write(
+    'usage: scroll-perf-probe.mjs <file-with-cdp-ws-url> <url> [label] [asis|nolottie] [dpr]\n',
+  )
+  process.exit(2)
+}
+if (mode !== 'asis' && mode !== 'nolottie') {
+  process.stderr.write(`unknown mode "${mode}" (expected asis or nolottie)\n`)
+  process.exit(2)
+}
+
+const client = await connect(readBrowserWsUrl(wsFile))
+const sessionId = await attachToPage(client, pageUrl)
+const evaluate = makeEvaluate(client, sessionId)
+
+await client.send('Page.enable', {}, sessionId)
+await client.send('Runtime.enable', {}, sessionId)
+await client.send('Performance.enable', {}, sessionId)
+
+// Headless defaults to a device pixel ratio of 1, which understates the cost of
+// anything canvas-backed: a Retina visitor rasterises four times the pixels.
+// Override it explicitly so every run states the density it measured.
+await client.send(
+  'Emulation.setDeviceMetricsOverride',
+  { width: 1440, height: 900, deviceScaleFactor: Number(dpr), mobile: false },
+  sessionId,
+)
+
+await client.send('Page.navigate', { url: pageUrl }, sessionId)
+await sleep(2500)
+
+// Anchor on the section's own marker, not on the `.sticky` utility class: any
+// other sticky element on the page (a nav bar being the obvious one) would
+// otherwise silently redirect the sweep to the wrong scroll range while still
+// printing plausible numbers.
+const geometry = await evaluate(`(() => {
+  const section = document.querySelector('[data-scroll-stack]');
+  if (!section) return { sectionTop: null };
+  return {
+    pageHeight: document.documentElement.scrollHeight,
+    stickyCount: section.querySelectorAll('.sticky').length,
+    canvasCount: document.querySelectorAll('canvas').length,
+    sectionTop: Math.round(section.getBoundingClientRect().top + window.scrollY),
+    sectionHeight: section.offsetHeight,
+  };
+})()`)
+
+if (geometry.sectionTop === null) {
+  process.stderr.write('no [data-scroll-stack] section found (page not hydrated?)\n')
+  process.exit(4)
+}
+
+if (mode === 'nolottie') {
+  await evaluate(`(() => {
+    for (const el of document.querySelectorAll('[data-lottie-banner]')) el.remove();
+    return true;
+  })()`)
+}
+
+// Settle at the top of the section before recording. Everything above this
+// point — navigation, the mode's DOM surgery, the jump-scroll's relayout — is
+// setup cost, and must land outside the measurement window or a `nolottie` run
+// would carry the cost of its own node removal into the very deltas that are
+// supposed to show the saving.
+await evaluate(`window.scrollTo(0, ${geometry.sectionTop}); true`)
+await sleep(400)
+
+await evaluate(`(() => {
+  window.__frames = [];
+  window.__longTasks = [];
+  let last = performance.now();
+  const tick = (now) => {
+    window.__frames.push(now - last);
+    last = now;
+    window.__raf = requestAnimationFrame(tick);
+  };
+  window.__raf = requestAnimationFrame(tick);
+  try {
+    window.__lt = new PerformanceObserver((list) => {
+      for (const e of list.getEntries()) window.__longTasks.push(Math.round(e.duration));
+    });
+    window.__lt.observe({ entryTypes: ['longtask'] });
+  } catch {}
+  return true;
+})()`)
+
+const before = await client.send('Performance.getMetrics', {}, sessionId)
+
+// A scroll sweep is inherently sequential: dispatching every wheel event at
+// once would land as one jump and measure nothing about per-frame cost during
+// a scroll, and the 16ms pacing is what makes the sweep resemble a real one.
+// Both awaits below are therefore deliberate, not a missed Promise.all.
+const steps = 60
+const perStep = Math.round(geometry.sectionHeight / steps)
+for (let i = 0; i < steps; i++) {
+  // eslint-disable-next-line no-await-in-loop -- deliberate; see above
+  await client.send(
+    'Input.dispatchMouseEvent',
+    { type: 'mouseWheel', x: 720, y: 450, deltaX: 0, deltaY: perStep, pointerType: 'mouse' },
+    sessionId,
+  )
+  // eslint-disable-next-line no-await-in-loop -- deliberate; see above
+  await sleep(16)
+}
+await sleep(500)
+
+const after = await client.send('Performance.getMetrics', {}, sessionId)
+const frames = await evaluate(`(() => {
+  cancelAnimationFrame(window.__raf);
+  try { window.__lt.disconnect(); } catch {}
+  const f = window.__frames.filter((d) => d > 0);
+  const sorted = [...f].sort((a, b) => a - b);
+  const pct = (p) => sorted.length ? sorted[Math.min(sorted.length - 1, Math.floor(sorted.length * p))] : 0;
+  return {
+    frames: f.length,
+    mean: +(f.reduce((a, b) => a + b, 0) / (f.length || 1)).toFixed(2),
+    p50: +pct(0.5).toFixed(2),
+    p95: +pct(0.95).toFixed(2),
+    worst: +Math.max(...f, 0).toFixed(2),
+    over32ms: f.filter((d) => d > 32).length,
+    over50ms: f.filter((d) => d > 50).length,
+    longTasks: window.__longTasks.length,
+    longTaskTotalMs: window.__longTasks.reduce((a, b) => a + b, 0),
+  };
+})()`)
+
+const read = (set, name) => set.metrics.find((m) => m.name === name)?.value ?? 0
+const delta = (name) => +(read(after, name) - read(before, name)).toFixed(4)
+
+process.stdout.write(
+  JSON.stringify(
+    {
+      label,
+      mode,
+      devicePixelRatio: Number(dpr),
+      geometry,
+      frames,
+      blink: {
+        layoutCount: delta('LayoutCount'),
+        recalcStyleCount: delta('RecalcStyleCount'),
+        layoutDurationMs: +(delta('LayoutDuration') * 1000).toFixed(1),
+        recalcStyleDurationMs: +(delta('RecalcStyleDuration') * 1000).toFixed(1),
+        scriptDurationMs: +(delta('ScriptDuration') * 1000).toFixed(1),
+        taskDurationMs: +(delta('TaskDuration') * 1000).toFixed(1),
+      },
+    },
+    null,
+    2,
+  ) + '\n',
+)
+
+client.close()
