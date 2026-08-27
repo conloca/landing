@@ -106,8 +106,18 @@ export function StackCard({ children, index, count }: StackCardProps) {
   // ancestor height would let it collapse to its natural size pre-hydration
   // and then visibly grow once `sticky`+`h-dvh` land — same class of jump,
   // one level down. Only `sticky`/`top-0` (pinning) toggles.
+  //
+  // The slot height must stay viewport-relative, never a fixed pixel value.
+  // `ScrollStackRoot` derives `activeIndex` from progress on the assumption
+  // that one slot equals one viewport-height of scrolling; a fixed height
+  // breaks that in both directions. Shorter than the viewport and the card
+  // never pins for a full segment (it scrolls away mid-transition); taller
+  // and it overflows the viewport, so `sticky top-0` can never bring its
+  // lower half into view. The design frame's own slot height belongs on
+  // `MotionCard`'s `max-h` below, which caps the card without coupling the
+  // slot to a screen size the visitor may not have.
   const pinned = hydrated && !reducedMotion && stack !== null
-  const wrapperClass = pinned ? 'sticky top-0 flex items-center py-4 h-[846px]' : 'flex items-center py-4 h-[846px]'
+  const wrapperClass = pinned ? 'sticky top-0 flex h-dvh items-center py-4' : 'flex h-dvh items-center py-4'
   const zIndexStyle = useMemo(() => (pinned ? { zIndex: index + 1 } : undefined), [pinned, index])
   const isInert = pinned && stack !== null && index < stack.activeIndex
 
