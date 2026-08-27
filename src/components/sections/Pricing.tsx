@@ -24,7 +24,7 @@ const lacks = (label: string): PlanFeature => ({ label, included: false })
 const PLANS: Plan[] = [
   {
     name: 'Simple',
-    pricing: { monthlyRate: 8, annualTotal: 84 },
+    pricing: { monthlyRate: 8 },
     pitch: 'For small teams getting their site off the ground',
     cta: 'Choose simple',
     ctaHref: CTA_LINKS.choosePlan,
@@ -41,9 +41,7 @@ const PLANS: Plan[] = [
   },
   {
     name: 'Pro',
-    // $144/yr was confirmed over $150; the proposal's "$12.5 Month" was an
-    // arithmetic slip, so the derived headline is $12. See #56.
-    pricing: { monthlyRate: 15, annualTotal: 144 },
+    pricing: { monthlyRate: 15 },
     pitch: 'For growing teams shipping content more often',
     cta: 'Choose pro',
     ctaHref: CTA_LINKS.choosePlan,
@@ -61,7 +59,7 @@ const PLANS: Plan[] = [
   },
   {
     name: 'Business',
-    pricing: { monthlyRate: 200, annualTotal: 2220 },
+    pricing: { monthlyRate: 200 },
     pitch: 'For larger teams managing sites, brands & markets',
     cta: 'Choose business',
     ctaHref: CTA_LINKS.choosePlan,
@@ -85,10 +83,9 @@ const PLANS: Plan[] = [
  * allowances come from a later pricing proposal, so the rendered numbers deliberately
  * diverge from the node tree here.
  *
- * Annual billing is a discount off the monthly rate. Both prices are stated as the
- * business quotes them; `@/lib/pricing` derives the discount and the per-month
- * equivalent from the pair — read `annualDiscountPercent` rather than a percentage
- * written into a comment that nothing keeps in step.
+ * Each plan states only its monthly rate. The yearly price is not stored anywhere:
+ * `@/lib/pricing` derives it from one shared rule — a year is charged as ten months —
+ * so the two can never disagree. Change a price here; change the discount there.
  */
 export function Pricing() {
   const [billingIndex, setBillingIndex] = useState<SegmentIndex>(0)
