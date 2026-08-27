@@ -122,9 +122,16 @@
  *
  * The prerendered HTML must be fully readable with JS disabled, so NO initial
  * hidden state may live in the server output. `js-ready` is added to <html> by
- * entry-client.tsx only after hydration, which is the single gate that lets
- * reveal primitives hide-then-animate. Without JS the class never appears and
- * every `[data-reveal]` element stays at its natural, visible state.
+ * the inline boot script in index.html — before first paint, not after
+ * hydration, so reveal targets are hidden with no flash of the final layout —
+ * and it is the single gate that lets reveal primitives hide-then-animate.
+ * Without JS the class never appears and every `[data-reveal]` element stays at
+ * its natural, visible state.
+ *
+ * That same boot script arms a 2.5s timer that strips the class again, so a
+ * bundle that never runs cannot leave the page blank. entry-client.tsx disarms
+ * the timer from a mounted effect rather than before hydrateRoot, so a
+ * hydration crash also lets the content reappear.
  */
 @media (prefers-reduced-motion: no-preference) {
   .js-ready [data-reveal="pending"] {

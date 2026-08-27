@@ -1,0 +1,21 @@
+{
+  "overrides": [
+    {
+      "files": [
+        "*.ts",
+        "*.tsx",
+        "*.mts",
+        "*.cts",
+        "*.js",
+        "*.mjs",
+        "*.cjs",
+        "*.jsx"
+      ],
+      "options": {
+        "semi": false,
+        "singleQuote": true,
+        "printWidth": 100
+      }
+    }
+  ]
+}
