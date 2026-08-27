@@ -202,11 +202,13 @@ widths — 1440, 1024, 640, and 393 pixels.
 
 ### We built it this way — please confirm
 
-14. **The "for developers / for editors" toggle disappears entirely below a 640-pixel
-    screen width in the design.** We did it differently — showing it at every screen
-    width, since a working control that disappears on mobile looks more like an
-    oversight than a deliberate choice. Keep it that way, or does it genuinely need to
-    be hidden on mobile?
+14. **The "for developers / for editors" toggle disappears entirely below a 1024-pixel
+    screen width in the design.** That hidden range is wider than it originally was —
+    it grew from 640 pixels to 1024 when the mobile hero was rebuilt in #86, without
+    this question being discussed or resolved there. We did it differently — showing it
+    at every screen width, since a working control that disappears on phones and
+    tablets looks more like an oversight than a deliberate choice. Keep it that way, or
+    does it genuinely need to be hidden on those screens?
 
 15. **There's no content at all for the mobile hamburger menu, at any width, in the
     design.** We built a standard dropdown menu with the same links as the desktop
