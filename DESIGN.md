@@ -40,8 +40,13 @@ Two details of that spec are easy to get wrong:
   `{ "colorSpace": "srgb", "components": [0.96, 0.96, 0.94], "hex": "#f5f6ef" }`.
   Hex strings were valid in earlier drafts and are not valid now. The `hex`
   field is an optional fallback, not the value.
-- The semantic scheme is stored in `oklch`, matching what the stylesheet already
-  shipped. Converting it to sRGB would round the values and change rendering.
+- The semantic scheme is stored in `srgb` with the hex the colour carries in the
+  Figma frame, so every role token is traceable to a fill that exists in the
+  design. It previously held `oklch` values inherited from the shadcn starter,
+  which were pure-neutral greys unrelated to this palette. Two entries are the
+  exception and stay `oklch`: the dark scheme's `border` and `input` are
+  translucent white, and the generator only honours `alpha` on `oklch` — its
+  `srgb` branch returns a plain hex and would drop the transparency silently.
 
 ### What is emitted, and what is only recorded
 
@@ -133,6 +138,61 @@ CSS keyword rather than a scale value — flagged for the designer in
 the rest are the shadcn/ui role tokens, defined for both light and dark under
 `scheme.light` and `scheme.dark`. Components should reference these roles rather
 than a raw palette value, so a theme change lands in one place.
+
+Every role resolves to a colour counted in the Figma frame:
+
+| Role                                                     | Light     | Dark                  | Where it comes from                  |
+| -------------------------------------------------------- | --------- | --------------------- | ------------------------------------ |
+| `background` / `card` / `popover`                        | `#ffffff` | `#1c1917` / `#292524` | page and card surfaces               |
+| `foreground`, and `*-foreground` on a light surface      | `#1c1917` | `#fafaf9`             | primary text, and text on dark       |
+| `primary-foreground` (it inverts — it sits on `primary`) | `#fafaf9` | `#1c1917`             | the label on the dark button         |
+| `primary`                                                | `#292524` | `#fafaf9`             | the `Get Started` button fill        |
+| `secondary` / `muted` / `accent`                         | `#f5f5f4` | `#44403c`             | segmented-control track              |
+| `muted-foreground`                                       | `#78716c` | `#a8a29e`             | muted text, inactive tab labels      |
+| `border` / `input`                                       | `#e7e5e4` | white at 10% / 15%    | button borders, carousel track       |
+| `destructive`                                            | `#fe3434` | `#fe3434`             | removed-line text in the diff mockup |
+| `ring`                                                   | `#9ae600` | `#9ae600`             | the lime brand accent                |
+
+Three of these are judgement calls rather than readings, because the design does
+not specify them, and all three are queued for the designer:
+
+- **The focus `ring`**, given the brand lime for want of any drawn focus state.
+- **`destructive`.** `#fe3434` is the only red in the file, and it is content
+  inside a product screenshot — the removed-line colour of a diff — not a UI
+  role the page itself uses. It is also thin for text: on white it measures
+  about 3.65:1, under the 4.5:1 WCAG AA needs for normal text. Only `button`
+  and `badge` reference it, both solely through their `destructive` variant and
+  an `aria-invalid` state; the page uses neither, and the form components that
+  would otherwise reach it through validation — `input`, `textarea`, `select`,
+  `form`, `alert` — are not in `src/components/ui` at all. So this is a latent
+  trap rather than a live defect. **Adding any form to this page makes it
+  live**, and it wants a real error colour from the designer rather than one
+  invented here.
+- **The whole dark scheme**, mirrored from the dark product mockup in the hero
+  because no dark theme was designed. `.dark` is never applied, so none of it
+  ships; it exists so the shadcn primitives' `dark:` variants resolve. Its
+  `border`/`input` deliberately stay translucent white rather than a stone
+  step: a solid value equal to `muted` would erase the border on any muted
+  surface, and translucency composites correctly over all of them.
+
+**Known gap: the role values are literals, not aliases.** Most of the hexes
+above also exist in the `color.stone` / `color.lime` palette, and DTCG can
+express the relationship — `"$value": "{color.stone.800}"`. The generator
+rejects aliases rather than resolving them, so the roles repeat the literal
+instead. The cost is real: nudge the brand lime in the palette and `ring`
+silently keeps the old value, because the link lives only in this table.
+The fix is to teach the generator to resolve `{…}` references and then rewrite
+the roles as aliases — which also needs two new palette entries first, since
+`#ffffff` and the `destructive` red belong to no scale yet.
+
+`chart-1`–`chart-5` and the `sidebar-*` family came from the shadcn starter.
+This is a marketing page with neither charts nor a sidebar. `src/components/ui`
+holds only `badge`, `button`, `segmented-control` and `sheet` — shadcn's
+`chart.tsx` and `sidebar.tsx`, which are what would consume those variables,
+were never added — and a search for `bg-sidebar*` / `chart-[1-5]` utilities
+across `src/` returns nothing. Leaving them in meant anyone inspecting the
+running site saw a dozen variables with nothing to do with Conloca, so they are
+gone.
 
 ## Typography
 

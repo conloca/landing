@@ -186,7 +186,37 @@ function sandBlock(tree: TokenNode): string[] {
     );
 }
 
+/**
+ * A role present in one mode but not the other resolves to an undefined custom
+ * property in that mode only — invisible in review and in the light-mode build,
+ * which is the one anyone looks at.
+ */
+function assertSchemeModesAgree(tree: TokenNode): void {
+  const keysOf = (mode: "light" | "dark"): string[] => {
+    const group = (tree["scheme"] as TokenNode | undefined)?.[mode];
+    if (typeof group !== "object" || group === null || isLeaf(group)) {
+      throw new Error(`scheme.${mode} is missing from ${SOURCE}`);
+    }
+    // `$description` / `$type` / `$extensions` are legal DTCG group metadata,
+    // not roles; counting them would fail a build for annotating one mode.
+    return Object.keys(group as TokenNode)
+      .filter((key) => !key.startsWith("$"))
+      .toSorted();
+  };
+  const light = keysOf("light");
+  const dark = keysOf("dark");
+  const onlyLight = light.filter((k) => !dark.includes(k));
+  const onlyDark = dark.filter((k) => !light.includes(k));
+  if (onlyLight.length > 0 || onlyDark.length > 0) {
+    throw new Error(
+      `scheme.light and scheme.dark must declare the same roles; ` +
+        `only in light: [${onlyLight.join(", ")}], only in dark: [${onlyDark.join(", ")}]`,
+    );
+  }
+}
+
 function render(tree: TokenNode): string {
+  assertSchemeModesAgree(tree);
   const sans = formatFontFamily(
     lookup(tree, "font.family.sans"),
     "font.family.sans",
