@@ -3,6 +3,7 @@ import { CtaButton } from '@/components/CtaButton'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import {
+  annualTotal,
   formatUsd,
   headlineAmount,
   HEADLINE_PERIOD_LABEL,
@@ -35,7 +36,7 @@ export interface Plan {
 
 /**
  * Both periods are quoted per month, so the annual card must say what it actually
- * charges. Without this line a visitor reads "$7 / Month" and expects a $7 debit.
+ * charges. Without this line a visitor reads "$6.67 / Month" and expects a $6.67 debit.
  */
 function BillingNote({ plan, billing }: { plan: Plan; billing: BillingPeriod }) {
   if (billing === 'monthly') {
@@ -44,7 +45,7 @@ function BillingNote({ plan, billing }: { plan: Plan; billing: BillingPeriod }) 
 
   return (
     <p className="mt-1 text-sm text-stone-500">
-      Billed annually — {formatUsd(plan.pricing.annualTotal)} per year
+      Billed annually — {formatUsd(annualTotal(plan.pricing))} per year
     </p>
   )
 }
