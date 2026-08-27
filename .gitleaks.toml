@@ -1,0 +1,14 @@
+# Repo-scoped gitleaks allowlist.
+#
+# The Figma file key is an identifier from the public design URL, not a
+# credential: it appears in the link shared with the team and is already
+# committed in docs/figma/DESIGN-SPEC.md.
+#
+# Deliberately regex-only, with no `paths` condition. Gitleaks ORs allowlist
+# conditions rather than ANDing them, so adding a path here would allowlist
+# every secret under that path, not just this key. Figma personal access
+# tokens are prefixed `figd_` and live in a gitignored .env; they remain
+# unallowlisted and must still be caught anywhere in the tree.
+[allowlist]
+description = "Figma file key is a public identifier, not a secret"
+regexes = ['''OxxksZFS8hzKoFTeSRdFGs''']

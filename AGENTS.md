@@ -113,14 +113,29 @@ screenshot at the same width, using `pixelmatch` + `pngjs`:
 bun run visual-diff <reference.png> <live.png> <diff-output.png>
 ```
 
-**Reference renders are not committed to this repo** — they're a byproduct of the
-Figma extraction pass (see Figma MCP servers below), regenerated from the source
-file rather than checked in, to keep the repo lean. Export all four breakpoint
-frames (393/640/1024/1440) and, for finer-grained diffing, per-section crops of the
-desktop frame, at 1x scale (device pixel ratio 1 — this script has no notion of
-scale and a 2x export will silently compare against the wrong breakpoint's
-layout). Capture the live equivalents with `agent-browser` against `bun run
-preview`, at the reference frame's exact CSS width.
+**Reference renders live in `docs/figma/renders/`** — all four breakpoint frames
+(393/640/1024/1440) plus per-section crops of the desktop frame, at 1x scale.
+`docs/figma/renders-manifest.json` maps each file to its Figma node id and
+records its verified dimensions.
+
+They are committed rather than regenerated, which reverses the earlier
+convention, because **regenerating them is no longer possible on the current
+plan**: the node-tree and render endpoints allow roughly six calls per month on
+a View/Collab seat, measured as HTTP 429 with a `Retry-After` of about three
+days. Treat them as irreplaceable until someone holds a Figma Dev or Full seat.
+`docs/figma/README.md` documents the quota, what could not be extracted, and the
+one render (`sec-s0-hero.png`, 1592px wide) that must be cropped to 1440 before
+diffing.
+
+Everything under `docs/figma/` is marked `-diff` in `.gitattributes`, so it is
+unreviewable by eye in a pull request; `bun run check:figma` enforces the
+properties a reviewer would otherwise have to check by hand, and the
+`figma-archive` workflow runs it on any pull request touching that directory.
+
+Reference renders must stay at 1x (device pixel ratio 1) — this script has no
+notion of scale and a 2x export will silently compare against the wrong
+breakpoint's layout. Capture the live equivalents with `agent-browser` against
+`bun run preview`, at the reference frame's exact CSS width.
 
 Both inputs must be the same width or the script refuses to compare them. Height
 mismatches (real content vs. placeholder assets) are reported, not silently

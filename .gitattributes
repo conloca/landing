@@ -1,0 +1,10 @@
+# Raw Figma API output, preserved near-verbatim as evidence rather than
+# authored — one field is redacted, see docs/figma/README.md.
+# These are megabyte-scale single-line JSON files; without this, any diff
+# touching them floods review tooling and language statistics.
+docs/figma/*.json -diff linguist-generated
+docs/figma/outline.txt -diff linguist-generated
+docs/figma/copy.txt -diff linguist-generated
+
+# renders-manifest.json is authored, not raw API output — keep it reviewable.
+docs/figma/renders-manifest.json diff -linguist-generated

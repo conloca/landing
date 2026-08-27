@@ -465,29 +465,44 @@ gradient plus noise reproduces them closely enough. Question 14.
 
 ## 8. What was extracted, and gaps
 
-**Captured** (in this directory):
+> **This section is a snapshot from the 2026-08-25 extraction and is no longer
+> the inventory.** Some of what it lists as missing was obtained afterwards, and
+> some of what it lists as captured is not kept in the repository. For what
+> actually exists today, and why, see [`README.md`](README.md) in this
+> directory — that is the current inventory. The rest of this spec remains
+> accurate about the design itself.
+
+Kept for the historical record of what the extraction run itself achieved:
+
+**Captured at the time:**
 
 - `nodes.json` — complete desktop node tree (1.2 MB)
 - `frame-desktop1440.png`, `frame-tablet1024.png`, `frame-small640.png`, `frame-mobile393.png`
   — full renders of all four breakpoints
 - `sec-s0-hero.png` … `sec-s5-footer.png` — per-section desktop renders
 - `slices/`, `tab/`, `sm/`, `mob/` — readable slices of each breakpoint
+  (reading aids, derived from the frames above — **not** kept in the repository)
 - `outline.txt` — annotated node tree with layout, fills, effects and text
 - `copy.txt` — every string in document order with its type style
 - `anim.json` — the Animations section structure
 - `file-depth2.json` — all pages and top-level frames
 
-**Gaps, stated plainly:**
+**Gaps as they stood then:**
 
 1. **No assets exported** — the image endpoint is rate-limited. Node ids recorded above.
+   *Since resolved:* the image-**fills** endpoint (`/v1/files/:key/images`) sits in a
+   separate, looser quota and the assets were exported through it later.
 2. **Node trees for the 640 / 1024 / 393 frames were not fetched** (same rate limit).
    Responsive behaviour above is read from the renders: reliable for layout intent, not for
    exact padding values. Re-fetch before implementing those breakpoints precisely.
+   *Still true.*
 3. **Figma Variables are unavailable** — `/v1/variables/local` returns 403 `Invalid scope`.
    That endpoint needs an Enterprise plan and a `file_variables:read` scope. The colour and
    type tables above are derived from actual usage in the frame, which is authoritative for
-   the build even if it is not the designer's token names.
+   the build even if it is not the designer's token names. *Still true, and confirmed:
+   the scope is not offerable on this plan, so reissuing the token does not help.*
 4. **The `Color tokens - Semantics` page** (`40002164:36164`) was not read — rate-limited.
-   Worth fetching later to get the designer's own token naming.
+   Worth fetching later to get the designer's own token naming. *Still true.*
 5. **The `Content editors` page variant was not extracted** — out of the requested scope, but
    it exists and is a real deliverable if the segmented control is meant to work.
+   *Still true.*
