@@ -1,7 +1,7 @@
 {
   "name": "conloca-landing",
   "private": true,
-  "version": "0.3.4",
+  "version": "0.3.5",
   "type": "module",
   "scripts": {
     "tokens": "bun run scripts/build-tokens.ts",
