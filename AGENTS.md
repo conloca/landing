@@ -253,6 +253,88 @@ re-capture after the final edit and confirm the image reflects the revision you
 are actually proposing — a screenshot of an intermediate attempt that review
 later rejected looks exactly as convincing.
 
+## Figma asset export
+
+`bun run figma:export` pulls the design's raster assets into `src/assets/figma/`
+and writes a `manifest.json` describing each one.
+
+Requirements: `FIGMA_PAT` in the environment (bun loads `.env` automatically for
+scripts it runs; the MCP servers below are a separate case that needs the manual
+`set -a` export), and **`cwebp` on PATH** — `brew install webp`, or
+`apt install webp`. The script exits 2 with that instruction if it is absent.
+
+An asset is re-fetched only when its image reference, target width or quality
+differs from what `manifest.json` records, so a settings change takes effect
+while an unchanged run avoids re-downloading and re-encoding. Note this saves
+bandwidth, not quota: the single Tier 1 request happens before the skip check,
+so even a no-op run costs one call.
+
+`bun run test` covers the image-header parsers and `Retry-After` handling —
+the places where a wrong answer would be silent rather than loud.
+
+### Why there is a custom client
+
+`scripts/figma-client.ts` wraps the REST API with rate limiting. This is not
+incidental: Figma splits endpoints into three cost tiers, and the ones asset
+export needs are the most restricted.
+
+| Tier | Endpoints | Dev/Full seat budget |
+| --- | --- | --- |
+| 1 | `GET file`, `GET file nodes`, **`GET images`** | 10/min Starter, 15/min Professional, 20/min Org and Enterprise |
+| 2 | comments, variables, webhooks, projects | 25–100/min |
+| 3 | components, metadata, users, analytics | 50–150/min |
+
+A **View or Collab seat gets roughly six Tier 1 calls per month**, which is what
+silently defeated the first extraction attempt in this repo. Figma reports that
+case as `X-Figma-Rate-Limit-Type: low`, and the client fails fast on it with
+exit code 5 rather than sleeping through a multi-day `Retry-After` — waiting
+cannot fix a monthly quota, only a different seat can.
+
+**This project's token is in exactly that state.** Measured 2026-08-26:
+
+| Endpoint | Result |
+| --- | --- |
+| `GET /v1/files/:key/images` (image fills) | 200, repeatedly, no throttling |
+| `GET /v1/files/:key/nodes` | 429, `Retry-After` ≈ 3 days, plan `starter`, type `low` |
+| `GET /v1/files/:key/variables/local` | 403 — token lacks the `file_variables:read` scope |
+| `GET /v1/files/:key/styles` | 200, but an empty array (no published styles) |
+
+Two consequences. First, the image-fills endpoint is evidently metered
+separately from node fetches despite both being documented as Tier 1 — which is
+the only reason asset export works on this seat, and why the exporter is built
+on fills rather than node renders. Second, **reading node trees or rendering
+SVGs from this file needs a Dev or Full seat**; no amount of retrying
+substitutes for it. `bun run figma:node <id>` waits far longer than the export
+does and still reports the seat quota rather than hanging.
+
+The `file_variables:read` failure is a *token scope* problem, not a plan one —
+personal access token scopes are fixed at creation, so it needs a new token
+rather than an upgrade. The client detects this and names the missing scope.
+
+The client honours `Retry-After` when present, falls back to exponential
+backoff with full jitter when it isn't, paces requests through a per-tier token
+bucket *before* hitting the limit, and caps concurrency. Defaults assume the
+Starter allowance, since the plan is only revealed on a 429.
+
+Exit codes: `2` configuration, `3` auth, `4` transient rate limit that outlived
+the retry budget, `5` seat quota.
+
+### Prefer image fills over per-node renders
+
+`GET /v1/files/:key/images` returns the source URL for *every* image fill in the
+file in a single Tier 1 call. `GET /v1/images` renders one request per node.
+For the eight assets this project needs, that is one call instead of eight
+against the tightest budget in the API — use the fills endpoint unless a
+rendered vector export is specifically required.
+
+Two traps worth knowing. Fill URLs serve whatever format was originally
+uploaded, so the file extension must come from the bytes rather than being
+assumed — two assets here are JPEGs that a naive exporter wrote as `.png`. And
+Figma stores originals, not rendered sizes: the 40×40 avatar arrives as a
+1392×1643 PNG. Everything is therefore downscaled to twice its design width and
+re-encoded as WebP by `scripts/figma/optimize.ts`, which took the eight assets
+from roughly 50 MB to under 800 KB.
+
 ## Figma MCP servers
 
 Three servers are registered in `.mcp.json` (project scope, so every agent on the

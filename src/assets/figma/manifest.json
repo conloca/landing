@@ -1,0 +1,69 @@
+{
+  "fileKey": "OxxksZFS8hzKoFTeSRdFGs",
+  "assets": [
+    {
+      "ref": "49da61454b1d3e49d6ba6316a56bea5d085f1288",
+      "note": "Full product dashboard screenshot used as the hero visual — sidebar, stat cards, activity list and video still, all one image",
+      "maxWidth": 1862,
+      "quality": 90,
+      "file": "hero-panel.webp",
+      "bytes": 61248
+    },
+    {
+      "ref": "a1762f3486f62a5c12b17c0a4bebd2cabadd4370",
+      "note": "Hero video container backdrop, 800x838",
+      "maxWidth": 1600,
+      "quality": 80,
+      "file": "hero-backdrop-a.webp",
+      "bytes": 19462
+    },
+    {
+      "ref": "c86040899b8d1030ef62b45ef366beeccac8e494",
+      "note": "Hero video container backdrop, 800x838",
+      "maxWidth": 1600,
+      "quality": 80,
+      "file": "hero-backdrop-b.webp",
+      "bytes": 300688
+    },
+    {
+      "ref": "4ca778739defffbf87ce67ad8e1c2d6ad7791794",
+      "note": "Feature section background, 1424x814",
+      "maxWidth": 2848,
+      "quality": 80,
+      "file": "feature-section-bg-a.webp",
+      "bytes": 17114
+    },
+    {
+      "ref": "bd6e7ba6630522261b404aaa43de8a22fa27906e",
+      "note": "Feature section background, 1424x814",
+      "maxWidth": 2848,
+      "quality": 80,
+      "file": "feature-section-bg-b.webp",
+      "bytes": 12756
+    },
+    {
+      "ref": "247c5d379fa0e0fc18a6bbdc7b4010c30fd940a4",
+      "note": "Bento card artwork, 682x665",
+      "maxWidth": 1364,
+      "quality": 85,
+      "file": "bento-card.webp",
+      "bytes": 368126
+    },
+    {
+      "ref": "4aeba4b18d2c729786dcb83ff79a457525a300fa",
+      "note": "Collaborator avatar, 40x40",
+      "maxWidth": 80,
+      "quality": 90,
+      "file": "avatar.webp",
+      "bytes": 1838
+    },
+    {
+      "ref": "bd393d2ff199c75688b25740587201541481ae89",
+      "note": "Cursor profile image, 59x59",
+      "maxWidth": 118,
+      "quality": 90,
+      "file": "cursor-profile.webp",
+      "bytes": 4824
+    }
+  ]
+}
