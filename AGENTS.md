@@ -142,6 +142,29 @@ computed `opacity` back — it flips to `1`). A blank region in a `--full` diff
 near the fold is worth checking with a real `scroll` command before treating it
 as a fidelity bug.
 
+**When every screenshot times out, the binary is the problem, not your page.**
+On this machine, Chrome for Testing's `Page.captureScreenshot` is broken: every
+capture call times out with exit code 124, while `eval`, `open`, `get title` and
+even PDF capture all succeed against the same session, and macOS logged a hang
+report for the binary. A whole session was lost to diagnosing this as page
+breakage, network trouble, and concurrency saturation in turn. Point
+`agent-browser` at the dedicated headless build instead:
+
+```bash
+export AGENT_BROWSER_EXECUTABLE_PATH="/Users/ultra/.cache/puppeteer/chrome-headless-shell/mac_arm-148.0.7778.167/chrome-headless-shell-mac-arm64/chrome-headless-shell"
+```
+
+With that exported, viewport, open and screenshot all succeed. A reboot is the
+likely permanent cure — uptime was 44 days when this surfaced — so re-test the
+default binary before assuming the workaround is still needed.
+
+**Close your own session when you finish, and never `close --all`.** Each
+orphaned daemon holds roughly eleven Chrome processes; five of them reached 55
+processes here and degraded capture for every agent on the machine. The
+`--all` form is worse than leaking, because it terminates sessions belonging to
+other agents that are still working — that happened in this project and cost a
+concurrent agent its in-flight run. Use plain `agent-browser close`.
+
 ## Figma MCP servers
 
 Three servers are registered in `.mcp.json` (project scope, so every agent on the
