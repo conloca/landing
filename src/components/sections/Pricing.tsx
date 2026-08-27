@@ -4,62 +4,74 @@ import { SegmentedControl, type SegmentIndex } from '@/components/ui/segmented-c
 import { Reveal } from '@/components/motion/Reveal'
 import {
   PricingCard,
-  type BillingPeriod,
   type Plan,
+  type PlanFeature,
 } from '@/components/sections/pricing/PricingCard'
 import { CTA_LINKS } from '@/lib/nav'
+import type { BillingPeriod } from '@/lib/pricing'
 
 const BILLING_OPTIONS: [string, string] = ['Monthly', 'Annual']
 const BILLING_PERIODS: readonly [BillingPeriod, BillingPeriod] = ['monthly', 'annual']
 
+const has = (label: string): PlanFeature => ({ label, included: true })
+const lacks = (label: string): PlanFeature => ({ label, included: false })
+
+/**
+ * Every plan lists the same eight capabilities in the same order, so a visitor can
+ * read down a column and compare like with like. A tier that lacks something still
+ * shows the row, marked as excluded — omitting it reads as an oversight, not a limit.
+ */
 const PLANS: Plan[] = [
   {
     name: 'Simple',
-    price: { monthly: '$8', annual: null },
+    pricing: { monthlyRate: 8 },
     pitch: 'For small teams getting their site off the ground',
     cta: 'Choose simple',
     ctaHref: CTA_LINKS.choosePlan,
     features: [
-      '3 seats included ($5 per additional seat)',
-      '5 seats max',
-      '1 repository',
-      '1GB repository storage',
-      '1GB media storage',
+      has('3 seats included ($5 per additional seat)'),
+      has('5 seats max'),
+      has('1 repository'),
+      has('1GB repository storage'),
+      has('1GB media storage'),
+      lacks('Data residency choice'),
+      lacks('Access control'),
+      has('Community support'),
     ],
   },
   {
     name: 'Pro',
-    price: { monthly: '$15', annual: null },
+    pricing: { monthlyRate: 15 },
     pitch: 'For growing teams shipping content more often',
     cta: 'Choose pro',
     ctaHref: CTA_LINKS.choosePlan,
     highlighted: true,
     features: [
-      '10 seats included ($7 per additional seat)',
-      '20 seats max',
-      'Unlimited repositories',
-      '20GB repository storage',
-      '100GB media storage',
-      'Choose data residency (US/EU)',
-      'Basic access control',
-      'Support',
+      has('15 seats included ($9 per additional seat)'),
+      has('25 seats max'),
+      has('Unlimited repositories'),
+      has('20GB repository storage'),
+      has('100GB media storage'),
+      has('Choose data residency (US/EU)'),
+      has('Basic access control'),
+      has('Priority support'),
     ],
   },
   {
     name: 'Business',
-    price: { monthly: '$200', annual: null },
+    pricing: { monthlyRate: 200 },
     pitch: 'For larger teams managing sites, brands & markets',
     cta: 'Choose business',
     ctaHref: CTA_LINKS.choosePlan,
     features: [
-      '30 seats included ($10 per additional seat)',
-      'No seat limit',
-      'Unlimited repositories',
-      '30GB repository storage',
-      '1TB media storage',
-      'Choose data residency (US/EU)',
-      'Advanced access control and Audit trail',
-      'Priority support',
+      has('30 seats included ($12 per additional seat)'),
+      has('No seat limit'),
+      has('Unlimited repositories'),
+      has('30GB repository storage'),
+      has('1TB media storage'),
+      has('Choose data residency (US/EU)'),
+      has('Advanced access control and Audit trail'),
+      has('Priority support'),
     ],
   },
 ]
@@ -67,17 +79,13 @@ const PLANS: Plan[] = [
 /**
  * Figma S4 — pricing (`40002427:17148`).
  *
- * The design has no annual figures anywhere in its node tree — only `$8`/`$15`/`$200`,
- * all labelled "/ Month" — so `annual` is `null` on every plan and no number is invented.
+ * The design carries monthly figures only; the annual pricing and the revised seat
+ * allowances come from a later pricing proposal, so the rendered numbers deliberately
+ * diverge from the node tree here.
  *
- * Selecting Annual therefore reaches a state with nothing purchasable. That is
- * deliberate: an inert pill was reported as broken, and a visitor is better served by
- * a control that answers ("not announced yet") than by one that ignores the click. It
- * also keeps the gap visible to whoever reviews the page instead of burying it.
- *
- * When figures arrive, how much else changes depends on their shape: a per-year total
- * only needs `annual` filled in, whereas the common "per month, billed annually" form
- * also needs the suffix in `PricingCard` and the surrounding copy.
+ * Each plan states only its monthly rate. The yearly price is not stored anywhere:
+ * `@/lib/pricing` derives it from one shared rule — a year is charged as ten months —
+ * so the two can never disagree. Change a price here; change the discount there.
  */
 export function Pricing() {
   const [billingIndex, setBillingIndex] = useState<SegmentIndex>(0)
