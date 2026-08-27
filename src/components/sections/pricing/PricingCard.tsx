@@ -2,7 +2,13 @@ import { Check, Minus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
-import { formatUsd, headline, type BillingPeriod, type PlanPricing } from '@/lib/pricing'
+import {
+  formatUsd,
+  headlineAmount,
+  HEADLINE_PERIOD_LABEL,
+  type BillingPeriod,
+  type PlanPricing,
+} from '@/lib/pricing'
 
 /**
  * A capability row. `included: false` is what a tier does *not* get — rendered with a
@@ -23,11 +29,6 @@ export interface Plan {
   highlighted?: boolean
 }
 
-const PERIOD_SUFFIX: Record<'month' | 'year', string> = {
-  month: '/ Month',
-  year: '/ Year',
-}
-
 /**
  * Both periods are quoted per month, so the annual card must say what it actually
  * charges. Without this line a visitor reads "$7 / Month" and expects a $7 debit.
@@ -45,13 +46,11 @@ function BillingNote({ plan, billing }: { plan: Plan; billing: BillingPeriod }) 
 }
 
 function Price({ plan, billing }: { plan: Plan; billing: BillingPeriod }) {
-  const { amount, per } = headline(plan.pricing, billing)
-
   return (
     <>
       <p className="mt-6 text-3xl font-black text-stone-900">
-        {formatUsd(amount)}{' '}
-        <span className="text-base font-normal text-stone-500">{PERIOD_SUFFIX[per]}</span>
+        {formatUsd(headlineAmount(plan.pricing, billing))}{' '}
+        <span className="text-base font-normal text-stone-500">{HEADLINE_PERIOD_LABEL}</span>
       </p>
       <BillingNote plan={plan} billing={billing} />
     </>

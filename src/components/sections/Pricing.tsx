@@ -39,13 +39,8 @@ const PLANS: Plan[] = [
   },
   {
     name: 'Pro',
-    /**
-     * The source proposal gives Pro as "$144 Year ($12.5 Month)". Those two figures
-     * disagree: $144 / 12 is $12.00, and $12.50 a month would make the year $150.
-     * The annual total is treated as authoritative and the monthly equivalent derived
-     * from it, so the card shows $12. If $12.50 is the intended headline instead,
-     * `annualTotal` becomes 150 and nothing else changes. Open question on the PR.
-     */
+    // $144/yr was confirmed over $150; the proposal's "$12.5 Month" was an
+    // arithmetic slip, so the derived headline is $12. See #56.
     pricing: { monthlyRate: 15, annualTotal: 144 },
     pitch: 'For growing teams shipping content more often',
     cta: 'Choose pro',
@@ -82,9 +77,14 @@ const PLANS: Plan[] = [
 /**
  * Figma S4 — pricing (`40002427:17148`).
  *
- * The design carries monthly figures only; the annual prices and the revised seat
+ * The design carries monthly figures only; the annual pricing and the revised seat
  * allowances come from a later pricing proposal, so the rendered numbers deliberately
- * diverge from the node tree here. See `@/lib/pricing` for how each figure is derived.
+ * diverge from the node tree here.
+ *
+ * Annual billing is a discount off the monthly rate. Both prices are stated as the
+ * business quotes them; `@/lib/pricing` derives the discount and the per-month
+ * equivalent from the pair — read `annualDiscountPercent` rather than a percentage
+ * written into a comment that nothing keeps in step.
  */
 export function Pricing() {
   const [billingIndex, setBillingIndex] = useState<SegmentIndex>(0)
