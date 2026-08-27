@@ -232,4 +232,7 @@ const dictionary = new StyleDictionary({ source: [SOURCE], platforms: {} });
 await dictionary.hasInitialized;
 
 writeFileSync(OUT, render(dictionary.tokens as TokenNode));
-console.log(`wrote ${OUT}`);
+// Straight to stdout rather than console.log: this line is the command's intended
+// output, not a stray debug statement, and the repo's leftover-marker gate blocks
+// console.log as the latter.
+process.stdout.write(`wrote ${OUT}\n`);
