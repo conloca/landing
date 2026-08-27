@@ -91,12 +91,33 @@ if (mode === 'nolottie') {
 await evaluate(`window.scrollTo(0, ${geometry.sectionTop}); true`)
 await sleep(400)
 
+// Sample the animated value alongside the timing. The two failure modes look
+// identical to a viewer but are opposites in the data: dropped frames show as
+// gaps in *timing* while values advance evenly, whereas stepping shows as
+// plateaus and jumps in *value* while timing stays perfectly even. Recording
+// only one of them cannot tell you which you are looking at.
 await evaluate(`(() => {
   window.__frames = [];
+  window.__values = [];
   window.__longTasks = [];
+  const card = document.querySelector('[data-scroll-stack-card="0"]');
+  if (!card) throw new Error('no [data-scroll-stack-card="0"] element to sample');
+  // Read the inline style motion writes, not the computed one. Calling
+  // getComputedStyle on an element motion has just dirtied forces a style
+  // recalculation every frame, which inflates the very recalcStyleCount and
+  // frame timings this probe reports alongside the values.
+  const readScale = () => {
+    const t = card.style.transform;
+    if (!t) return 1;
+    const scale = t.match(/scale(?:X)?\\(([^,)]+)/);
+    if (scale) return Math.round(parseFloat(scale[1]) * 100000) / 100000;
+    const matrix = t.match(/matrix(?:3d)?\\(([^,]+),/);
+    return matrix ? Math.round(parseFloat(matrix[1]) * 100000) / 100000 : null;
+  };
   let last = performance.now();
   const tick = (now) => {
     window.__frames.push(now - last);
+    window.__values.push(readScale());
     last = now;
     window.__raf = requestAnimationFrame(tick);
   };
@@ -150,6 +171,45 @@ const frames = await evaluate(`(() => {
   };
 })()`)
 
+// Characterise the value sequence: how often it fails to move at all between
+// frames, and how big its jumps are when it does. A continuous animation moves
+// a little on nearly every frame; a stepped one sits still and then lurches.
+const valueMotion = await evaluate(`(() => {
+  const v = window.__values.filter((x) => typeof x === 'number');
+  const moving = [];
+  let held = 0;
+  let longestHold = 0;
+  for (let i = 1; i < v.length; i++) {
+    const d = Math.abs(v[i] - v[i - 1]);
+    if (d < 1e-5) {
+      held++;
+      longestHold = Math.max(longestHold, held);
+    } else {
+      held = 0;
+      moving.push(d);
+    }
+  }
+  const sorted = [...moving].sort((a, b) => a - b);
+  const median = sorted.length ? sorted[Math.floor(sorted.length / 2)] : 0;
+  const biggest = sorted.length ? sorted[sorted.length - 1] : 0;
+  return {
+    samples: v.length,
+    first: v[0] ?? null,
+    last: v[v.length - 1] ?? null,
+    framesWithNoChange: v.length - 1 - moving.length,
+    longestUnchangedRun: longestHold,
+    medianStep: +median.toFixed(5),
+    largestStep: +biggest.toFixed(5),
+    // Spread of step sizes. NOT a smoothness score, and it reads backwards if
+    // used as one: uniformly quantised stepping scores exactly 1.0, because
+    // every jump is the same size, while genuinely continuous spring motion
+    // scores well above 1 as each impulse decays. Read it only alongside
+    // framesWithNoChange, which is the real discriminator. Few moving frames
+    // plus a spread near 1.0 is the stepping signature.
+    stepSizeSpread: median > 0 ? +(biggest / median).toFixed(1) : null,
+  };
+})()`)
+
 const read = (set, name) => set.metrics.find((m) => m.name === name)?.value ?? 0
 const delta = (name) => +(read(after, name) - read(before, name)).toFixed(4)
 
@@ -161,6 +221,7 @@ process.stdout.write(
       devicePixelRatio: Number(dpr),
       geometry,
       frames,
+      valueMotion,
       blink: {
         layoutCount: delta('LayoutCount'),
         recalcStyleCount: delta('RecalcStyleCount'),
