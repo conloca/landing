@@ -299,12 +299,13 @@ async function materialize(
   // Figma serves an asset whose extension matches the output, the two paths
   // would otherwise be identical and discarding the "original" would delete
   // the freshly encoded result.
-  // codeql[js/http-to-file-access] `info.extension` is typed 'png' | 'jpg'
-  // (see scripts/figma/optimize.ts) -- inspectImage derives it from the
-  // response bytes' magic-byte header, but the return value is one of those
-  // two literals regardless of what the header actually says, so the
-  // downloaded bytes cannot inject an arbitrary path segment here.
   const scratch = resolve(scratchDir, `${item.name}.${info.extension}`);
+  // codeql[js/http-to-file-access] `info.extension` (folded into `scratch`
+  // above) is typed 'png' | 'jpg' (see scripts/figma/optimize.ts) --
+  // inspectImage derives it from the response bytes' magic-byte header, but
+  // the return value is one of those two literals regardless of what the
+  // header actually says, so the downloaded bytes cannot inject an arbitrary
+  // path segment into this write.
   await writeFile(scratch, bytes);
 
   const { sourceBytes, targetBytes } = await optimizeAsset({
