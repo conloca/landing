@@ -1,7 +1,8 @@
-import { Button } from '@/components/ui/button'
+import { CtaButton } from '@/components/CtaButton'
 import { SegmentedControl } from '@/components/ui/segmented-control'
 import { Reveal } from '@/components/motion/Reveal'
 import { PricingCard, type Plan } from '@/components/sections/pricing/PricingCard'
+import { CTA_LINKS } from '@/lib/nav'
 
 const BILLING_OPTIONS: [string, string] = ['Monthly', 'Annual']
 
@@ -11,6 +12,7 @@ const PLANS: Plan[] = [
     price: '$8',
     pitch: 'For small teams getting their site off the ground',
     cta: 'Choose simple',
+    ctaHref: CTA_LINKS.choosePlan,
     features: [
       '3 seats included ($5 per additional seat)',
       '5 seats max',
@@ -24,6 +26,7 @@ const PLANS: Plan[] = [
     price: '$15',
     pitch: 'For growing teams shipping content more often',
     cta: 'Choose pro',
+    ctaHref: CTA_LINKS.choosePlan,
     highlighted: true,
     features: [
       '10 seats included ($7 per additional seat)',
@@ -41,6 +44,7 @@ const PLANS: Plan[] = [
     price: '$200',
     pitch: 'For larger teams managing sites, brands & markets',
     cta: 'Choose business',
+    ctaHref: CTA_LINKS.choosePlan,
     features: [
       '30 seats included ($10 per additional seat)',
       'No seat limit',
@@ -74,7 +78,9 @@ export function Pricing() {
       </div>
 
       <div className="mt-8 flex justify-center">
-        <Button variant="outline">Compare plans</Button>
+        <CtaButton variant="outline" href={CTA_LINKS.comparePlans}>
+          Compare plans
+        </CtaButton>
       </div>
     </section>
   )

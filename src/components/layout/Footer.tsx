@@ -1,6 +1,6 @@
-import { Button } from '@/components/ui/button'
+import { CtaButton } from '@/components/CtaButton'
 import { Logo } from '@/components/layout/Logo'
-import { NAV_LINKS } from '@/lib/nav'
+import { CTA_LINKS, NAV_LINKS } from '@/lib/nav'
 
 const FOOTER_LINKS = [...NAV_LINKS, { label: 'Open source', href: '#' }]
 
@@ -20,9 +20,14 @@ export function Footer() {
               {link.label}
             </a>
           ))}
-          <Button size="sm" variant="outline" className="border-white/20 bg-white text-stone-900">
+          <CtaButton
+            size="sm"
+            variant="outline"
+            className="border-white/20 bg-white text-stone-900"
+            href={CTA_LINKS.getStarted}
+          >
             Get started
-          </Button>
+          </CtaButton>
         </nav>
       </div>
     </footer>

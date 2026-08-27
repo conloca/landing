@@ -1,8 +1,5 @@
 import { cn } from '@/lib/utils'
 
-/** Shared by every "Developers / Content editors" instance (Hero, feature cards). */
-export const AUDIENCE_OPTIONS: [string, string] = ['Developers', 'Content editors']
-
 interface SegmentedControlProps {
   options: [string, string]
   activeIndex: 0 | 1
@@ -12,10 +9,10 @@ interface SegmentedControlProps {
 }
 
 /**
- * Presentational only — the Figma file's second tab in every instance
- * ("Content editors", "Annual") has no page or pricing data behind it (see
- * docs/QUESTIONS-DESIGNER.md). Rendering it as an inert pill avoids a tab
- * control that does nothing when clicked.
+ * Presentational only — every instance in the Figma file has a second tab with
+ * no page or data behind it (see docs/QUESTIONS-DESIGNER.md), so this renders
+ * inert pills rather than a tab control that does nothing when clicked.
+ * Callers supply their own labels; this component knows nothing about them.
  */
 export function SegmentedControl({
   options,

@@ -1,5 +1,7 @@
-import { Button } from '@/components/ui/button'
-import { AUDIENCE_OPTIONS, SegmentedControl } from '@/components/ui/segmented-control'
+import { CtaButton } from '@/components/CtaButton'
+import { SegmentedControl } from '@/components/ui/segmented-control'
+import { AUDIENCE_OPTIONS } from '@/lib/audience'
+import { CTA_LINKS } from '@/lib/nav'
 import { Reveal } from '@/components/motion/Reveal'
 import { AstroBadge } from '@/components/sections/hero/AstroBadge'
 import { CarouselRail } from '@/components/sections/hero/CarouselRail'
@@ -21,10 +23,12 @@ export function Hero() {
         <div className="flex flex-col gap-6">
           <CarouselRail />
           <div className="flex gap-3">
-            <Button size="lg">Get started</Button>
-            <Button size="lg" variant="outline">
+            <CtaButton size="lg" href={CTA_LINKS.getStarted}>
+              Get started
+            </CtaButton>
+            <CtaButton size="lg" variant="outline" href={CTA_LINKS.tryDemo}>
               Try Demo
-            </Button>
+            </CtaButton>
           </div>
         </div>
       </Reveal>
