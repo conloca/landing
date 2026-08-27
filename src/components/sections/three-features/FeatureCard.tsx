@@ -1,12 +1,18 @@
 import type { ReactNode } from 'react'
-import { Button } from '@/components/ui/button'
-import { AUDIENCE_OPTIONS, SegmentedControl } from '@/components/ui/segmented-control'
+import { CtaButton } from '@/components/CtaButton'
+import { SegmentedControl } from '@/components/ui/segmented-control'
+import { AUDIENCE_OPTIONS } from '@/lib/audience'
+import { CTA_LINKS } from '@/lib/nav'
 import { cn } from '@/lib/utils'
 
 interface FeatureCardProps {
   title: string
   body: string
   secondaryCta: string
+  /** Paired with `secondaryCta` rather than fixed here: the label is per-card
+   * data, so its destination has to be too, or a card relabelled "Watch demo"
+   * would quietly keep pointing at the docs. */
+  secondaryCtaHref: string | null
   visual: ReactNode
   /** Card 1/2 sit text-and-visual side by side; card 3 stacks visual over text. */
   layout: 'visual-right' | 'visual-left' | 'stacked'
@@ -17,6 +23,7 @@ export function FeatureCard({
   title,
   body,
   secondaryCta,
+  secondaryCtaHref,
   visual,
   layout,
   background,
@@ -53,10 +60,14 @@ export function FeatureCard({
             <p className={cn('mt-4 text-base', layout === 'stacked' && 'mt-2')}>{body}</p>
           </div>
           <div className="flex shrink-0 gap-3">
-            <Button>Get started</Button>
-            <Button variant="outline" className="border-white/40 bg-white/10 text-stone-50 hover:bg-white/20">
+            <CtaButton href={CTA_LINKS.getStarted}>Get started</CtaButton>
+            <CtaButton
+              variant="outline"
+              className="border-white/40 bg-white/10 text-stone-50 hover:bg-white/20"
+              href={secondaryCtaHref}
+            >
               {secondaryCta}
-            </Button>
+            </CtaButton>
           </div>
         </div>
         <div

@@ -20,6 +20,7 @@
  *    both once JS is driving the stack.
  */
 import {
+  Children,
   createContext,
   useContext,
   useEffect,
@@ -42,11 +43,20 @@ import { useHydrated } from '@/components/motion/Reveal'
 interface StackState {
   progress: MotionValue<number>
   activeIndex: number
+  count: number
 }
 
 const ScrollStackContext = createContext<StackState | null>(null)
 
-export function ScrollStackRoot({ children, count }: { children: ReactNode; count: number }) {
+/**
+ * `count` is derived from the children rather than accepted as a prop, and
+ * read back by `StackCard` through context. Both components need it for the
+ * same segment math, and taking it twice let the two disagree: adding a card
+ * while updating only one call site silently broke the pinning arithmetic
+ * with nothing visibly wrong in the diff.
+ */
+export function ScrollStackRoot({ children }: { children: ReactNode }) {
+  const count = Children.count(children)
   const sectionRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ['start start', 'end end'] })
   const [activeIndex, setActiveIndex] = useState(0)
@@ -78,7 +88,10 @@ export function ScrollStackRoot({ children, count }: { children: ReactNode; coun
     // eslint-disable-next-line react-hooks/exhaustive-deps -- one-time sync against the mounted measurement, not a reactive dependency
   }, [])
 
-  const state = useMemo(() => ({ progress: scrollYProgress, activeIndex }), [scrollYProgress, activeIndex])
+  const state = useMemo(
+    () => ({ progress: scrollYProgress, activeIndex, count }),
+    [scrollYProgress, activeIndex, count],
+  )
 
   return (
     <div ref={sectionRef}>
@@ -90,10 +103,9 @@ export function ScrollStackRoot({ children, count }: { children: ReactNode; coun
 interface StackCardProps {
   children: ReactNode
   index: number
-  count: number
 }
 
-export function StackCard({ children, index, count }: StackCardProps) {
+export function StackCard({ children, index }: StackCardProps) {
   const hydrated = useHydrated()
   const reducedMotion = useReducedMotion()
   const stack = useContext(ScrollStackContext)
@@ -107,6 +119,9 @@ export function StackCard({ children, index, count }: StackCardProps) {
   // and then visibly grow once `sticky`+`h-dvh` land — same class of jump,
   // one level down. Only `sticky`/`top-0` (pinning) toggles.
   const pinned = hydrated && !reducedMotion && stack !== null
+  // Only read when `pinned`, which already requires a context — the fallback
+  // just keeps the segment math total for the unpinned/no-context render.
+  const count = stack?.count ?? 1
   const wrapperClass = pinned ? 'sticky top-0 flex h-dvh items-center p-4' : 'flex h-dvh items-center p-4'
   const zIndexStyle = useMemo(() => (pinned ? { zIndex: index + 1 } : undefined), [pinned, index])
   const isInert = pinned && stack !== null && index < stack.activeIndex

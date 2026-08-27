@@ -1,10 +1,19 @@
 import { GitMerge } from 'lucide-react'
 import { CollaboratorCursor } from '@/components/sections/three-features/CollaboratorCursor'
 
-/** Card 3 visual: pull-request diff card, per Figma `homepage.vx.json` mockup. */
+/**
+ * Card 3 visual: pull-request diff card, per Figma `homepage.vx.json` mockup.
+ *
+ * `aria-hidden` because it is set dressing, not page content: the filename,
+ * the diff lines, the fictional author and "Merge pull request" all describe an
+ * imaginary review that a screen reader was reading out as part of the real
+ * page, and that crawlers could index as product copy. Nothing inside is
+ * focusable — the merge control is a `span`, not a button — so hiding the whole
+ * subtree removes no interaction.
+ */
 export function DiffMockup() {
   return (
-    <div className="mx-auto w-full max-w-[520px] rounded-xl bg-white shadow-xl">
+    <div className="mx-auto w-full max-w-[520px] rounded-xl bg-white shadow-xl" aria-hidden>
       <div className="flex items-center justify-between border-b border-stone-100 px-4 py-3 text-sm">
         <span className="font-mono text-stone-700">homepage.vx.json</span>
         <span className="flex gap-1.5 text-xs font-medium">

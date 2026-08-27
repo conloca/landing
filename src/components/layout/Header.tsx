@@ -1,7 +1,8 @@
 import { Menu } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { CtaButton } from '@/components/CtaButton'
 import { Logo } from '@/components/layout/Logo'
-import { NAV_LINKS } from '@/lib/nav'
+import { CTA_LINKS, NAV_LINKS } from '@/lib/nav'
 import {
   Sheet,
   SheetClose,
@@ -29,10 +30,10 @@ export function Header() {
           ))}
         </nav>
         <div className="flex items-center gap-2">
-          <Button variant="outline" className="hidden sm:inline-flex">
+          <CtaButton variant="outline" className="hidden sm:inline-flex" href={CTA_LINKS.tryDemo}>
             Try Demo
-          </Button>
-          <Button>Get Started</Button>
+          </CtaButton>
+          <CtaButton href={CTA_LINKS.getStarted}>Get Started</CtaButton>
           <MobileNav />
         </div>
       </div>

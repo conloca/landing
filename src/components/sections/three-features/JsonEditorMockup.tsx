@@ -10,10 +10,19 @@ const JSON_LINES = [
   '    { "name": "description", "type": "text" },',
 ]
 
-/** Card 1 visual: JSON schema editor + rendered visual-editor mockup, per Figma `Lootie animation` group. */
+/**
+ * Card 1 visual: JSON schema editor + rendered visual-editor mockup, per Figma
+ * `Lootie animation` group.
+ *
+ * `aria-hidden` because every string in here is set dressing, not page content:
+ * the filename, the JSON body and the mock article ("Turn text to video in
+ * minutes") describe a fictional document, and the `h4` in particular was being
+ * announced to screen readers and offered to crawlers as a real product
+ * heading. Safe to hide wholesale — nothing inside is focusable.
+ */
 export function JsonEditorMockup() {
   return (
-    <div className="relative h-full w-full">
+    <div className="relative h-full w-full" aria-hidden>
       <div className="absolute top-4 left-0 w-[70%] max-w-[340px] rounded-xl bg-white p-3 shadow-xl">
         <div className="mb-2 flex items-center justify-between border-b border-stone-100 pb-2 text-xs text-stone-500">
           <span className="font-mono">hero-section.vx.json</span>

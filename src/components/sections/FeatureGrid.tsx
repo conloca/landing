@@ -17,10 +17,16 @@ const DATA_ILLUSTRATION = <DataCollectionsIllustration />
 const FRAGMENTS_ILLUSTRATION = <FragmentsIllustration />
 const VERSION_HISTORY_ILLUSTRATION = <VersionHistoryIllustration />
 
-/** Document order matches `.bento-grid`'s nth-child grid-area mapping in index.css. */
+/**
+ * Document order matches `.bento-grid`'s nth-child grid-area mapping in
+ * index.css, so document order is the single thing that decides layout —
+ * including which card is the large one. `tall` is therefore derived from
+ * position below rather than stored here: as a data field it was a second,
+ * independent answer to the same question, and reordering this array moved
+ * one without the other, leaving the wrong card enlarged.
+ */
 const CARDS = [
   {
-    tall: true,
     title: 'Sceduled Publishing', // verbatim Figma copy — likely a typo for "Scheduled", see docs/QUESTIONS-DESIGNER.md
     body: 'Set a date and time for content to go live automatically',
     illustration: SCHEDULED_ILLUSTRATION,
@@ -58,6 +64,13 @@ const CARDS = [
 ]
 
 /**
+ * The first card is the large one, because `.bento-grid > :nth-child(1)` is
+ * what claims the `big` grid area. Move a card to the front to enlarge it;
+ * there is nothing else to update.
+ */
+const LARGE_CARD_INDEX = 0
+
+/**
  * Card 6/7 body copy looks swapped in the Figma file (card 7's body describes
  * fragments, not version history) — kept verbatim, see docs/QUESTIONS-DESIGNER.md.
  */
@@ -65,8 +78,8 @@ export function FeatureGrid() {
   return (
     <section className="mx-auto max-w-[1440px] px-8 py-16">
       <div className="bento-grid">
-        {CARDS.map((card) => (
-          <BentoCard key={card.title} {...card} />
+        {CARDS.map((card, index) => (
+          <BentoCard key={card.title} {...card} tall={index === LARGE_CARD_INDEX} />
         ))}
       </div>
     </section>

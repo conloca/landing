@@ -1,5 +1,5 @@
 import { Check } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { CtaButton } from '@/components/CtaButton'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 
@@ -8,6 +8,10 @@ export interface Plan {
   price: string
   pitch: string
   cta: string
+  /** Paired with `cta` rather than shared across plans: the label already
+   * varies per plan ("Choose simple" / "Choose pro" / "Choose business"), and a
+   * plan that becomes "Contact sales" needs its own destination. */
+  ctaHref: string | null
   features: string[]
   highlighted?: boolean
 }
@@ -29,13 +33,14 @@ export function PricingCard({ plan }: { plan: Plan }) {
           {plan.price} <span className="text-base font-normal text-stone-500">/ Month</span>
         </p>
         <p className="mt-2 text-sm text-stone-500">{plan.pitch}</p>
-        <Button
+        <CtaButton
           size="lg"
           variant={plan.highlighted ? 'default' : 'outline'}
           className="mt-6 w-full"
+          href={plan.ctaHref}
         >
           {plan.cta}
-        </Button>
+        </CtaButton>
       </div>
       <ul className="flex-1 space-y-3 rounded-b-3xl bg-sand-200 p-6 pt-4">
         {plan.features.map((feature) => (
