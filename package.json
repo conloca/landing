@@ -1,11 +1,12 @@
 {
   "name": "conloca-landing",
   "private": true,
-  "version": "0.1.4",
+  "version": "0.2.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build && vite build --ssr src/entry-server.tsx && bun run scripts/prerender.ts",
+    "tokens": "bun run scripts/build-tokens.ts",
+    "dev": "bun run tokens && vite",
+    "build": "bun run tokens && vite build && vite build --ssr src/entry-server.tsx && bun run scripts/prerender.ts",
     "preview": "vite preview",
     "lint": "oxlint",
     "typecheck": "tsc --noEmit",
@@ -36,6 +37,7 @@
     "oxlint": "^1.80.0",
     "pixelmatch": "^7.2.0",
     "pngjs": "^7.0.0",
+    "style-dictionary": "^5.5.2",
     "tailwindcss": "^4.3.3",
     "typescript": "^5.9.3",
     "vite": "npm:rolldown-vite@^7.3.1"
