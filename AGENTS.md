@@ -301,6 +301,75 @@ auto-execute any future patch or minor release — including a compromised one �
 with a live Figma credential handed to it. Bump this deliberately, after checking
 the release.
 
+### Exporting assets: use the image-fills endpoint, not the render endpoint
+
+`/v1/images/:key?ids=...` renders nodes on demand and is metered by **render
+cost**. Exporting a few tall frames exhausts it, after which it returns HTTP 429
+for a long time. This is what blocked the original design extraction and left
+the hero as a hand-built DOM approximation.
+
+`/v1/files/:key/images` is a **different quota** and was not rate-limited even
+while the render endpoint was. It returns a map of every image fill in the file:
+
+```
+imageRef -> pre-signed S3 URL
+```
+
+So for anything that is an image *fill* (photos, screenshots, blurred colour
+fields — most raster assets in this file), prefer it:
+
+1. Find the `imageRef` values in the node tree: walk `nodes.json` for nodes
+   whose `fills[]` contain `{"type": "IMAGE", "imageRef": "..."}`.
+2. `GET /v1/files/:key/images` once to get the whole map.
+3. Download the URLs you need, then recompress before committing
+   (`magick in.png -resize <2x-display-width> -strip -quality 84 out.webp`
+   typically cuts a screenshot by an order of magnitude).
+
+Two things that endpoint does **not** do:
+
+- **It returns the uploaded source image, not the fill as rendered.** The
+  node's `fills[].scaleMode` (`FILL` / `FIT` / `CROP` / `TILE`) and, for
+  `CROP`, its `imageTransform`, are not baked in. Commit the raw original for
+  a cropped fill and the section renders with different framing than the
+  design while every measurement still "matches". Read `scaleMode` and either
+  crop at recompress time or reproduce it with `object-fit`/`object-position`.
+- **The URLs are pre-signed and expire.** Download immediately; never persist
+  one in a committed file or a checked-in extraction dump.
+
+The render endpoint is still the only option for **vector** exports (SVG of a
+logo or icon), which have no `imageRef`.
+
+### Read rotated nodes' geometry carefully
+
+For a node with a non-zero `rotation`, Figma's `absoluteBoundingBox` is the
+axis-aligned box **around the rotated shape**, not the node's own rect. Using
+its width and height directly renders the element too large.
+
+Ask the API for the real rect first: request the node with `geometry=paths`
+and read its `size` (and `relativeTransform`). A plain `/v1/files/:key/nodes`
+call omits both — they come back `null` — which is the only reason the
+arithmetic below is ever needed.
+
+When you only have the bounding box, invert it. For rotation `t`:
+
+```
+AABB_w = W·|cos t| + H·|sin t|
+AABB_h = W·|sin t| + H·|cos t|
+```
+
+The absolute values matter: `rotation` is signed (`-180..180`), and dropping
+them on a negative angle silently yields a box *narrower* than the element.
+Solve the pair for `W` and `H`, and keep the same centre — the rotation does
+not move it. Note also that Figma measures counter-clockwise-positive, the
+opposite of CSS `rotate()`, so negate `t` before putting it in a transform.
+
+Worked example: a frame reporting 931.53x781.61 at `t = -1.5°` is really
+912x758. Solving the same pair with signed sines instead gives 952.98x806.83
+— wrong, ~4% too large in both axes, and plausible enough to ship.
+
+The inversion is ill-conditioned near 45° (the determinant goes to zero), so
+treat it as the fallback it is.
+
 ## Language: English only, everywhere in the repository
 
 Everything committed to this repository is written in English — source code,
