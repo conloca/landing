@@ -22,23 +22,30 @@ export function Header() {
     <header className="mx-auto flex h-[66px] max-w-[1440px] items-center px-4 sm:h-[82px] sm:px-6 lg:px-8">
       <div className="flex w-full items-center justify-between">
         <Logo />
-        <nav className="hidden items-center gap-8 md:flex" aria-label="Primary">
-          {NAV_LINKS.map((link) => (
-            <a
-              key={link.label}
-              href={link.href}
-              className="text-base text-stone-900 transition-colors hover:text-stone-600"
-            >
-              {link.label}
-            </a>
-          ))}
-        </nav>
-        <div className="flex items-center gap-2">
-          <CtaButton variant="outline" className="hidden sm:inline-flex" href={CTA_LINKS.tryDemo}>
-            Try Demo
-          </CtaButton>
-          <CtaButton href={CTA_LINKS.getStarted}>Get Started</CtaButton>
-          <MobileNav />
+        {/* Figma's "Right group" is one auto-layout frame (gap 31) holding the
+            nav links AND the button pair together, not two independently
+            justified blocks — `justify-between` across three top-level
+            children would space the nav away from the buttons it belongs
+            beside instead of keeping them as one right-aligned unit. */}
+        <div className="flex items-center gap-[31px]">
+          <nav className="hidden items-center gap-8 md:flex" aria-label="Primary">
+            {NAV_LINKS.map((link) => (
+              <a
+                key={link.label}
+                href={link.href}
+                className="text-base text-stone-900 transition-colors hover:text-stone-600"
+              >
+                {link.label}
+              </a>
+            ))}
+          </nav>
+          <div className="flex items-center gap-2">
+            <CtaButton variant="outline" className="hidden sm:inline-flex" href={CTA_LINKS.tryDemo}>
+              Try Demo
+            </CtaButton>
+            <CtaButton href={CTA_LINKS.getStarted}>Get Started</CtaButton>
+            <MobileNav />
+          </div>
         </div>
       </div>
     </header>
