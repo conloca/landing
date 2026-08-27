@@ -3,6 +3,9 @@ import { JsonEditorMockup } from '@/components/sections/three-features/JsonEdito
 import { LocalesVisual } from '@/components/sections/three-features/LocalesVisual'
 import { DiffMockup } from '@/components/sections/three-features/DiffMockup'
 import { ScrollStackRoot, StackCard } from '@/components/motion/ScrollStack'
+import cardOneBackdrop from '@/assets/figma/feature-section-bg-a.webp'
+import cardTwoBackdrop from '@/assets/figma/hero-backdrop-b.webp'
+import cardThreeBackdrop from '@/assets/figma/feature-section-bg-b.webp'
 
 const CARDS = [
   {
@@ -10,7 +13,7 @@ const CARDS = [
     body: 'Developers work in the IDE. Editors work visually. Every change goes back to the same MDX files in Git.',
     secondaryCta: 'Read docs',
     layout: 'visual-right' as const,
-    background: 'bg-gradient-to-br from-stone-700 via-stone-800 to-emerald-900',
+    backgroundUrl: cardOneBackdrop,
     visual: <JsonEditorMockup />,
   },
   {
@@ -18,7 +21,7 @@ const CARDS = [
     body: 'Update the source structure once. Each locale follows the same versioned structure. When content changes, Conloca flags the locales that need updating.',
     secondaryCta: 'Read docs',
     layout: 'visual-left' as const,
-    background: 'bg-gradient-to-br from-sky-800 via-indigo-900 to-stone-800',
+    backgroundUrl: cardTwoBackdrop,
     visual: <LocalesVisual />,
   },
   {
@@ -26,7 +29,7 @@ const CARDS = [
     body: 'Every edit is written to a file with a readable diff and full history, ready for your existing pull-request workflow. Review changes, merge or roll back anything, any time.',
     secondaryCta: 'Read docs',
     layout: 'stacked' as const,
-    background: 'bg-gradient-to-br from-stone-800 via-slate-900 to-stone-900',
+    backgroundUrl: cardThreeBackdrop,
     visual: <DiffMockup />,
   },
 ]

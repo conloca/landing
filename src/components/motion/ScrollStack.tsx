@@ -107,7 +107,7 @@ export function StackCard({ children, index, count }: StackCardProps) {
   // and then visibly grow once `sticky`+`h-dvh` land — same class of jump,
   // one level down. Only `sticky`/`top-0` (pinning) toggles.
   const pinned = hydrated && !reducedMotion && stack !== null
-  const wrapperClass = pinned ? 'sticky top-0 flex h-dvh items-center p-4' : 'flex h-dvh items-center p-4'
+  const wrapperClass = pinned ? 'sticky top-0 flex items-center py-4 h-[846px]' : 'flex items-center py-4 h-[846px]'
   const zIndexStyle = useMemo(() => (pinned ? { zIndex: index + 1 } : undefined), [pinned, index])
   const isInert = pinned && stack !== null && index < stack.activeIndex
 
@@ -162,7 +162,7 @@ function MotionCard({
   )
 
   return (
-    <motion.div className="h-full max-h-[46rem] w-full" style={style}>
+    <motion.div className="h-full max-h-[814px] w-full" style={style}>
       {children}
     </motion.div>
   )
