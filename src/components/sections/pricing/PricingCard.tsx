@@ -1,56 +1,83 @@
-import { Check } from 'lucide-react'
+import { Check, Minus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
+import { formatUsd, headline, type BillingPeriod, type PlanPricing } from '@/lib/pricing'
 
-export type BillingPeriod = 'monthly' | 'annual'
+/**
+ * A capability row. `included: false` is what a tier does *not* get — rendered with a
+ * muted dash, never a tick, because a check mark beside "Access control" on the plan
+ * that lacks it reads as the opposite of what it means.
+ */
+export interface PlanFeature {
+  label: string
+  included: boolean
+}
 
 export interface Plan {
   name: string
-  /**
-   * Monthly is always known; annual is `null` until the design supplies figures.
-   * Narrower than `Record<BillingPeriod, string | null>` on purpose — that shape
-   * would let a monthly-less plan through and the null branch below would then
-   * claim the wrong period was unannounced.
-   */
-  price: { monthly: string; annual: string | null }
+  pricing: PlanPricing
   pitch: string
   cta: string
-  features: string[]
+  features: PlanFeature[]
   highlighted?: boolean
 }
 
-const PERIOD_SUFFIX: Record<BillingPeriod, string> = {
-  monthly: '/ Month',
-  annual: '/ Year',
+const PERIOD_SUFFIX: Record<'month' | 'year', string> = {
+  month: '/ Month',
+  year: '/ Year',
 }
 
 /**
- * Renders the figure for the selected period, or says so plainly when the design
- * never supplied one. Inventing a price here would be worse than showing the gap.
+ * Both periods are quoted per month, so the annual card must say what it actually
+ * charges. Without this line a visitor reads "$7 / Month" and expects a $7 debit.
  */
-function Price({ plan, billing }: { plan: Plan; billing: BillingPeriod }) {
-  const amount = plan.price[billing]
-
-  if (amount === null) {
-    return (
-      <p className="mt-6 text-base font-medium text-stone-500">
-        Annual pricing not announced yet
-      </p>
-    )
+function BillingNote({ plan, billing }: { plan: Plan; billing: BillingPeriod }) {
+  if (billing === 'monthly') {
+    return <p className="mt-1 text-sm text-stone-500">Billed monthly</p>
   }
 
   return (
-    <p className="mt-6 text-3xl font-black text-stone-900">
-      {amount} <span className="text-base font-normal text-stone-500">{PERIOD_SUFFIX[billing]}</span>
+    <p className="mt-1 text-sm text-stone-500">
+      Billed annually — {formatUsd(plan.pricing.annualTotal)} per year
     </p>
   )
 }
 
-export function PricingCard({ plan, billing }: { plan: Plan; billing: BillingPeriod }) {
-  /** No figure means nothing to buy yet — the call to action must not invite the click. */
-  const unpriced = plan.price[billing] === null
+function Price({ plan, billing }: { plan: Plan; billing: BillingPeriod }) {
+  const { amount, per } = headline(plan.pricing, billing)
 
+  return (
+    <>
+      <p className="mt-6 text-3xl font-black text-stone-900">
+        {formatUsd(amount)}{' '}
+        <span className="text-base font-normal text-stone-500">{PERIOD_SUFFIX[per]}</span>
+      </p>
+      <BillingNote plan={plan} billing={billing} />
+    </>
+  )
+}
+
+function FeatureRow({ feature }: { feature: PlanFeature }) {
+  const Icon = feature.included ? Check : Minus
+
+  return (
+    <li
+      className={cn(
+        'flex items-start gap-2 text-base font-medium',
+        feature.included ? 'text-stone-700' : 'text-stone-400',
+      )}
+    >
+      <Icon className="mt-0.5 size-4 shrink-0 text-stone-500" aria-hidden="true" />
+      <span>
+        <span className="sr-only">{feature.included ? 'Included: ' : 'Not included: '}</span>
+        {feature.label}
+      </span>
+    </li>
+  )
+}
+
+export function PricingCard({ plan, billing }: { plan: Plan; billing: BillingPeriod }) {
   return (
     <div
       className={cn(
@@ -61,7 +88,9 @@ export function PricingCard({ plan, billing }: { plan: Plan; billing: BillingPer
       <div className="rounded-3xl bg-white p-6">
         <div className="flex items-center justify-between">
           <h3 className="text-2xl font-medium text-stone-900">{plan.name}</h3>
-          {plan.highlighted ? <Badge className="bg-lime-400 text-stone-900">Best value</Badge> : null}
+          {plan.highlighted ? (
+            <Badge className="bg-lime-400 text-stone-900">Best value</Badge>
+          ) : null}
         </div>
         <Price plan={plan} billing={billing} />
         <p className="mt-2 text-sm text-stone-500">{plan.pitch}</p>
@@ -69,17 +98,13 @@ export function PricingCard({ plan, billing }: { plan: Plan; billing: BillingPer
           size="lg"
           variant={plan.highlighted ? 'default' : 'outline'}
           className="mt-6 w-full"
-          disabled={unpriced}
         >
           {plan.cta}
         </Button>
       </div>
       <ul className="flex-1 space-y-3 rounded-b-3xl bg-sand-200 p-6 pt-4">
         {plan.features.map((feature) => (
-          <li key={feature} className="flex items-start gap-2 text-base font-medium text-stone-700">
-            <Check className="mt-0.5 size-4 shrink-0 text-stone-500" />
-            {feature}
-          </li>
+          <FeatureRow key={feature.label} feature={feature} />
         ))}
       </ul>
     </div>
