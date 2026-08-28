@@ -253,6 +253,215 @@ re-capture after the final edit and confirm the image reflects the revision you
 are actually proposing — a screenshot of an intermediate attempt that review
 later rejected looks exactly as convincing.
 
+## Reaping stale agent worktrees
+
+Worktree isolation (dispatching each agent into its own `git worktree` so
+parallel agents don't race on one checkout) has no matching cleanup step, so
+the count only grows: one pass on this project found 41, up from an original
+11, with disk and `git worktree list` noise as the visible cost and an
+accidental bulk-delete of real work as the expensive one.
+
+**Only a human operator runs the removal steps below** — or an agent a
+human has explicitly told to remove one specific, named worktree, never an
+agent self-directing a sweep of the whole fleet. The reason isn't caution
+for its own sake: the one check this whole procedure hinges on — is a given
+worktree's owning agent actually finished — depends on knowing every agent
+any session on the machine has dispatched, and no session can see another
+session's dispatches. A dispatched agent that picks up a "reap worktrees"
+ticket can audit and report but should not delete anything itself unless a
+human names the specific worktree after seeing that report — and the
+report needs enough in it for the human to actually decide, not just a
+verdict: per worktree, its path, branch, `HEAD`, the time you evaluated it,
+and the result of each gate below (pass, fail, or unconfirmed), so the
+human is naming a worktree based on your evidence, not your one-word
+conclusion. That naming authorizes a `(path, HEAD)` pair, not just a path —
+if the worktree's current `HEAD` doesn't match what the report said when
+the human named it, treat the authorization as stale and don't remove it;
+something happened in that worktree between the report and the removal.
+Naming satisfies the liveness gate for that one worktree only — every
+other gate below (self-exclusion, clean status, the `clean -ndX` verdict,
+the `.env` verdict, ancestry or merged-PR confirmation) still has to pass
+before removal; naming isn't a blanket go-ahead, and it never overrides
+self-exclusion even if the named path happens to be the one you're running
+in.
+
+**Invariants — these hold regardless of who runs the sweep:**
+
+- Never evaluate the worktree you are currently running in. Capture your own
+  `git rev-parse --show-toplevel` once at the start and skip that path
+  unconditionally — it is guaranteed to look reapable (clean, `HEAD` at
+  `origin/main`) at the exact moment it's freshly dispatched and about to
+  start real work.
+- The candidate set is dispatcher-created worktrees only —
+  `.claude/worktrees/agent-*` — never the main working tree, and never a
+  worktree a human created by hand for their own use (`git worktree add`
+  off `main` with no agent behind it looks identical to an abandoned one by
+  every check below; this section doesn't apply to it, full stop, not as a
+  reap criterion but as a scope filter). Snapshot in this exact order —
+  `git worktree list --porcelain` first, *then* the live-agent list —
+  because the reverse order is unsafe: a worktree dispatched between the
+  two reads would be in the worktree snapshot but missing from an
+  already-taken live list, and would look abandoned when it's brand new.
+  Only evaluate candidates present in the worktree snapshot; one dispatched
+  after it is out of scope for this run regardless of how clean it looks
+  when you get to it.
+- Liveness comes before git state, and it must cover every session on the
+  machine, not just the operator's own. An agent that hasn't written its
+  first file yet is clean and its `HEAD` is trivially an ancestor of
+  `origin/main` — indistinguishable from a genuinely abandoned worktree by
+  git state alone, and this is equally true of a read-only agent (a code
+  reviewer, say) that never writes at all for its entire lifetime. Do not
+  infer liveness from a lock's absence, and not from "no process has the
+  path open" — an agent idle between tool calls holds no such handle
+  either.
+- Check every remaining worktree individually, never as a batch, and never
+  on age or branch naming alone. `git worktree prune` (the last step below)
+  is the one necessary exception — it only deregisters metadata for
+  worktrees whose directory is already gone, never touches a live directory
+  or its files, and skips locked entries; run `git worktree prune -nv`
+  first if you want to see what it would drop before doing it for real.
+- Never pass `--force` to `git worktree remove`, and never unlock a
+  worktree in order to remove it — a lock is a claim someone made
+  deliberately. If removal refuses on a lock or on dirty state, leave that
+  worktree and say why in your report; don't force past the refusal.
+
+**Current manual procedure** (see the closing note below — this is deliberately
+being replaced by a script):
+
+For a worktree that passes the invariants above, refresh `origin/main` with
+an explicit destination refspec — a bare `fetch origin main` is not
+guaranteed to update `refs/remotes/origin/main`, which lets a stale local
+ref make a force-pushed or rebase-merged-away commit look reachable — then
+check cleanliness and ancestry. **If the fetch itself fails** (network,
+auth, remote outage), stop and leave this worktree unconfirmed; never fall
+through to evaluating it against whatever `refs/remotes/origin/main`
+already happened to be:
+
+Run the fetch on its own, once per sweep (it's refreshing a ref shared by
+every worktree, not something to repeat per candidate), and confirm it
+actually succeeded before touching anything else:
+
+```bash
+git -C "<main-checkout>" fetch origin main:refs/remotes/origin/main
+```
+
+If that command's exit status is nonzero, stop the entire sweep — every
+worktree is now unconfirmed, not just the one you were looking at. Only
+once it has genuinely succeeded, evaluate each candidate:
+
+```bash
+git --no-optional-locks -C "<worktree>" status --porcelain --untracked-files=all   # must be empty; --no-optional-locks so this read doesn't take .git/index.lock out from under a live agent's own commands; explicit --untracked-files flag so a global status.showUntrackedFiles=no can't hide real work
+git -C "<worktree>" merge-base --is-ancestor HEAD refs/remotes/origin/main; echo "ancestor=$?"  # the full ref, not the short name — a stray local branch or tag named origin/main takes priority in git's disambiguation and would make this trivially true
+git -C "<worktree>" clean -ndX                                              # dry run: what removal would also take (ignored files, not shown by status --porcelain)
+if [ -f "<worktree>/.env" ]; then cmp -s "<worktree>/.env" "<main-checkout>/.env" && echo "env=identical" || echo "env=differs"; else echo "env=absent"; fi
+```
+
+Any of these commands erroring out (nonzero exit from `status` or `clean`,
+or a `merge-base` exit other than `0` or `1`) means the worktree itself is
+gone or unreadable, not that the checks below rendered a verdict — a
+`status`/`clean` call against a missing directory prints nothing and looks
+identical to "clean" if you only look at stdout. Treat any such error as
+unconfirmed and leave the worktree for `git worktree prune` rather than
+reading empty output as a pass.
+
+These are templates, not commands to paste literally: put each path into a
+shell variable first (`wt="$(...)"`) and reference `"$wt"`, rather than
+typing the literal path text into the command line — double-quoting a
+pasted-in string still lets the shell expand `$(...)` or backticks inside
+it, which a variable assignment followed by `"$var"` does not.
+
+The `clean -ndX` line needs a verdict, not just a look: anything it lists
+outside an expected allow-list (`node_modules/`, `dist/`, build caches, and
+`.env` — handled by the line above) is unexplained ignored content that the
+unforced `remove` below will delete without complaint; escalate rather than
+guessing it's fine. For `.env`: `env=absent` or `env=identical` both mean
+proceed (most candidates will show `absent` — `git worktree add` doesn't
+copy ignored files, that's expected, not an error). `env=differs` means
+stop and escalate that one specifically, and never `cat` or `diff` either
+file's contents into your output or a report.
+
+A squash- or rebase-merged branch fails the ancestor check even though its
+PR is genuinely done, because GitHub rewrites the commits in both cases —
+that failure looks identical to a worktree that's just behind. Don't guess
+which one it is. Confirm instead: `gh pr view --json
+state,headRefOid,baseRefName,mergeCommit -- "<branch>"` (`--` before the
+branch matters — a branch literally named `--repo=owner/repo` would
+otherwise be parsed as a flag; `gh pr list` defaults to open PRs and won't
+surface a merged one), and require all of: `state == MERGED`, `baseRefName
+== main`, `headRefOid` equal to `git -C "<worktree>" rev-parse HEAD`
+(catches a branch that gained commits after its PR merged, which never
+landed anywhere), and `git -C "<main-checkout>" merge-base --is-ancestor
+<mergeCommit.oid> refs/remotes/origin/main` exits 0 — that last check is
+what actually proves the merge is reachable from `main` right now, rather
+than merely having happened at some point in the past (a force-push to
+`main` after the merge can make the first three true while this one
+correctly fails). If any of these don't hold, leave the worktree and name
+it in your report for a human decision.
+
+Once every gate above has passed — including a fresh `fetch`, not just
+clean status, the `clean -ndX` verdict, the `.env` verdict, and ancestry or
+merged-PR confirmation — re-run all of them immediately before this step,
+not just once when you first audited the worktree. Re-fetching matters
+here specifically: `main` can move between the audit and the removal, and
+re-checking ancestry against an hours-old `refs/remotes/origin/main` is the
+exact stale-ref hazard this whole procedure fetches to avoid in the first
+place. Time passes between an audit and a human acting on it; re-running
+everything, fetch included, costs one round of commands and closes the gap
+between "was safe" and "is safe right now." Only then remove it:
+
+```bash
+git worktree remove -- "<path>"       # unforced: git's own clean-check runs again here
+git branch -d -- "<branch>"           # skip for a detached worktree, and try -D if -d refuses
+git worktree prune
+```
+
+`git branch -d`'s refusal or success is not additional proof either way —
+it depends on upstream-tracking state (whether `fetch --prune` already ran,
+whether GitHub's delete-branch-on-merge fired) that has nothing to do with
+whether the worktree was safe to remove. Safety came from the checks above;
+once you have one of those, `-d` refusing just means use `-D`. Either way,
+delete only `<branch>` as recorded in the worktree snapshot you evaluated —
+never a branch that is also checked out in another worktree (`branch -d`
+refuses this on its own) or that anything else still points at. Treat
+`main` as the standing example of a branch never appropriate to delete via
+this procedure, not as the only one — the same applies to any other
+long-lived branch the repository treats as a merge target.
+
+**The liveness gate has exactly two accepted proofs — nothing else
+satisfies it.** Either (a) you, the operator, personally attest — in
+writing, before evaluating anything — that you've checked every session on
+this machine for agents currently out (this is what "the live-agent list"
+in the snapshot step above means: your own written sweep, not a lock, a
+process list, or a guess), or (b) a human has personally confirmed no
+session has an agent out in that one specific worktree — not merely read
+an audit report and inferred liveness from its git-state columns, since
+those are exactly the signal this section says can't establish it — and
+then named it. That naming counts as proof for that worktree alone and
+nothing else; every other gate (self-exclusion, clean status, `clean
+-ndX`, `.env`, ancestry or merged-PR) still has to pass. If
+neither (a) nor (b) holds for a given worktree, don't run the removal steps
+against it — audit and report instead. This gate is only as good as your
+actual visibility into every session dispatching agents, not just your
+own, and there is currently no mechanism in this repo that gives you that
+visibility for certain — which is exactly the gap a real dispatch-side
+lease or lock (see #93) is meant to close.
+
+**Run this sweep as a step of ticket-driven cleanup, not on a timer** —
+whoever is dispatching agents notices the count (`git worktree list | wc -l`)
+climbing past a level that stops being "a handful of active dispatches," and
+files or reopens a ticket for it. This is a fixed decision procedure written
+as prose for a human to execute (and for an agent to audit against, per the
+note near the top of this section) each time, which is a bad fit for
+something whose failure mode is bulk data loss. Turning it into a
+report-only script that prints a verdict and reason per worktree, and never
+deletes anything itself — plus giving dispatch a real lease/lock mechanism
+so liveness stops being a matter of attestation — is filed as
+[issue #93](https://github.com/conloca/landing/issues/93) rather than done
+here. Cite that issue (or this section, until it lands) instead of
+re-deriving the procedure from memory; it also tracks the edge cases this
+prose version doesn't fully close (the already-gone and
+detached-with-no-branch worktree states, and a defined verdict vocabulary).
+
 ## Figma asset export
 
 `bun run figma:export` pulls the design's raster assets into `src/assets/figma/`
