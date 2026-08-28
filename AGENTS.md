@@ -354,6 +354,7 @@ git --no-optional-locks -C "<worktree>" status --porcelain --untracked-files=all
 git -C "<worktree>" merge-base --is-ancestor HEAD refs/remotes/origin/main; echo "ancestor=$?"  # the full ref, not the short name — a stray local branch or tag named origin/main takes priority in git's disambiguation and would make this trivially true
 git -C "<worktree>" clean -ndX                                              # dry run: what removal would also take (ignored files, not shown by status --porcelain)
 if [ -f "<worktree>/.env" ]; then cmp -s "<worktree>/.env" "<main-checkout>/.env" && echo "env=identical" || echo "env=differs"; else echo "env=absent"; fi
+gd="$(git -C "<worktree>" rev-parse --git-dir)"; for f in rebase-merge rebase-apply MERGE_HEAD CHERRY_PICK_HEAD BISECT_LOG; do if [ -e "$gd/$f" ]; then echo "sequencer=$f in progress"; fi; done; true   # a paused rebase/bisect/merge/cherry-pick has clean status and an ancestor HEAD — the checks above see nothing wrong; trailing `true` keeps this line's exit status 0 on every healthy worktree, matching the "nonzero = unreadable" contract below
 ```
 
 Any of these commands erroring out (nonzero exit from `status` or `clean`,
@@ -363,6 +364,19 @@ gone or unreadable, not that the checks below rendered a verdict — a
 identical to "clean" if you only look at stdout. Treat any such error as
 unconfirmed and leave the worktree for `git worktree prune` rather than
 reading empty output as a pass.
+
+**A worktree paused mid-rebase or mid-bisect passes every check above and
+still cannot be safely removed.** Its working tree is clean (a paused
+rebase has no uncommitted changes), and its detached `HEAD` is typically an
+ancestor of `origin/main`, so both the status and ancestry gates read as a
+pass. `git worktree remove`'s own clean-check guards modified files,
+untracked files, locks, and submodules — it has no notion of sequencer
+state, so an unforced remove deletes `.git/worktrees/<name>/` wholesale,
+`rebase-merge/`/`rebase-apply/`/`BISECT_LOG` included, and the in-progress
+operation is unrecoverable. If the loop above printed any `sequencer=...`
+line for a candidate, treat it as unconfirmed — leave it for a human to
+resolve the paused operation first, regardless of what every other gate
+says.
 
 These are templates, not commands to paste literally: put each path into a
 shell variable first (`wt="$(...)"`) and reference `"$wt"`, rather than
