@@ -72,6 +72,7 @@ import { cn } from '@/lib/utils'
 import {
   SCROLL_OFFSET,
   activeIndexFor,
+  hasRevealStarted,
   slotThresholds,
 } from '@/components/motion/scroll-stack-geometry'
 
@@ -228,15 +229,30 @@ export function StackSlide({ children, index }: StackSlideProps) {
   const pinned = stack?.pinned ?? false
   const activeIndex = stack?.activeIndex ?? 0
   // Both directions are inert once pinned: an earlier state is covered (by
-  // z-index, below) and a later one has not arrived (hidden outright, below).
-  // Neither should be in the Tab order.
+  // z-index, below) and a later one is either mid-arrival (visible and
+  // animating, but not yet the active state — see `notYetArrived` below) or
+  // has not arrived at all (hidden outright). None of the three should be in
+  // the Tab order — only the active state's own controls should be reachable.
   const isInert = pinned && index !== activeIndex
-  // A state that has not arrived yet still resolves a real transform value
-  // (its scale/opacity/y clamp to their pre-arrival numbers, not zero — see
-  // `MotionCard`), and it sits at a higher z-index than the active state
-  // (later index, drawn on top once both are opaque). Left unhidden it would
-  // float above the active state, partially see-through, before its turn.
-  const notYetArrived = pinned && index > activeIndex
+  // A state whose OWN reveal has not started yet still resolves a real
+  // transform value (its scale/opacity/y clamp to their pre-arrival numbers,
+  // not zero — see `MotionCard`), and it sits at a higher z-index than the
+  // active state (later index, drawn on top once both are opaque). Left
+  // unhidden it would float above the active state, partially see-through,
+  // before its turn.
+  //
+  // `hasRevealStarted` (not a bare `index > activeIndex` comparison) because
+  // a state's own reveal window is `[thresholds[index-1], thresholds[index]]`
+  // (see `MotionCard`) — it starts animating the instant its *predecessor*
+  // becomes active, i.e. the instant `activeIndex` reaches `index - 1`, one
+  // threshold *before* `activeIndex` reaches `index` itself. Gating this on
+  // `index > activeIndex` was a real, shipped bug: it kept the state hidden
+  // for the animation's entire duration and only revealed it already fully
+  // settled — the zoom/slide/fade never had a visible frame to play in.
+  // `hasRevealStarted` is shared with `MotionCard`'s own window math (via
+  // `scroll-stack-geometry.ts`) specifically so the two can't drift apart
+  // again the way this bug let them.
+  const notYetArrived = pinned && !hasRevealStarted(activeIndex, index)
   const zIndexStyle = useMemo(() => (pinned ? { zIndex: index + 1 } : undefined), [pinned, index])
   const wrapperClass = cn(
     pinned
