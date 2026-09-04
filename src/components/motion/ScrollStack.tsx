@@ -318,27 +318,20 @@ function MotionCard({
   const hasRange = index > 0 && start >= 0 && end > start && end <= 1
   const fallbackProgress = useMotionValue(0)
   const source = progress ?? fallbackProgress
-  const range = hasRange ? [start, end] : [0, 1]
   // Placeholder reveal — designer has not sent the real timeline for this yet
-  // (see docs/QUESTIONS-DESIGNER.md). Zoom (scale) + a short rise (y) +
-  // fade (opacity), all driven off the same arrival window so they read as
-  // one motion rather than three independent ones.
-  const scale = useTransform(source, range, [0.94, 1])
-  const y = useTransform(source, range, [24, 0])
-  // Mirrors the old covering-state fade, time-reversed: opacity used to hold
-  // at 1 for the transition's first half and drop to 0.7 over the second, so
-  // the arriving state now rises 0.7 → 1 over the first half and holds at 1
-  // for the second — fully opaque well before it becomes the active state.
+  // (see docs/QUESTIONS-DESIGNER.md). Plain opacity only: an earlier version
+  // also scaled (0.94→1) and rose (y: 24→0) on arrival, which combined with
+  // each state's own full-bleed background reads as a new slide sliding in
+  // rather than one frame's content changing — exactly the effect the
+  // designer's "one slide, not three" correction was about. A fade is the
+  // one motion that cannot be mistaken for that.
   const opacity = useTransform(
     source,
     hasRange ? [start, start + (end - start) * 0.5] : [0, 1],
     [0.7, 1],
   )
   const animated = pinned && hasRange
-  const style = useMemo(
-    () => (animated ? { scale, y, opacity } : {}),
-    [animated, scale, y, opacity],
-  )
+  const style = useMemo(() => (animated ? { opacity } : {}), [animated, opacity])
 
   return (
     // `data-scroll-stack-card` carries the index so tooling can address a
@@ -347,11 +340,13 @@ function MotionCard({
     // reasoning as `data-scroll-stack` on the root: a probe that navigates by
     // element position instead silently measures the wrong node when the
     // markup shifts, and reports confident numbers about it.
-    <motion.div
-      className="h-full max-h-[46rem] w-full"
-      style={style}
-      data-scroll-stack-card={index}
-    >
+    //
+    // No `max-h` cap: the Figma reference (`40002427:16418`) fills its whole
+    // 1440x846 slot edge to edge per state — a capped, centred card read as
+    // a small floating panel in an otherwise-empty full-height section,
+    // which is part of what made this look like slides rather than one
+    // full-screen frame.
+    <motion.div className="h-full w-full" style={style} data-scroll-stack-card={index}>
       {children}
     </motion.div>
   )
