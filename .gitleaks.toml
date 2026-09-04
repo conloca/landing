@@ -1,7 +1,8 @@
 # Secret-scanning config. gitleaks reads this automatically from the repo root.
 #
-# Starts from the stock ruleset — `useDefault` keeps every upstream rule active, so this file only
-# ever *narrows* by exception. Nothing here disables a rule.
+# Starts from the stock ruleset — `useDefault` keeps every upstream rule active. This file
+# *adds* rules the stock set lacks (the Figma-token rule below) and *narrows* the rest by
+# exception. Nothing here disables a rule.
 [extend]
 useDefault = true
 
@@ -11,15 +12,36 @@ useDefault = true
 # one written, silently discarding the other with no error.
 
 # ---------------------------------------------------------------------------------------------
+# Rule: Figma personal access tokens. The stock gitleaks ruleset does NOT cover them (issue
+# #80) — a planted `figd_` token passes a default-config scan silently. This repo's Figma
+# token (the MCP server's and `scripts/figma-client.ts`'s FIGMA_PAT) is a live credential
+# with API access, so this rule closes that stock gap. The length floor keeps prose fragments
+# ("figd_" in a sentence, "figd_-prefixed") from tripping it; real tokens are long base64url
+# strings after the prefix.
+[[rules]]
+id = "figma-personal-access-token"
+description = "Figma personal access token"
+regex = '''figd_[A-Za-z0-9_-]{20,}'''
+keywords = ["figd_"]
+
+# ---------------------------------------------------------------------------------------------
 # Exception: the Figma file key is a public document identifier, not a credential.
 #
 # The key appears in the design's share URL (figma.com/design/OxxksZFS8hzKoFTeSRdFGs/Conloca), in
 # docs/figma/DESIGN-SPEC.md, and in scripts/figma-export.ts. It identifies which file to read;
 # access is granted by FIGMA_PAT, which lives in the gitignored .env and is never committed. The
 # generic-api-key rule matches it purely on shape.
+#
+# Anchored to the captured SECRET, not the line (issue #96). Unanchored and without
+# regexTarget, the regex matched anywhere on a finding's line, so it suppressed EVERY finding
+# on any line containing the key — a line like `FIGMA_PAT=figd_... OxxksZFS8hzKoFTeSRdFGs`
+# scanned clean with a live credential sitting on it. `^...$` plus `regexTarget = "secret"`
+# exempts only findings whose captured secret is exactly the key; anything else sharing the
+# line still reports. Mirrors the 40-hex entry below.
 [[allowlists]]
 description = "Figma file key — a public document identifier, not a credential"
-regexes = ['''OxxksZFS8hzKoFTeSRdFGs''']
+regexes = ['''^OxxksZFS8hzKoFTeSRdFGs$''']
+regexTarget = "secret"
 
 # ---------------------------------------------------------------------------------------------
 # Exception: Figma `imageRef` handles look like generic API keys.
@@ -34,9 +56,10 @@ regexes = ['''OxxksZFS8hzKoFTeSRdFGs''']
 # entry here would suppress *every* secret anywhere in those files — including a real `figd_`
 # token pasted into one. Matching only an exact 40-hex string keeps the exception to the shape
 # that is actually a false positive: every credential format that matters carries a distinctive
-# prefix (`figd_`, `ghp_`, `sk-`, `AKIA`) and is caught by its own rule regardless — a `figd_`
-# token can never satisfy this anchored all-hex pattern, since `f`/`i`/`g`/`d`/`_` include three
-# characters ('i', 'g', '_') outside [a-f0-9].
+# prefix. `ghp_`, `sk-` and `AKIA` are caught by the stock ruleset; `figd_` has no stock rule —
+# which is why the `figma-personal-access-token` rule above exists — and a `figd_` token can
+# never satisfy this anchored all-hex pattern regardless, since `f`/`i`/`g`/`d`/`_` include
+# three characters ('i', 'g', '_') outside [a-f0-9].
 #
 # `regexTarget = "secret"` matches the captured value, not the surrounding line — the `match`
 # would be `key":"<hash>"` and would never satisfy these anchors.
