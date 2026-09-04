@@ -23,7 +23,19 @@ import dashboardUrl from '@/assets/figma/hero-dashboard.webp'
  */
 export function HeroVisual() {
   return (
-    <div className="relative aspect-[3398/2337] w-full rounded-[20px] lg:aspect-[800/838] lg:rounded-[28px]">
+    // `group` + the clip-path below turn this box into the crop mask Figma's
+    // still frame can't express: the shot is meant to sink into this backdrop
+    // and get cut off by its right edge, not float in front of it. Only the
+    // right/top/bottom edges of the mask may clip — the left one is pushed a
+    // full box-width further out so it never clips the shot's intentional
+    // left bleed (see DashboardShot). Gated to `@min-[800px]`, the same
+    // container-query width the bleed geometry itself keys off (established
+    // by the parent from 1382px, see Hero.tsx): below that the shot is
+    // `size-full` with no bleed, and clipping there would cut its box-shadow
+    // for no reason. No radius utilities here — this div paints nothing of
+    // its own, so border-radius is a no-op; rounding lives on the elements
+    // that actually paint (the backdrop `<img>`, the shot).
+    <div className="group relative aspect-[3398/2337] w-full lg:aspect-[800/838] @min-[800px]:[clip-path:inset(0_0_0_-100%)]">
       {/* Below `lg` the shot is not sitting on the blurred colour field — that
           field is the hero card's own backdrop there (see HeroBackdrop), and
           drawing it twice would double the vignette behind the panel. */}
@@ -31,7 +43,7 @@ export function HeroVisual() {
         src={backdropUrl}
         alt=""
         aria-hidden
-        className="absolute inset-0 hidden size-full rounded-[28px] object-cover lg:block"
+        className="absolute inset-0 hidden size-full rounded-[28px] object-cover lg:block @min-[800px]:rounded-r-none"
       />
       <DashboardShot />
     </div>
@@ -57,8 +69,16 @@ export function HeroVisual() {
  * nothing is cropping it there.
  */
 function DashboardShot() {
+  // Scales on hover of the whole `group` (HeroVisual), not just this div —
+  // the clickable target is the entire visual per the design review, and only
+  // the window grows: the clip mask above stays put, so the crop bites harder
+  // the bigger this gets. No href yet — the demo video isn't recorded.
+  //
+  // Gated to `(hover: hover)`: on a touch device `:hover` applies on tap and
+  // has nothing to clear it without a real link to navigate away to, so an
+  // ungated version sticks the shot scaled up until the user taps elsewhere.
   return (
-    <div className="absolute top-0 left-0 size-full rounded-[20px] shadow-[0_4px_6px_rgba(16,24,40,0.03),0_12px_16px_rgba(16,24,40,0.08),0_4px_64px_rgba(0,0,0,0.15)] lg:top-[4.773%] lg:left-[4%] lg:h-[90.453%] lg:w-[92%] lg:-rotate-[1.5deg] @min-[800px]:-left-[15.221%] @min-[800px]:w-[114%] @min-[800px]:rounded-r-none">
+    <div className="absolute top-0 left-0 size-full rounded-[20px] shadow-[0_4px_6px_rgba(16,24,40,0.03),0_12px_16px_rgba(16,24,40,0.08),0_4px_64px_rgba(0,0,0,0.15)] transition-transform duration-300 ease-out [@media(hover:hover)]:group-hover:scale-110 lg:top-[4.773%] lg:left-[4%] lg:h-[90.453%] lg:w-[92%] lg:-rotate-[1.5deg] @min-[800px]:-left-[15.221%] @min-[800px]:w-[114%] @min-[800px]:rounded-r-none">
       <img
         src={dashboardUrl}
         alt="Conloca dashboard showing recent content activity for a staging site"
