@@ -144,11 +144,24 @@ export function Hero() {
             geometry in a place that has neither the -120px margin nor
             anything cropping the square right corner, clipping the shot
             against the viewport edge instead. Establishing the container at
-            the same breakpoint keeps the two gates from disagreeing. */}
+            the same breakpoint keeps the two gates from disagreeing.
+            The `-mr-[120px]` overhang is mirrored inside HeroVisual: its
+            clip-path insets the same 120px on the right, so the rounded edge
+            lands at the page box, not on the part the section clips away.
+            Change one number, change both.
+            The 800px from 1382 is `min-w`, not `w`, on purpose: Tailwind v4
+            emits the arbitrary `min-[1382px]` media block BEFORE the `lg`
+            block, so a `min-[1382px]:w-[800px]` loses the cascade to
+            `lg:w-full` and the box silently takes the column width instead.
+            Between 1382 and 1417 that column is narrower than 800
+            (viewport - 618), the `@min-[800px]` query never fires, and the
+            shot renders unclipped with a square corner past the viewport.
+            `min-width` is a different property and a hard floor for flex
+            shrinking, so it holds regardless of rule order. */}
         {/* 339.8 of a 385 card at 393, 599.9 of 624 at 640 — the shot widens
             against the card as the card widens, so the two frames give 88% and
             96% rather than one constant. */}
-        <div className="w-[88.26%] sm:w-[96%] lg:w-full lg:max-w-[800px] min-[1382px]:ml-auto min-[1382px]:-mr-[120px] min-[1382px]:w-[800px] min-[1382px]:@container">
+        <div className="w-[88.26%] sm:w-[96%] lg:w-full lg:max-w-[800px] min-[1382px]:ml-auto min-[1382px]:-mr-[120px] min-[1382px]:min-w-[800px] min-[1382px]:@container">
           <HeroVisual />
         </div>
       </Reveal>

@@ -25,21 +25,35 @@ export function HeroVisual() {
   return (
     // `group` + the clip-path below turn this box into the crop mask Figma's
     // still frame can't express: the shot is meant to sink into this backdrop
-    // and get cut off by its right edge, not float in front of it. Only the
-    // left edge is pushed out (a full box-width, `-100%`) to clear the shot's
-    // own deliberate ~131.5px left bleed (see DashboardShot) — top, right and
-    // bottom stay flush at `0`. Gated to `@min-[800px]`, the same
-    // container-query width the bleed geometry itself keys off (established
-    // by the parent from 1382px, see Hero.tsx).
+    // and get cut off by its right edge, not float in front of it. The left
+    // edge is pushed out (a full box-width, `-100%`) to clear the shot's own
+    // deliberate ~131.5px left bleed (see DashboardShot); top and bottom stay
+    // flush at `0`. Gated to `@min-[800px]`, the same container-query width
+    // the bleed geometry itself keys off (established by the parent from
+    // 1382px, see Hero.tsx).
+    //
+    // The right inset is `120px`, and that number is not this file's to
+    // choose: it MUST equal the wrapper's `min-[1382px]:-mr-[120px]` in
+    // Hero.tsx. The parent hangs this 800px box 120px past the page box, and
+    // the section's `overflow-x-clip` then cuts everything at the page edge
+    // with a straight line. A clip at `0` on the right would put the rounded
+    // corner exactly on that hidden overhang, so nothing visible ever gets
+    // rounded and the shot appears to run under the page boundary. Insetting
+    // the clip by the same 120px moves the rounded edge back to where the
+    // eye actually meets it, so the rightmost 120px of this box is
+    // deliberately never painted. Change one number, change both.
+    //
+    // This is a knowing departure from the Figma 1440 frame, which cuts the
+    // overhang straight at the frame edge: the product decision is that the
+    // visible right edge is rounded and the shot stays inside the page box.
     //
     // `round 28px` matters, not decoration: a plain `inset()` clip is always
     // hard-cornered regardless of the border-radius on whatever it's
     // clipping, and the curve only renders near this shape's OWN corners —
     // push an edge out (as left is) and its corner goes with it, past
-    // anything visible, so `round` does nothing on that side. Keeping
-    // top/right/bottom at `0` is what lets the round-28px corner land where
-    // it's actually visible. Must match the backdrop `<img>`'s own
-    // `rounded-[28px]` below — they shape the same physical corners.
+    // anything visible, so `round` does nothing on that side. Must match the
+    // backdrop `<img>`'s own `rounded-[28px]` below — they shape the same
+    // physical corners.
     //
     // Trade-off, deliberate and visually verified (screenshotted at rest and
     // at hover-scale, both edges clean): top/bottom no longer get the extra
@@ -47,7 +61,7 @@ export function HeroVisual() {
     // overshoot and the box-shadow's blur, so both now clip natively at
     // those edges instead of bleeding past them. Rounding actually being
     // visible was the ask; a hard-clipped shadow edge is the accepted cost.
-    <div className="group relative aspect-[3398/2337] w-full lg:aspect-[800/838] @min-[800px]:[clip-path:inset(0_0_0_-100%_round_28px)]">
+    <div className="group relative aspect-[3398/2337] w-full lg:aspect-[800/838] @min-[800px]:[clip-path:inset(0_120px_0_-100%_round_28px)]">
       {/* Below `lg` the shot is not sitting on the blurred colour field — that
           field is the hero card's own backdrop there (see HeroBackdrop), and
           drawing it twice would double the vignette behind the panel. */}
