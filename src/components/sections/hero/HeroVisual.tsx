@@ -26,26 +26,28 @@ export function HeroVisual() {
     // `group` + the clip-path below turn this box into the crop mask Figma's
     // still frame can't express: the shot is meant to sink into this backdrop
     // and get cut off by its right edge, not float in front of it. Only the
-    // right edge of the mask may clip — top, bottom and left are all pushed a
-    // full box-width further out. Left, because the shot's rest position
-    // already bleeds ~131.5px past the container's left edge by design (see
-    // DashboardShot). Top and bottom too, even though the shot sits inside
-    // those edges at rest with ~28px to spare either way: `scale-110` on
-    // hover grows the rotated shot's half-extent from 390.8px to 429.9px,
-    // pushing its corners ~11px past the container's top and bottom at the
-    // peak of the zoom — on top of the box-shadow, which the old `inset(0 …
-    // 0)` was already hard-cutting even at rest. Neither has a card edge to
-    // justify a cut, unlike the right edge, which is the one deliberate crop
-    // and must stay flush at 0 (it's what makes the hover zoom bite harder
-    // into the shot, as intended).
-    // Gated to `@min-[800px]`, the same container-query width the bleed
-    // geometry itself keys off (established by the parent from 1382px, see
-    // Hero.tsx): below that the shot is `size-full` with no bleed, and
-    // clipping there would cut its box-shadow for no reason. No radius
-    // utilities here — this div paints nothing of its own, so border-radius
-    // is a no-op; rounding lives on the elements that actually paint (the
-    // backdrop `<img>`, the shot).
-    <div className="group relative aspect-[3398/2337] w-full lg:aspect-[800/838] @min-[800px]:[clip-path:inset(-100%_0_-100%_-100%)]">
+    // left edge is pushed out (a full box-width, `-100%`) to clear the shot's
+    // own deliberate ~131.5px left bleed (see DashboardShot) — top, right and
+    // bottom stay flush at `0`. Gated to `@min-[800px]`, the same
+    // container-query width the bleed geometry itself keys off (established
+    // by the parent from 1382px, see Hero.tsx).
+    //
+    // `round 28px` matters, not decoration: a plain `inset()` clip is always
+    // hard-cornered regardless of the border-radius on whatever it's
+    // clipping, and the curve only renders near this shape's OWN corners —
+    // push an edge out (as left is) and its corner goes with it, past
+    // anything visible, so `round` does nothing on that side. Keeping
+    // top/right/bottom at `0` is what lets the round-28px corner land where
+    // it's actually visible. Must match the backdrop `<img>`'s own
+    // `rounded-[28px]` below — they shape the same physical corners.
+    //
+    // Trade-off, deliberate and visually verified (screenshotted at rest and
+    // at hover-scale, both edges clean): top/bottom no longer get the extra
+    // room a previous revision gave them for the ~11px `scale-110` hover
+    // overshoot and the box-shadow's blur, so both now clip natively at
+    // those edges instead of bleeding past them. Rounding actually being
+    // visible was the ask; a hard-clipped shadow edge is the accepted cost.
+    <div className="group relative aspect-[3398/2337] w-full lg:aspect-[800/838] @min-[800px]:[clip-path:inset(0_0_0_-100%_round_28px)]">
       {/* Below `lg` the shot is not sitting on the blurred colour field — that
           field is the hero card's own backdrop there (see HeroBackdrop), and
           drawing it twice would double the vignette behind the panel. */}
@@ -53,7 +55,7 @@ export function HeroVisual() {
         src={backdropUrl}
         alt=""
         aria-hidden
-        className="absolute inset-0 hidden size-full rounded-[28px] object-cover lg:block @min-[800px]:rounded-r-none"
+        className="absolute inset-0 hidden size-full rounded-[28px] object-cover lg:block"
       />
       <DashboardShot />
     </div>
@@ -71,12 +73,13 @@ export function HeroVisual() {
  * Using the reported figures directly renders the shot ~12px too tall.
  *
  * That geometry only reads correctly at the container's full 800px, where the
- * square right corner is hidden by the crop. So it keys off a container query,
+ * right edge is clipped by the mask above. So it keys off a container query,
  * not a viewport breakpoint: the real invariant is "when I am at my Figma
  * width, render Figma geometry", and expressing it that way keeps this file
  * from having to know the parent's columns, gaps and padding. Below 800px the
- * shot sits fully inside the container with every corner rounded, because
- * nothing is cropping it there.
+ * shot sits fully inside the container with nothing cropping it — rounding
+ * is uniform on all four corners at every width either way; only the right
+ * edge ever gets clipped, and only once the `@min-[800px]` mask is active.
  */
 function DashboardShot() {
   // Scales on hover of the whole `group` (HeroVisual), not just this div —
@@ -88,7 +91,7 @@ function DashboardShot() {
   // has nothing to clear it without a real link to navigate away to, so an
   // ungated version sticks the shot scaled up until the user taps elsewhere.
   return (
-    <div className="absolute top-0 left-0 size-full rounded-[20px] shadow-[0_4px_6px_rgba(16,24,40,0.03),0_12px_16px_rgba(16,24,40,0.08),0_4px_64px_rgba(0,0,0,0.15)] transition-transform duration-300 ease-out [@media(hover:hover)]:group-hover:scale-110 lg:top-[4.773%] lg:left-[4%] lg:h-[90.453%] lg:w-[92%] lg:-rotate-[1.5deg] @min-[800px]:-left-[15.221%] @min-[800px]:w-[114%] @min-[800px]:rounded-r-none">
+    <div className="absolute top-0 left-0 size-full rounded-[20px] shadow-[0_4px_6px_rgba(16,24,40,0.03),0_12px_16px_rgba(16,24,40,0.08),0_4px_64px_rgba(0,0,0,0.15)] transition-transform duration-300 ease-out [@media(hover:hover)]:group-hover:scale-110 lg:top-[4.773%] lg:left-[4%] lg:h-[90.453%] lg:w-[92%] lg:-rotate-[1.5deg] @min-[800px]:-left-[15.221%] @min-[800px]:w-[114%]">
       <img
         src={dashboardUrl}
         alt="Conloca dashboard showing recent content activity for a staging site"
@@ -99,7 +102,7 @@ function DashboardShot() {
         // reference render the left anchor is the closer match at both sizes
         // (mean error 15.45 against 15.87 over the panel), so it stays shared
         // rather than being overridden per breakpoint.
-        className="size-full rounded-[20px] object-cover object-left @min-[800px]:rounded-r-none"
+        className="size-full rounded-[20px] object-cover object-left"
       />
       <PlayBadge />
     </div>
