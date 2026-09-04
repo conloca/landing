@@ -55,7 +55,19 @@ export function Hero() {
     // above this section, not overlaid on it, so "first screen" is the
     // viewport minus that header, or the hero's own bottom lands below the
     // fold on every screen.
-    <section className="mx-auto grid max-w-[1440px] grid-cols-1 items-stretch overflow-x-clip px-1 lg:grid-cols-[506px_1fr] lg:items-center lg:gap-12 lg:px-8 lg:py-0 min-[1382px]:h-[clamp(835px,calc(100vh-82px),960px)]">
+    // Column widths split from `lg` (1024) and `xl` (1280) for a reason:
+    // Figma draws >=1024 as *two separate frames* (the 1024 tablet frame and
+    // the 1440 desktop frame, `docs/figma/DESIGN-SPEC.md` §1), and only the
+    // 1440 one resolves the text column to exactly 506px — it's a "1 row x 8
+    // columns" auto-layout grid where the text column reads ~3/8 of the
+    // inner width, not a fixed pixel the designer picked. Baking 506px in
+    // from `lg` stretched a value that's only correct at >=1280 down across
+    // the whole tablet range, narrowing the actual available column and
+    // forcing the headline into an extra wrapped line there. `lg` gets the
+    // same ~3:5 share fluidly instead; `xl` (Tailwind's 1280, matching the
+    // spec's own "1024-1279 -> 1024 frame, >=1280 -> 1440 frame" table) locks
+    // back to Figma's exact 506px.
+    <section className="mx-auto grid max-w-[1440px] grid-cols-1 items-stretch overflow-x-clip px-1 lg:grid-cols-[3fr_5fr] lg:items-center lg:gap-12 lg:px-8 lg:py-0 xl:grid-cols-[506px_1fr] min-[1382px]:h-[clamp(835px,calc(100vh-82px),960px)] h-max">
       <HeroBackdrop />
 
       <Reveal
@@ -69,8 +81,12 @@ export function Hero() {
         />
 
         {/* 32/32 at 393 and 52/52 at 640 are both drawn, so the step is the
-            design's own, not an interpolation. */}
-        <h1 className="font-display order-2 max-w-[337px] text-[32px] leading-[1] font-black text-stone-50 sm:max-w-[576px] sm:text-[52px] lg:max-w-[432px] lg:text-5xl lg:font-bold lg:text-stone-900">
+            design's own, not an interpolation. No `lg:max-w`: the 432px
+            figure is only correct at the exact 1440 frame (see the section's
+            own comment above) — from `lg` this wraps against the fluid
+            `3fr` column's real width instead, and `xl` locks the exact
+            Figma number back in once that column really is 506px again. */}
+        <h1 className="font-display order-2 max-w-[337px] text-[32px] leading-[1] font-black text-stone-50 sm:max-w-[576px] sm:text-[52px] lg:text-5xl lg:font-bold lg:text-stone-900 xl:max-w-[432px]">
           Keep content in your repo. Give editors a visual editing interface
         </h1>
 
