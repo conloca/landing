@@ -26,16 +26,26 @@ export function HeroVisual() {
     // `group` + the clip-path below turn this box into the crop mask Figma's
     // still frame can't express: the shot is meant to sink into this backdrop
     // and get cut off by its right edge, not float in front of it. Only the
-    // right/top/bottom edges of the mask may clip — the left one is pushed a
-    // full box-width further out so it never clips the shot's intentional
-    // left bleed (see DashboardShot). Gated to `@min-[800px]`, the same
-    // container-query width the bleed geometry itself keys off (established
-    // by the parent from 1382px, see Hero.tsx): below that the shot is
-    // `size-full` with no bleed, and clipping there would cut its box-shadow
-    // for no reason. No radius utilities here — this div paints nothing of
-    // its own, so border-radius is a no-op; rounding lives on the elements
-    // that actually paint (the backdrop `<img>`, the shot).
-    <div className="group relative aspect-[3398/2337] w-full lg:aspect-[800/838] @min-[800px]:[clip-path:inset(0_0_0_-100%)]">
+    // right edge of the mask may clip — top, bottom and left are all pushed a
+    // full box-width further out. Left, because the shot's rest position
+    // already bleeds ~131.5px past the container's left edge by design (see
+    // DashboardShot). Top and bottom too, even though the shot sits inside
+    // those edges at rest with ~28px to spare either way: `scale-110` on
+    // hover grows the rotated shot's half-extent from 390.8px to 429.9px,
+    // pushing its corners ~11px past the container's top and bottom at the
+    // peak of the zoom — on top of the box-shadow, which the old `inset(0 …
+    // 0)` was already hard-cutting even at rest. Neither has a card edge to
+    // justify a cut, unlike the right edge, which is the one deliberate crop
+    // and must stay flush at 0 (it's what makes the hover zoom bite harder
+    // into the shot, as intended).
+    // Gated to `@min-[800px]`, the same container-query width the bleed
+    // geometry itself keys off (established by the parent from 1382px, see
+    // Hero.tsx): below that the shot is `size-full` with no bleed, and
+    // clipping there would cut its box-shadow for no reason. No radius
+    // utilities here — this div paints nothing of its own, so border-radius
+    // is a no-op; rounding lives on the elements that actually paint (the
+    // backdrop `<img>`, the shot).
+    <div className="group relative aspect-[3398/2337] w-full lg:aspect-[800/838] @min-[800px]:[clip-path:inset(-100%_0_-100%_-100%)]">
       {/* Below `lg` the shot is not sitting on the blurred colour field — that
           field is the hero card's own backdrop there (see HeroBackdrop), and
           drawing it twice would double the vignette behind the panel. */}

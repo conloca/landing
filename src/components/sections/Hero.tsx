@@ -1,12 +1,12 @@
-import { CtaButton } from "@/components/CtaButton";
-import { SegmentedControl } from "@/components/ui/segmented-control";
-import { AUDIENCE_OPTIONS } from "@/lib/audience";
-import { CTA_LINKS } from "@/lib/nav";
-import { Reveal } from "@/components/motion/Reveal";
-import { AstroBadge } from "@/components/sections/hero/AstroBadge";
-import { CarouselRail } from "@/components/sections/hero/CarouselRail";
-import { HeroBackdrop } from "@/components/sections/hero/HeroBackdrop";
-import { HeroVisual } from "@/components/sections/hero/HeroVisual";
+import { CtaButton } from '@/components/CtaButton'
+import { SegmentedControl } from '@/components/ui/segmented-control'
+import { AUDIENCE_OPTIONS } from '@/lib/audience'
+import { CTA_LINKS } from '@/lib/nav'
+import { Reveal } from '@/components/motion/Reveal'
+import { AstroBadge } from '@/components/sections/hero/AstroBadge'
+import { CarouselRail } from '@/components/sections/hero/CarouselRail'
+import { HeroBackdrop } from '@/components/sections/hero/HeroBackdrop'
+import { HeroVisual } from '@/components/sections/hero/HeroVisual'
 
 /**
  * Figma S0 hero. The design draws this **twice**, and they are different
@@ -36,7 +36,24 @@ export function Hero() {
     // 1382px and this is what crops it at the 1440 box; `hidden` would make a
     // scroll container instead. Dropping it puts a horizontal scrollbar on
     // every viewport below ~1680 and exposes the shot's squared right corner.
-    <section className="mx-auto grid max-w-[1440px] grid-cols-1 items-stretch overflow-x-clip px-1 lg:grid-cols-[506px_1fr] lg:items-center lg:gap-12 lg:px-8 lg:py-0 min-[1382px]:min-h-[878px]">
+    // The desktop composition is the page's "first screen": it fills the
+    // viewport height rather than sizing to its own content, clamped so a
+    // very short window doesn't crush it below its design minimum and a very
+    // tall one doesn't stretch it into visibly empty space. 835/960 are a
+    // product decision (not derived from the Figma frame, which is 878 tall)
+    // — NOTE: 835 is 3px shorter than the visual's own intrinsic height at
+    // this breakpoint (a fixed 800x838, see HeroVisual's `aspect-[800/838]`
+    // at the parent's pinned `w-[800px]`), so at exactly the floor the shot
+    // overflows the section by 3px; flagged upstream, not silently changed
+    // here. Scoped to the same `1382px` breakpoint as the rest of the
+    // desktop-only geometry above — below that, the stacked mobile/tablet
+    // composition sizes to content.
+    // `100vh` alone would count the header twice: `<Header>` (82px from `sm`,
+    // which this breakpoint is always past) sits in normal document flow
+    // above this section, not overlaid on it, so "first screen" is the
+    // viewport minus that header, or the hero's own bottom lands below the
+    // fold on every screen.
+    <section className="mx-auto grid max-w-[1440px] grid-cols-1 items-stretch overflow-x-clip px-1 lg:grid-cols-[506px_1fr] lg:items-center lg:gap-12 lg:px-8 lg:py-0 min-[1382px]:h-[clamp(835px,calc(100vh-82px),960px)]">
       <HeroBackdrop />
 
       <Reveal
@@ -122,5 +139,5 @@ export function Hero() {
         <CarouselRail />
       </div>
     </section>
-  );
+  )
 }
