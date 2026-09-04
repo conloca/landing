@@ -41,9 +41,12 @@ function repoRoot(): string {
   return git(['rev-parse', '--show-toplevel'])
 }
 
-function listAgentWorktrees(root: string): { path: string; branch: string | null }[] {
+type WorktreeEntry = { path: string; branch: string | null }
+
+/** `git worktree list --porcelain` always lists the main checkout first. */
+function listWorktrees(root: string): WorktreeEntry[] {
   const porcelain = git(['worktree', 'list', '--porcelain'], root)
-  const entries: { path: string; branch: string | null }[] = []
+  const entries: WorktreeEntry[] = []
   let path = ''
   let branch: string | null = null
   for (const line of porcelain.split('\n')) {
@@ -56,7 +59,26 @@ function listAgentWorktrees(root: string): { path: string; branch: string | null
     }
   }
   if (path) entries.push({ path, branch })
-  return entries.filter((e) => e.path.includes('/.claude/worktrees/agent-'))
+  return entries
+}
+
+/**
+ * Fetches origin/main with an explicit destination refspec, per the
+ * documented procedure — a bare `fetch origin main` doesn't guarantee
+ * refs/remotes/origin/main updates, which would let ancestry/merged-PR
+ * checks pass against a stale ref. Runs from the main checkout, not the
+ * caller's cwd, so it always refreshes the ref the rest of the repo reads.
+ */
+function fetchOriginMain(mainPath: string): boolean {
+  try {
+    execFileSync('git', ['fetch', 'origin', 'main:refs/remotes/origin/main'], {
+      cwd: mainPath,
+      stdio: 'ignore',
+    })
+    return true
+  } catch {
+    return false
+  }
 }
 
 function checkCleanStatus(path: string): GateResult {
@@ -67,7 +89,17 @@ function checkCleanStatus(path: string): GateResult {
 }
 
 function checkCleanDryRun(path: string): GateResult {
-  const out = gitOrNull(['clean', '-ndX'], path) ?? ''
+  let out: string
+  try {
+    out = git(['clean', '-ndX'], path)
+  } catch {
+    return {
+      name: 'clean-ndX',
+      verdict: 'UNCONFIRMED',
+      detail:
+        'git clean errored — worktree unreadable, cannot confirm no unexplained ignored content',
+    }
+  }
   if (out === '') return { name: 'clean-ndX', verdict: 'PASS', detail: 'no ignored content' }
   const ALLOW = /node_modules\/|dist\/|dist-ssr\/|\.env$/
   const lines = out.split('\n').filter(Boolean)
@@ -224,74 +256,114 @@ function checkMergedPr(branch: string, path: string, mainPath: string): GateResu
       }
 }
 
+/**
+ * `lsof -d cwd -Fn` lists, per process, a `p<pid>`/`n<name>`/`f<fd>` group —
+ * no shell involved, so a path containing shell metacharacters can't inject
+ * anything. Matched by exact line equality or a `/`-bounded prefix (`n` +
+ * path, or `n` + path + `/`), so `agent-1` can't false-positive on a live
+ * `agent-12`, but a process chdir'd into a subdirectory (a build, a test
+ * runner) still counts as live — an exact-only match would report that
+ * worktree as safe to remove while it's genuinely in use.
+ */
 function checkLivenessBestEffort(path: string): GateResult {
+  let out: string
   try {
-    const out = execFileSync(
-      'bash',
-      ['-c', `lsof -d cwd -Fn 2>/dev/null | grep -A1 '^p' | grep -F '${path}' || true`],
-      {
-        encoding: 'utf8',
-      },
-    ).trim()
-    return out === ''
-      ? {
-          name: 'liveness (best-effort)',
-          verdict: 'UNCONFIRMED',
-          detail:
-            'no process currently has this path as cwd — NOT proof of death, an idle agent between tool calls looks identical; requires separate human/orchestrator attestation',
-        }
-      : {
-          name: 'liveness (best-effort)',
-          verdict: 'FAIL',
-          detail: `a live process has this path as cwd:\n${out}`,
-        }
+    out = execFileSync('lsof', ['-d', 'cwd', '-Fn'], { encoding: 'utf8' })
   } catch {
     return { name: 'liveness (best-effort)', verdict: 'UNCONFIRMED', detail: 'process scan failed' }
   }
+  const isLive = out.split('\n').some((line) => line === `n${path}` || line.startsWith(`n${path}/`))
+  return isLive
+    ? {
+        name: 'liveness (best-effort)',
+        verdict: 'FAIL',
+        detail: 'a live process has this path as cwd',
+      }
+    : {
+        name: 'liveness (best-effort)',
+        verdict: 'UNCONFIRMED',
+        detail:
+          'no process currently has this path as cwd — NOT proof of death, an idle agent between tool calls looks identical; requires separate human/orchestrator attestation',
+      }
 }
 
-function auditOne(
-  path: string,
-  mainPath: string,
-): { path: string; branch: string | null; gates: GateResult[]; overall: string } {
+type AuditResult = { path: string; branch: string | null; gates: GateResult[]; overall: string }
+
+function auditOne(path: string, mainPath: string): AuditResult {
   const branch = gitOrNull(['-C', path, 'symbolic-ref', '--short', 'HEAD'])
-  const gates = [
-    checkLivenessBestEffort(path),
+  const liveness = checkLivenessBestEffort(path)
+  const mechanicalGates = [
     checkCleanStatus(path),
     checkCleanDryRun(path),
     checkEnvDiff(path, mainPath),
     checkSequencerState(path),
     checkAncestryOrMergedPr(path, branch, mainPath),
   ]
+  const gates = [liveness, ...mechanicalGates]
+  // Liveness can only ever return FAIL or UNCONFIRMED — it never proves a
+  // worktree is dead (see checkLivenessBestEffort). Its UNCONFIRMED must
+  // therefore stay out of the tally below, or the PASS branch is dead code
+  // and every otherwise-clean worktree reports UNCONFIRMED forever. Its
+  // FAIL still counts: a live process is real evidence, not just absence.
   const overall = gates.some((g) => g.verdict === 'FAIL')
     ? 'FAIL — do not remove'
-    : gates.some((g) => g.verdict === 'UNCONFIRMED')
+    : mechanicalGates.some((g) => g.verdict === 'UNCONFIRMED')
       ? 'UNCONFIRMED — needs human judgement before removal'
       : 'PASS (excluding liveness attestation) — safe to remove pending liveness confirmation'
   return { path, branch, gates, overall }
 }
 
-function printReport(r: ReturnType<typeof auditOne>) {
+function printReport(r: AuditResult) {
   console.log(`\n=== ${r.path} ===`)
   console.log(`branch: ${r.branch ?? '(detached)'}`)
   for (const g of r.gates) console.log(`  [${g.verdict}] ${g.name}: ${g.detail.split('\n')[0]}`)
   console.log(`  OVERALL: ${r.overall}`)
 }
 
+/** A worktree whose directory is gone or unreadable must not kill the sweep for every worktree after it. */
+function auditOneSafely(path: string, mainPath: string): AuditResult {
+  try {
+    return auditOne(path, mainPath)
+  } catch (e) {
+    const message = e instanceof Error ? e.message : String(e)
+    return {
+      path,
+      branch: null,
+      gates: [{ name: 'audit', verdict: 'UNCONFIRMED', detail: `worktree unreadable: ${message}` }],
+      overall: 'UNCONFIRMED — needs human judgement before removal',
+    }
+  }
+}
+
+function resolveTargets(root: string, mainPath: string, args: string[]): string[] {
+  if (args.length > 0) return args.map((p) => (p.startsWith('/') ? p : join(root, p)))
+  return listWorktrees(mainPath)
+    .filter((e) => e.path.includes('/.claude/worktrees/agent-'))
+    .map((e) => e.path)
+}
+
 function main() {
   const root = repoRoot()
-  const args = process.argv.slice(2)
-  const targets =
-    args.length > 0
-      ? args.map((p) => (p.startsWith('/') ? p : join(root, p)))
-      : listAgentWorktrees(root).map((e) => e.path)
+  const mainPath = listWorktrees(root)[0]?.path ?? root
+  if (!fetchOriginMain(mainPath)) {
+    console.error(
+      'git fetch origin main:refs/remotes/origin/main failed — every ancestry/merged-PR ' +
+        'verdict below would read a possibly stale ref. Fix network/auth and retry; not ' +
+        'auditing against a stale origin/main.',
+    )
+    process.exit(1)
+  }
+  const targets = resolveTargets(root, mainPath, process.argv.slice(2))
   if (targets.length === 0) {
     console.log('No .claude/worktrees/agent-* worktrees found.')
     return
   }
   for (const path of targets) {
+    // Never evaluate the worktree this audit is itself running from — it is
+    // guaranteed to look reapable (clean, HEAD at origin/main) the instant
+    // it's freshly dispatched and about to start real work.
     if (basename(path).startsWith('.') || path === root) continue
-    printReport(auditOne(path, root))
+    printReport(auditOneSafely(path, mainPath))
   }
 }
 
