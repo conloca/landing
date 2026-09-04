@@ -1,17 +1,7 @@
-import { useState } from 'react'
 import { CtaButton } from '@/components/CtaButton'
-import { SegmentedControl, type SegmentIndex } from '@/components/ui/segmented-control'
 import { Reveal } from '@/components/motion/Reveal'
-import {
-  PricingCard,
-  type Plan,
-  type PlanFeature,
-} from '@/components/sections/pricing/PricingCard'
+import { PricingCard, type Plan, type PlanFeature } from '@/components/sections/pricing/PricingCard'
 import { CTA_LINKS } from '@/lib/nav'
-import type { BillingPeriod } from '@/lib/pricing'
-
-const BILLING_OPTIONS: [string, string] = ['Monthly', 'Annual']
-const BILLING_PERIODS: readonly [BillingPeriod, BillingPeriod] = ['monthly', 'annual']
 
 const has = (label: string): PlanFeature => ({ label, included: true })
 const lacks = (label: string): PlanFeature => ({ label, included: false })
@@ -88,21 +78,17 @@ const PLANS: Plan[] = [
  * so the two can never disagree. Change a price here; change the discount there.
  */
 export function Pricing() {
-  const [billingIndex, setBillingIndex] = useState<SegmentIndex>(0)
-  const billing = BILLING_PERIODS[billingIndex]
+  // Billing toggle is paused: the design reserves a spot for an annual price,
+  // but there's no agreed way to present it yet. Don't re-add a raw
+  // Monthly/Annual switch without a design for what it should show.
+  const billing = 'monthly' as const
 
   return (
     <section id="pricing" className="mx-auto max-w-[1440px] px-8 py-24 sm:py-[196px]">
-      <Reveal className="flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-center">
+      <Reveal>
         <h2 className="font-display max-w-xl text-5xl leading-[1] font-bold text-stone-900">
           Choose a plan that fits you the best
         </h2>
-        <SegmentedControl
-          options={BILLING_OPTIONS}
-          activeIndex={billingIndex}
-          onChange={setBillingIndex}
-          label="Billing period"
-        />
       </Reveal>
 
       <div className="mt-12 flex flex-col gap-3 sm:flex-row">
