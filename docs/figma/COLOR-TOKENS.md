@@ -52,14 +52,15 @@ Group counts as the document declares them: `bg` 10, `fg` 5, `stroke` 5.
 
 ## How our roles line up
 
-There are two different answers here, and conflating them is a trap.
+There were two different answers here, and conflating them was a trap.
 
-**On `main` today, our values do not match the design at all.** `src/index.css`
-still carries the stock shadcn palette — zero-chroma neutrals, untouched since the
-component library was installed. This is what the designer saw when they inspected
-the running site and reported a mismatch.
+**Before the correction, our values did not match the design at all.**
+`src/index.css` carried the stock shadcn palette — zero-chroma neutrals,
+untouched since the component library was installed. This is what the designer
+saw when they inspected the running site and reported a mismatch. The table
+below is that historical state, kept for the record:
 
-| Role | On `main` now | Resolves to | Designer's value | Matches |
+| Role | Before the correction | Resolves to | Designer's value | Matches |
 | --- | --- | --- | --- | --- |
 | `background` | `oklch(1 0 0)` | `#FFFFFF` | `#FFFFFF` (`color.bg.surface.initial`) | yes |
 | `foreground` | `oklch(0.145 0 0)` | `#0A0A0A` | `#1C1917` (`color.fg.strong.default`) | no |
@@ -68,13 +69,16 @@ the running site and reported a mismatch.
 | `border` / `input` | `oklch(0.922 0 0)` | `#E5E5E5` | `#E7E5E4` (`color.stroke.strong`) | no |
 | `ring` | `oklch(0.708 0 0)` | `#A1A1A1` | — no focus token in the design | n/a |
 
-**The correction is written but not merged.** A separate change derives these
-roles from fills counted in the design's node tree, and those derived values *do*
-match the designer's column above exactly. Until it lands, this document describes
-the target, not the state of `main`.
+**The correction has landed.** `scheme.light` / `scheme.dark` in
+`tokens/tokens.json` derive from fills counted in the design's node tree, and
+those derived values match the designer's column above exactly, so the names and
+the values now agree with this document.
 
-So the fix is not a rename. The values on `main` genuinely have to change; the
-names are a second, smaller question on top.
+The one stone step the semantic table references that the token file lacked —
+`stone/950` (`color.bg.accent.pressed`) — is recorded as `color.stone.950`, so
+every stone alias in the table now resolves inside `tokens/tokens.json`. The
+table's one non-stone alias, `white`, still belongs to no scale — see the
+known-gap note in DESIGN.md.
 
 Two of ours have **no counterpart** in the designer's semantic set, so they remain
 our own decisions and are open questions for them:
@@ -107,6 +111,18 @@ entries, none project-specific. It is reconstructible from Tailwind itself, so i
 is deliberately not stored here.
 
 The Figma **Variables REST API** (`/v1/files/:key/variables/local`) remains
-inaccessible: it requires the `file_variables:read` scope, which this account
-cannot grant. The table above is read from the generated documentation frame
-instead, which carries the same information.
+inaccessible: the personal access token lacks the `file_variables:read` scope
+(403, re-verified 2026-08-28). The table above is read from the generated
+documentation frame instead, which carries the same information.
+
+**Live re-verification was attempted on 2026-08-28 and blocked on both
+channels.** The REST nodes endpoint still answers 429 with
+`x-figma-rate-limit-type: low` on plan `starter` (`Retry-After` ≈ 37.5 hours),
+and the desktop Dev Mode MCP server gates every content tool behind the same
+missing paid seat ("make sure their paid Figma seat includes Dev Mode
+access"). The values in this document therefore track the manifested dump of
+2026-08-27 (file version 2026-08-26, sha256-recorded in
+`extraction-manifest.json`), not a fresh read. Once a Dev seat is actually
+active, re-fetch `nodes-colors.json` and re-run
+`bun run scripts/figma-color-tokens.ts --check` — it fails loudly if the
+designer has renamed or re-valued a token since.
