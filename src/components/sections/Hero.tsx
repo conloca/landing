@@ -1,6 +1,7 @@
+import { AudienceSwitch } from '@/components/AudienceSwitch'
 import { CtaButton } from '@/components/CtaButton'
-import { SegmentedControl } from '@/components/ui/segmented-control'
-import { AUDIENCE_OPTIONS } from '@/lib/audience'
+import { useAudience } from '@/lib/audience-context'
+import { HERO_COPY } from '@/lib/content/hero-copy'
 import { CTA_LINKS } from '@/lib/nav'
 import { Reveal } from '@/components/motion/Reveal'
 import { AstroBadge } from '@/components/sections/hero/AstroBadge'
@@ -27,6 +28,9 @@ import { HeroVisual } from '@/components/sections/hero/HeroVisual'
  * above the buttons in the left column and spans the shot down the right.
  */
 export function Hero() {
+  const { audience } = useAudience()
+  const copy = HERO_COPY[audience]
+
   return (
     // `items-stretch` below `lg` is load-bearing, not a default: the backdrop
     // is a zero-content grid item that has to grow to the height of the two
@@ -60,21 +64,19 @@ export function Hero() {
         direction="up"
         className="col-start-1 row-start-1 flex flex-col items-center gap-8 px-6 pt-[18.7%] text-center sm:pt-[22.6%] lg:items-start lg:px-0 lg:pt-[60px] lg:text-left"
       >
-        <SegmentedControl
-          options={AUDIENCE_OPTIONS}
-          activeIndex={0}
-          className="order-1 hidden lg:flex"
-        />
+        <AudienceSwitch className="order-1 hidden lg:flex" />
 
         {/* 32/32 at 393 and 52/52 at 640 are both drawn, so the step is the
             design's own, not an interpolation. */}
         <h1 className="font-display order-2 max-w-[337px] text-[32px] leading-[1] font-black text-stone-50 sm:max-w-[576px] sm:text-[52px] lg:max-w-[432px] lg:text-5xl lg:font-bold lg:text-stone-900">
-          Keep content in your repo. Give editors a visual editing interface
+          {copy.headline}
         </h1>
 
-        <div className="order-1 lg:order-3">
-          <AstroBadge />
-        </div>
+        {copy.showAstroBadge && (
+          <div className="order-1 lg:order-3">
+            <AstroBadge />
+          </div>
+        )}
       </Reveal>
 
       {/* Reserves the empty lower third of the Figma card, which is not
@@ -100,10 +102,10 @@ export function Hero() {
         <CtaButton
           size="lg"
           variant="outline"
-          href={CTA_LINKS.tryDemo}
+          href={copy.secondaryCtaHref}
           className="h-[34px] px-4 text-sm lg:h-11 lg:px-6 lg:text-base"
         >
-          Try Demo
+          {copy.secondaryCta}
         </CtaButton>
       </div>
 
@@ -136,7 +138,7 @@ export function Hero() {
       </Reveal>
 
       <div className="col-start-1 row-start-4 px-6 pt-[18.4%] pb-18 lg:row-start-2 lg:px-0 lg:pt-0 lg:pb-0">
-        <CarouselRail />
+        <CarouselRail text={copy.carousel} />
       </div>
     </section>
   )
