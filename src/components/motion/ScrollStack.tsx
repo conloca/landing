@@ -6,9 +6,9 @@
  * sequence).
  *
  * The frame pins at the top of the viewport for the whole section; each
- * state's content is absolutely stacked inside it and crossfades/zooms/slides
- * into place on arrival, rather than each state being its own full-height
- * block that scrolls up from below the fold to cover the last one — that
+ * state's content is absolutely stacked inside it and fades into place on
+ * arrival, rather than each state being its own full-height block that
+ * scrolls up from below the fold to cover the last one — that
  * off-screen-to-on-screen travel is exactly what read as "three different
  * slides" rather than one frame changing.
  *
@@ -39,10 +39,10 @@
  *    keyboard-focusable while invisible (z-index hides content from sighted
  *    users, not from Tab order). `inert` removes the covered states from
  *    both once JS is driving the stack, and a state that has not arrived yet
- *    is hidden outright (`invisible`), not just faded — its transform still
- *    resolves to a real value while unarrived, and it sits at a *higher*
- *    z-index than the active state (see `StackSlide`), so left unhidden it
- *    would visibly float on top, partially see-through, ahead of its turn.
+ *    is hidden outright (`invisible`) as well as inert: `inert` alone hides
+ *    it from the Tab order, not from sighted users, and it sits at a
+ *    *higher* z-index than the active state (see `StackSlide`), so left
+ *    unhidden it would visibly float on top, ahead of its turn.
  * 4. The scroll range and the arrival thresholds are chosen together so that
  *    the slot height cancels out of the arithmetic entirely. See
  *    `slotThresholds`.
@@ -72,22 +72,32 @@ import { cn } from '@/lib/utils'
 import {
   SCROLL_OFFSET,
   activeIndexFor,
-  hasRevealStarted,
+  revealStart,
   slotThresholds,
 } from '@/components/motion/scroll-stack-geometry'
 
 /**
- * The slot height. It sizes the one pinned frame, and — multiplied by
- * `count` — the section's total scroll distance (see the file header, point
- * 2). It must stay viewport-relative for the same reason it always has: a
- * slot taller than the viewport can never be brought fully into view by
- * `sticky top-0`, and a slot shorter than it leaves the next state
- * permanently peeking out. `h-dvh` is neither, at every viewport size —
- * which is why the design frame's 846px slot measurement does not belong
- * here (see the file header).
+ * The slot height. One constant, applied as an inline style (`height:
+ * ${SLOT_VH}dvh`) everywhere a slot needs it — the pinned frame, each
+ * unpinned slide, and (multiplied by `count`) the section's total scroll
+ * distance (see the file header, point 2) — rather than as a Tailwind class
+ * string. This used to be two hand-kept copies, a class string and a number,
+ * with nothing but a comment enforcing they matched; nothing failed a test
+ * the one time only one of them changed. An interpolated class like
+ * `` `h-[${SLOT_VH}dvh]` `` would "fix" that by deriving the class from the
+ * number, except Tailwind's static scanner can't see through the
+ * interpolation and would silently ship no CSS for it at all — inline
+ * styles have no such scanner to fool.
+ *
+ * Must stay viewport-relative for the same reason it always has: a slot
+ * taller than the viewport can never be brought fully into view by `sticky
+ * top-0`, and a slot shorter than it leaves the next state permanently
+ * peeking out. `100dvh` is neither, at every viewport size — which is why
+ * the design frame's 846px slot measurement does not belong here (see the
+ * file header).
  */
-const SLOT_CLASS = 'h-dvh'
 const SLOT_VH = 100
+const SLOT_STYLE = { height: `${SLOT_VH}dvh` }
 
 interface StackState {
   progress: MotionValue<number>
@@ -143,11 +153,22 @@ export function ScrollStackRoot({ children }: { children: ReactNode }) {
   useMotionValueEvent(scrollYProgress, 'change', syncActiveIndex)
 
   const reducedMotion = useReducedMotion()
+  // Scroll input is discrete, so a transform bound straight to
+  // `scrollYProgress` reproduces the input's chunkiness exactly — measured
+  // over a scripted sweep, the driven value changed on only 21 of 213
+  // frames, every change an identical jump, while frame timing stayed
+  // clean. A real mouse wheel is chunkier than that sweep, so the effect is
+  // worse in practice. The spring below smooths that into continuous
+  // motion, tuned quick rather than floaty.
+  //
+  // `inertSource` exists because hooks cannot be conditional: reduced motion
+  // wants the raw, un-sprung value so nothing keeps animating once scroll
+  // input stops, but that means the spring itself must still be called on
+  // every render regardless — feeding it a value that never changes, rather
+  // than skipping the call, is what keeps it from integrating a real rAF
+  // loop on every scroll burst for users who explicitly asked for less
+  // motion, to produce a value (`smoothProgress`) nobody then reads.
   const inertSource = useMotionValue(0)
-  // See the file header point 1, and the original design note this file
-  // inherits: the spring is tuned quick rather than floaty, and reduced
-  // motion gets the raw, un-sprung value so nothing keeps animating once
-  // scroll input stops.
   const smoothProgress = useSpring(reducedMotion ? inertSource : scrollYProgress, {
     stiffness: 260,
     damping: 38,
@@ -157,10 +178,13 @@ export function ScrollStackRoot({ children }: { children: ReactNode }) {
 
   // Two mount-time syncs against the already-measured scroll position, both for
   // loads that start inside or past this section — a deep link to `#pricing`,
-  // a restored scroll position, a back-navigation. See `StackSlide` for why
-  // `activeIndex` matters here (the `inert` gate), and the header comment
-  // above `smoothProgress` for why `jump` rather than letting the spring
-  // animate to the first measurement.
+  // a restored scroll position, a back-navigation. `syncActiveIndex`: see
+  // `StackSlide` for why `activeIndex` matters here (the `inert` gate) —
+  // without this it stays 0 until the first scroll tick. `jump`, not letting
+  // the spring animate to the first measurement: without it, every such load
+  // would visibly slide/fade the slides into place over a few hundred
+  // milliseconds, as if the spring had to "catch up" to where the page
+  // already is.
   useEffect(() => {
     const measured = scrollYProgress.get()
     syncActiveIndex(measured)
@@ -200,14 +224,30 @@ export function ScrollStackRoot({ children }: { children: ReactNode }) {
 }
 
 /**
- * The one pinned frame. Unpinned (pre-hydration, reduced motion), there is no
- * frame at all — `children` (each a `StackSlide`) render directly, one per
- * flowed block, exactly as a reader without JS or who asked for less motion
- * should see them: stacked, fully visible, nothing overlapping.
+ * The one pinned frame. Renders the SAME wrapper element in both states —
+ * only its classes toggle — rather than swapping between bare `children` and
+ * a wrapped `<div>`. An earlier version returned `children` directly while
+ * unpinned and only introduced the wrapper once `pinned` flipped true; React
+ * reconciles the Provider's child slot positionally, so that shape change
+ * unmounted and remounted every `StackSlide` subtree on the hydration flip —
+ * exactly the bug `StackSlide`'s own doc comment already warns about for a
+ * live `LottieBanner` mid-load, restarting its observer and WASM player, and
+ * dropping focus from any control a keyboard user reached before hydration
+ * finished. Toggling only the wrapper's own class and inline height (no
+ * `sticky`/no fixed height unpinned; `sticky top-0` plus `SLOT_STYLE`
+ * pinned) keeps one stable node across the flip. `sticky` alone establishes
+ * the containing block the
+ * absolutely-positioned slides need — no separate `relative` is needed
+ * alongside it, and adding one back would only invite a future `cn()`
+ * merge to silently drop `sticky` instead (`tailwind-merge` resolves
+ * conflicting `position` utilities by last occurrence).
  */
 function StackFrame({ children, pinned }: { children: ReactNode; pinned: boolean }) {
-  if (!pinned) return children
-  return <div className={`sticky top-0 relative ${SLOT_CLASS}`}>{children}</div>
+  return (
+    <div className={pinned ? 'sticky top-0' : ''} style={pinned ? SLOT_STYLE : undefined}>
+      {children}
+    </div>
+  )
 }
 
 interface StackSlideProps {
@@ -233,49 +273,84 @@ export function StackSlide({ children, index }: StackSlideProps) {
   // animating, but not yet the active state — see `notYetArrived` below) or
   // has not arrived at all (hidden outright). None of the three should be in
   // the Tab order — only the active state's own controls should be reachable.
+  // Driven by `activeIndex` (the raw, un-sprung position), not the smoothed
+  // one `notYetArrived` below uses — `inert` gates keyboard reachability,
+  // which should track the true scroll position rather than lag a spring's
+  // settle behind it, same reasoning `ScrollStackRoot` already applies to
+  // `activeIndex` itself.
   const isInert = pinned && index !== activeIndex
   // A state whose OWN reveal has not started yet still resolves a real
-  // transform value (its scale/opacity/y clamp to their pre-arrival numbers,
-  // not zero — see `MotionCard`), and it sits at a higher z-index than the
-  // active state (later index, drawn on top once both are opaque). Left
-  // unhidden it would float above the active state, partially see-through,
-  // before its turn.
+  // opacity value (it clamps to its pre-arrival number, 0 — see
+  // `MotionSlide`), and it sits at a higher z-index than the active state
+  // (later index, drawn on top once both are opaque). At exactly 0 that
+  // clamp is harmless on its own, but `invisible` is still needed: `inert`
+  // alone hides content from the Tab order, not from sighted users, and an
+  // element at opacity 0 still intercepts pointer events and shows up in
+  // devtools/accessibility trees as present, not gone.
   //
-  // `hasRevealStarted` (not a bare `index > activeIndex` comparison) because
-  // a state's own reveal window is `[thresholds[index-1], thresholds[index]]`
-  // (see `MotionCard`) — it starts animating the instant its *predecessor*
-  // becomes active, i.e. the instant `activeIndex` reaches `index - 1`, one
-  // threshold *before* `activeIndex` reaches `index` itself. Gating this on
-  // `index > activeIndex` was a real, shipped bug: it kept the state hidden
-  // for the animation's entire duration and only revealed it already fully
-  // settled — the zoom/slide/fade never had a visible frame to play in.
-  // `hasRevealStarted` is shared with `MotionCard`'s own window math (via
-  // `scroll-stack-geometry.ts`) specifically so the two can't drift apart
-  // again the way this bug let them.
-  const notYetArrived = pinned && !hasRevealStarted(activeIndex, index)
-  const zIndexStyle = useMemo(() => (pinned ? { zIndex: index + 1 } : undefined), [pinned, index])
+  // Gated on the SAME smoothed progress `MotionSlide`'s own opacity reads
+  // from (via the shared `revealStart`, not `activeIndex`, which tracks raw,
+  // un-sprung scroll). Those two used to disagree: on a fast reverse scroll,
+  // raw progress can drop below this slide's reveal-start threshold while
+  // the spring is still easing the opacity down from mid-fade, so
+  // `invisible` would land while the slide was still visibly, say, 40%
+  // opaque — a one-frame pop instead of a fade-out. Reading the smoothed
+  // value here keeps the two in lockstep in both scroll directions.
+  const thresholds = stack?.thresholds ?? []
+  const fallbackProgress = useMotionValue(0)
+  const smoothedProgress = stack?.progress ?? fallbackProgress
+  const [hasReachedReveal, setHasReachedReveal] = useState(
+    () => smoothedProgress.get() >= revealStart(thresholds, index),
+  )
+  useMotionValueEvent(smoothedProgress, 'change', (value) => {
+    setHasReachedReveal(value >= revealStart(thresholds, index))
+  })
+  // `CARDS` in `ThreeFeatures.tsx` never changes at runtime, so this never
+  // fires in practice today — but `revealStart(thresholds, index)` only gets
+  // read above on a scroll ('change') event, not a React render. If `count`
+  // or a slide's `index` ever did change with the scroll position held
+  // still, `hasReachedReveal` would be left stale against the new
+  // thresholds until the next scroll tick, which could show a slide already
+  // past its (new) reveal point as still `invisible`. Resyncing whenever the
+  // threshold this slide reads actually changes closes that gap without
+  // waiting for a scroll event that may never come.
+  useEffect(() => {
+    setHasReachedReveal(smoothedProgress.get() >= revealStart(thresholds, index))
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- `smoothedProgress` is a MotionValue identity, not reactive state; the effect's own dependency is the computed threshold, expressed via its inputs
+  }, [thresholds, index])
+  const notYetArrived = pinned && !hasReachedReveal
+  // Pinned needs the stacking order; unpinned needs the slot height that
+  // `StackFrame` no longer supplies once there's no sticky frame flowing the
+  // slides — the two are mutually exclusive, never both on the same style.
+  const wrapperStyle = useMemo(() => (pinned ? { zIndex: index + 1 } : SLOT_STYLE), [pinned, index])
   const wrapperClass = cn(
-    pinned
-      ? 'absolute inset-0 flex items-center p-4'
-      : `flex ${SLOT_CLASS} w-full items-center p-4`,
+    pinned ? 'absolute inset-0 flex items-center p-4' : 'flex w-full items-center p-4',
     notYetArrived && 'invisible',
+    // `inert` stops the covering/arriving slide's OWN content from being
+    // clicked or focused, but it does not make the element transparent to
+    // hit-testing — an inert slide sitting at a higher z-index still
+    // intercepts pointer events aimed at whatever is underneath it. Without
+    // this, the active slide's CTA buttons are unreachable by mouse for the
+    // entire crossfade, every time (not an edge case: every arrival is a
+    // crossfade). Only the active slide keeps the default `auto`.
+    isInert && 'pointer-events-none',
   )
 
   return (
-    <div className={wrapperClass} style={zIndexStyle} inert={isInert}>
-      <MotionCard
+    <div className={wrapperClass} style={wrapperStyle} inert={isInert}>
+      <MotionSlide
         progress={stack?.progress ?? null}
         thresholds={stack?.thresholds ?? null}
         index={index}
         pinned={pinned}
       >
         {children}
-      </MotionCard>
+      </MotionSlide>
     </div>
   )
 }
 
-function MotionCard({
+function MotionSlide({
   children,
   progress,
   thresholds,
@@ -305,8 +380,11 @@ function MotionCard({
   //    being the visible, active one — animating it regardless would reveal
   //    it in from nothing right as the section first comes into view.
   // Nothing ever reveals the first state in, so `style` stays `{}` for it
-  // regardless of `pinned`, same as the unhydrated path.
-  const start = index > 0 ? (thresholds?.[index - 1] ?? 0) : 0
+  // regardless of `pinned`, same as the unhydrated path. `start` comes from
+  // the same `revealStart` helper `StackSlide`'s `invisible` gate reads, so
+  // the two can't silently re-diverge the way two hand-kept copies of this
+  // threshold already have once.
+  const start = revealStart(thresholds ?? [], index)
   const end = index > 0 ? (thresholds?.[index] ?? 0) : 0
   // `slotThresholds` is strictly increasing within [0, 1) by construction, so
   // every state that has a predecessor has a real interval. This asserts that
@@ -318,35 +396,49 @@ function MotionCard({
   const hasRange = index > 0 && start >= 0 && end > start && end <= 1
   const fallbackProgress = useMotionValue(0)
   const source = progress ?? fallbackProgress
-  // Placeholder reveal — designer has not sent the real timeline for this yet
-  // (see docs/QUESTIONS-DESIGNER.md). Plain opacity only: an earlier version
+  // Placeholder reveal — the designer has not sent the real timeline for
+  // this yet (tracked in ticket #110, not yet in docs/QUESTIONS-DESIGNER.md
+  // — that file's current questions are about the Lottie banner and layout,
+  // not this reveal; don't follow this comment expecting to find it there).
+  // Plain opacity only: an earlier version
   // also scaled (0.94→1) and rose (y: 24→0) on arrival, which combined with
   // each state's own full-bleed background reads as a new slide sliding in
   // rather than one frame's content changing — exactly the effect the
   // designer's "one slide, not three" correction was about. A fade is the
   // one motion that cannot be mistaken for that.
-  const opacity = useTransform(
-    source,
-    hasRange ? [start, start + (end - start) * 0.5] : [0, 1],
-    [0.7, 1],
-  )
+  //
+  // The mapping is `[start, end] -> [0, 1]` — the FULL reveal window, not a
+  // half-window clamped to a `0.7` floor. A half-window bottomed at 0.7 was a
+  // real, shipped bug: `useTransform` clamps below-range input to the first
+  // output value, so the first state (`index === 0`, `hasRange` false) isn't
+  // the only one affected — the *next* state's pre-window progress also
+  // clamps to 0.7, and because it sits at a higher z-index than the active
+  // state (see `StackSlide`), it rendered as a permanent 70%-opacity ghost
+  // over the active state from the moment the section is reached, not just
+  // during its own transition. Ending the fade at `end` (not the window's
+  // midpoint) also keeps it synchronized with `isInert`: the state finishes
+  // becoming fully opaque exactly when `activeIndex` flips to it, instead of
+  // finishing early and sitting fully visible-but-inert (buttons dead) for
+  // the second half of its own arrival window.
+  const opacity = useTransform(source, hasRange ? [start, end] : [0, 1], [0, 1])
   const animated = pinned && hasRange
   const style = useMemo(() => (animated ? { opacity } : {}), [animated, opacity])
 
   return (
-    // `data-scroll-stack-card` carries the index so tooling can address a
+    // `data-scroll-stack-slide` carries the index so tooling can address a
     // specific slide; scripts/scroll-perf-probe.mjs samples slide 1's
-    // transform per frame (slide 0 never animates, see above). Same
+    // opacity per frame (slide 0 never animates, see above). Same
     // reasoning as `data-scroll-stack` on the root: a probe that navigates by
     // element position instead silently measures the wrong node when the
     // markup shifts, and reports confident numbers about it.
     //
     // No `max-h` cap: the Figma reference (`40002427:16418`) fills its whole
-    // 1440x846 slot edge to edge per state — a capped, centred card read as
-    // a small floating panel in an otherwise-empty full-height section,
-    // which is part of what made this look like slides rather than one
-    // full-screen frame.
-    <motion.div className="h-full w-full" style={style} data-scroll-stack-card={index}>
+    // 1440x846 slot per state (inset only by `StackSlide`'s own `p-4`
+    // breathing room, same on every edge) — a capped, centred panel read as a
+    // small floating card in an otherwise-empty full-height section, which
+    // is part of what made this look like slides rather than one full-screen
+    // frame.
+    <motion.div className="h-full w-full" style={style} data-scroll-stack-slide={index}>
       {children}
     </motion.div>
   )
