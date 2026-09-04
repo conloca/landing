@@ -63,3 +63,24 @@ export function activeIndexFor(progress: number, thresholds: readonly number[]):
   }
   return index
 }
+
+/**
+ * Whether slide `index`'s own reveal window has opened yet.
+ *
+ * A slide's reveal runs from its predecessor's arrival to its own arrival —
+ * `[thresholds[index - 1], thresholds[index]]` in `ScrollStack.tsx`'s
+ * `MotionCard`. Predecessor `index - 1` arrives exactly when `activeIndexFor`
+ * would return `index - 1`, which (by that function's own definition) is
+ * exactly `activeIndex >= index - 1`. Expressing that equivalence here once,
+ * rather than re-deriving it separately at each call site, is what keeps
+ * `MotionCard`'s animation window and `StackSlide`'s visibility gate from
+ * silently drifting apart if one is ever re-timed without the other — see
+ * `scroll-stack-geometry.test.ts` for the regression this guards.
+ *
+ * The first slide has no predecessor and is never revealed in (it is already
+ * the active slide the instant the section is reached), so it always reports
+ * started.
+ */
+export function hasRevealStarted(activeIndex: number, index: number): boolean {
+  return index <= 0 || activeIndex >= index - 1
+}
