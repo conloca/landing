@@ -3,6 +3,7 @@ import { CtaButton } from '@/components/CtaButton'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import {
+  annualTotal,
   formatUsd,
   headlineAmount,
   HEADLINE_PERIOD_LABEL,
@@ -33,12 +34,26 @@ export interface Plan {
   highlighted?: boolean
 }
 
+/**
+ * Both billing periods quote the same per-month unit, so on its own the annual
+ * headline reads as a monthly price nobody is actually charged. "Billed monthly"
+ * was dropped as redundant with the visible toggle state — but the annual total
+ * isn't shown anywhere else, so dropping it too left the discounted per-month
+ * figure with no indication a visitor is really charged the full year up front.
+ */
 function Price({ plan, billing }: { plan: Plan; billing: BillingPeriod }) {
   return (
-    <p className="mt-6 text-3xl font-black text-stone-900">
-      {formatUsd(headlineAmount(plan.pricing, billing))}{' '}
-      <span className="text-base font-normal text-stone-500">{HEADLINE_PERIOD_LABEL}</span>
-    </p>
+    <>
+      <p className="mt-6 text-3xl font-black text-stone-900">
+        {formatUsd(headlineAmount(plan.pricing, billing))}{' '}
+        <span className="text-base font-normal text-stone-500">{HEADLINE_PERIOD_LABEL}</span>
+      </p>
+      {billing === 'annual' && (
+        <p className="mt-1 text-sm text-stone-500">
+          Billed annually — {formatUsd(annualTotal(plan.pricing))} per year
+        </p>
+      )}
+    </>
   )
 }
 
