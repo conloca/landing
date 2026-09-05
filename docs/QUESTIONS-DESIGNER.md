@@ -240,3 +240,14 @@
 
 5. **Флаги внутри баннера планируем пережать** до разумного размера (см. вопрос 17). Пока
    ответа нет, работаем с исходным файлом как есть.
+
+6. **Provisional copy for hero carousel slides 2 and 3** (see the landing-layout
+   section's own question 6 above — this document has more than one numbered list,
+   more than one of which reaches "6"; English per this repository's rule for anything
+   written here). The hero carousel now auto-rotates every 5 seconds, but the design
+   only ever supplied text for one of its three slides. We wrote two additional slides
+   per audience ourselves, matching slide 1's length and tone and grounded in the
+   product description (a Git-native headless CMS for Astro: Git history, pull-request
+   review, localisation). They are marked provisional in `src/lib/content/hero-copy.ts`
+   and should be replaced once you answer the landing-layout section's question 6 with
+   the real copy.

@@ -156,7 +156,7 @@ export function Hero() {
       </Reveal>
 
       <div className="col-start-1 row-start-4 px-6 pt-[18.4%] pb-18 lg:row-start-2 lg:px-0 lg:pt-0 lg:pb-0">
-        <CarouselRail text={copy.carousel} />
+        <CarouselRail slides={copy.carousel} />
       </div>
     </section>
   )

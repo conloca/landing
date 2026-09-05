@@ -43,6 +43,46 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+  /*
+   * Hero carousel progress fill (`CarouselRail`). Two animations, not one,
+   * because the rail itself flips axis at `lg` (horizontal bars below it,
+   * vertical above) — `CarouselRail` switches which utility class applies
+   * per breakpoint, same as it already does for the rail's own geometry.
+   * `--carousel-cycle-ms` (defined once, below) is the slide's on-screen
+   * time: `CarouselRail` advances to the next slide when this animation's
+   * `animationend` fires, so the fill duration and the rotation interval
+   * are the same number by construction — both read the one variable
+   * rather than repeating the literal, so there is nowhere for the two
+   * breakpoints' cycles to drift apart.
+   */
+  --animate-carousel-fill-x: carousel-fill-x var(--carousel-cycle-ms) linear forwards;
+  --animate-carousel-fill-y: carousel-fill-y var(--carousel-cycle-ms) linear forwards;
+}
+
+:root {
+  /* Floored at 1000ms by `MIN_FILL_ELAPSED_SECONDS` in
+   * `src/components/sections/hero/carousel-rotation.ts`: that guard
+   * swallows any `animationend` firing before the floor, so a value tuned
+   * below it would silently and permanently stall rotation. */
+  --carousel-cycle-ms: 5000ms;
+}
+
+@keyframes carousel-fill-x {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes carousel-fill-y {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
 }
 
 @layer base {
