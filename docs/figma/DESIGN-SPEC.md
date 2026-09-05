@@ -457,15 +457,15 @@ still. Section 2's description of that panel describes what is _inside the image
 The vector assets in the table below (logo, glyphs, tiles) are still un-exported — they need
 `GET /v1/images?format=svg`, which is a per-node render rather than a fill:
 
-| Asset                                    | Node id                         | Format                                 |
-| ---------------------------------------- | ------------------------------- | -------------------------------------- |
-| `conloca-logo` (wordmark + mark)         | `40002160:4377`                 | SVG                                    |
-| Logo mark alone (`Union`)                | `40002065:1894`                 | SVG                                    |
-| Astro badge glyph                        | inside `40002427:16388`         | SVG                                    |
-| Git tile, Astro tile (statement section) | inside `40002427:16760`         | SVG                                    |
-| Hero video poster + gradient backdrops   | image fills in `40002427:16388` | PNG @2x                                |
-| Feature-card background photos (×3)      | image fills in `40002427:16418` | PNG @2x, or replace with CSS gradients |
-| Bento illustrations (×7)                 | inside `40002427:16814`         | PNG @1x (MCP), see note below          |
+| Asset                                                                                              | Node id                         | Format                                 |
+| -------------------------------------------------------------------------------------------------- | -------------------------------- | -------------------------------------- |
+| `conloca-logo` (wordmark + mark) — exported, inlined as `src/components/icons/ConlocaWordmark.tsx` | `40002160:4377`                 | SVG                                    |
+| Logo mark alone (`Union`)                                                                          | `40002065:1894`                 | SVG                                    |
+| Astro badge glyph                                                                                  | inside `40002427:16388`         | SVG                                    |
+| Git tile, Astro tile (statement section)                                                           | inside `40002427:16760`         | SVG                                    |
+| Hero video poster + gradient backdrops                                                             | image fills in `40002427:16388` | PNG @2x                                |
+| Feature-card background photos (×3)                                                                | image fills in `40002427:16418` | PNG @2x, or replace with CSS gradients |
+| Bento illustrations (×7)                                                                           | inside `40002427:16814`         | PNG @1x (MCP), see note below          |
 
 Export command shape (token in `.env` as `FIGMA_PAT`, already git-ignored):
 
