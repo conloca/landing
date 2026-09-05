@@ -13,10 +13,11 @@ import { Statement } from '@/components/sections/Statement'
 import { FeatureGrid } from '@/components/sections/FeatureGrid'
 import { Pricing } from '@/components/sections/Pricing'
 import { Footer } from '@/components/layout/Footer'
+import { AudienceProvider } from '@/lib/audience-context'
 
 export function App() {
   return (
-    <>
+    <AudienceProvider>
       <Header />
       <main className="min-h-dvh">
         <Hero />
@@ -26,6 +27,6 @@ export function App() {
         <Pricing />
       </main>
       <Footer />
-    </>
+    </AudienceProvider>
   )
 }
