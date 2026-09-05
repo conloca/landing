@@ -458,14 +458,14 @@ The vector assets in the table below (logo, glyphs, tiles) are still un-exported
 `GET /v1/images?format=svg`, which is a per-node render rather than a fill:
 
 | Asset                                                                                              | Node id                         | Format                                 |
-| -------------------------------------------------------------------------------------------------- | ------------------------------- | -------------------------------------- |
+| -------------------------------------------------------------------------------------------------- | -------------------------------- | -------------------------------------- |
 | `conloca-logo` (wordmark + mark) — exported, inlined as `src/components/icons/ConlocaWordmark.tsx` | `40002160:4377`                 | SVG                                    |
 | Logo mark alone (`Union`)                                                                          | `40002065:1894`                 | SVG                                    |
 | Astro badge glyph                                                                                  | inside `40002427:16388`         | SVG                                    |
 | Git tile, Astro tile (statement section)                                                           | inside `40002427:16760`         | SVG                                    |
 | Hero video poster + gradient backdrops                                                             | image fills in `40002427:16388` | PNG @2x                                |
 | Feature-card background photos (×3)                                                                | image fills in `40002427:16418` | PNG @2x, or replace with CSS gradients |
-| Bento illustrations (×7)                                                                           | inside `40002427:16814`         | PNG @2x or SVG                         |
+| Bento illustrations (×7)                                                                           | inside `40002427:16814`         | PNG @1x (MCP), see note below          |
 
 Export command shape (token in `.env` as `FIGMA_PAT`, already git-ignored):
 
@@ -476,6 +476,29 @@ curl -H "X-Figma-Token: $FIGMA_PAT" \
 
 Rate-limit note: the images endpoint is metered by render cost. Batch ids into one request and
 avoid re-rendering the tall full-page frames.
+
+**Bento illustrations: resolved via the Figma MCP, not the REST export script above.** The
+REST render endpoint was still rate-limited when this ran, but the official `figma` MCP server
+(`mcp__figma__get_screenshot`, OAuth-authenticated, no quota hit) renders any node directly. Each
+of the seven bento cards (`40002427:16814`'s children) was screenshotted whole via
+`get_screenshot(nodeId, fileKey: "OxxksZFS8hzKoFTeSRdFGs", contentsOnly: true)`, then cropped in
+post to the region above the card's title background rectangle (`Rectangle 20` in the node
+tree, which paints over the illustration to seat the title/body text) — so the crop line matches
+what a viewer actually sees rather than an arbitrary trim. Source PNGs were cropped with Pillow
+and re-encoded with `cwebp -q 84` per the repo's usual asset pipeline, landing in
+`src/assets/figma/bento/`. Re-export by repeating the same `get_screenshot` call per card id (see
+`feature-grid/bento-assets.ts` for the current node-id-to-file mapping) if the design changes.
+
+**These are 1x assets, unlike the rest of this repo's pipeline (which deliberately targets 2x —
+see "Prefer image fills over per-node renders" in AGENTS.md, and `manifest.json`'s `maxWidth`
+values for the concrete precedent).** `get_screenshot`'s `maxDimension`
+parameter only caps the longer edge _down_; passing a larger value than the node's own rendered
+size (tried at 2000px against a 682px-wide card) did not upscale it — the response's `width`
+stayed at the node's native size. This tool has no separate "render at Nx pixel density"
+parameter the way the REST `GET /v1/images` endpoint's `scale` query param does. Getting 2x bento
+illustrations therefore needs the REST render endpoint once its render-cost quota recovers
+(batch all seven ids into one `GET /v1/images?ids=...&scale=2` call), not a re-run of this MCP
+export.
 
 The three card background photos are large blurred abstract images. Shipping three full-bleed
 photographs at 1424×814 is a real weight cost on a landing page — worth checking whether a CSS
@@ -499,8 +522,10 @@ gradient plus noise reproduces them closely enough. Question 14.
 
 **Gaps, stated plainly:**
 
-1. **Raster assets: resolved.** Exported to `src/assets/figma/` via `bun run figma:export`.
-   The vector assets listed in section 7 still need an SVG render pass.
+1. **Raster assets: resolved.** Exported to `src/assets/figma/` via `bun run figma:export`. The
+   bento illustrations (section 3, `40002427:16814`) are resolved too, via the Figma MCP rather
+   than that script — see the note in section 7, right after the export command block. The
+   remaining vector assets listed in section 7 still need an SVG render pass.
 2. **Node trees for the 640 / 1024 / 393 frames were not fetched** (same rate limit).
    Responsive behaviour above is read from the renders: reliable for layout intent, not for
    exact padding values. Re-fetch before implementing those breakpoints precisely.
