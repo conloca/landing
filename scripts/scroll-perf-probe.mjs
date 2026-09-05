@@ -100,27 +100,33 @@ await evaluate(`(() => {
   window.__frames = [];
   window.__values = [];
   window.__longTasks = [];
-  const card = document.querySelector('[data-scroll-stack-card="0"]');
-  if (!card) throw new Error('no [data-scroll-stack-card="0"] element to sample');
+  // Slide 0 never animates (it has no predecessor to reveal in from — see
+  // ScrollStack.tsx's MotionSlide), so it would read as 100% held frames
+  // regardless of real smoothness. Slide 1 is the first one that does.
+  const slide = document.querySelector('[data-scroll-stack-slide="1"]');
+  if (!slide) throw new Error('no [data-scroll-stack-slide="1"] element to sample');
   // Read the inline style motion writes, not the computed one. Calling
   // getComputedStyle on an element motion has just dirtied forces a style
   // recalculation every frame, which inflates the very recalcStyleCount and
   // frame timings this probe reports alongside the values.
-  const readScale = () => {
-    const t = card.style.transform;
-    // motion writes the literal string "none" when every transform is at its
-    // default, so treating only the empty string as scale 1 would drop those
-    // frames entirely — and they are exactly the held frames this metric counts.
-    if (!t || t === 'none') return 1;
-    const scale = t.match(/scale(?:X)?\\(([^,)]+)/);
-    if (scale) return Math.round(parseFloat(scale[1]) * 100000) / 100000;
-    const matrix = t.match(/matrix(?:3d)?\\(([^,]+),/);
-    return matrix ? Math.round(parseFloat(matrix[1]) * 100000) / 100000 : null;
+  //
+  // Reads opacity, not transform: MotionSlide binds opacity only (a
+  // deliberate fade, no scale/translate - see its own comment), so a slide's
+  // inline transform is now permanently empty and a probe still reading it
+  // would report the "value never moves" signature on every run regardless
+  // of real smoothness, indistinguishable from a genuine stepping regression.
+  const readOpacity = () => {
+    const o = slide.style.opacity;
+    // motion omits the inline style entirely at its default (1), so an empty
+    // string is opacity 1, not a missing/invalid sample.
+    if (o === '') return 1;
+    const value = parseFloat(o);
+    return Number.isFinite(value) ? Math.round(value * 100000) / 100000 : null;
   };
   let last = performance.now();
   const tick = (now) => {
     window.__frames.push(now - last);
-    window.__values.push(readScale());
+    window.__values.push(readOpacity());
     last = now;
     window.__raf = requestAnimationFrame(tick);
   };

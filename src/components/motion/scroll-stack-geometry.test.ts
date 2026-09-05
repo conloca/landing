@@ -2,6 +2,7 @@ import { describe, expect, test } from 'bun:test'
 import {
   SCROLL_OFFSET,
   activeIndexFor,
+  revealStart,
   scrollSpan,
   slotThresholds,
   type ScrollOffset,
@@ -10,8 +11,8 @@ import {
 const END_END: ScrollOffset = ['start start', 'end end']
 
 /**
- * Progress at which card `index` is actually covered, worked out from layout in
- * pixels rather than from the threshold formula: card `index` is covered once
+ * Progress at which slide `index` is actually covered, worked out from layout in
+ * pixels rather than from the threshold formula: slide `index` is covered once
  * slot `index + 1` has scrolled to the top of the viewport, which takes
  * `(index + 1) * slotHeight` pixels, and the offset decides how many pixels one
  * unit of progress is worth.
@@ -55,7 +56,7 @@ describe('slotThresholds under SCROLL_OFFSET', () => {
     // Guards the pairing rather than either half of it: reverting the offset to
     // `'end end'` while leaving the thresholds alone is the plausible future
     // edit, and it must not stay green. With a 846px slot on a 1000px window,
-    // `'end end'` spans 1538px instead of 2538px, so card 0 would be marked
+    // `'end end'` spans 1538px instead of 2538px, so slide 0 would be marked
     // covered well before its coverer arrives.
     const covered = coveredAtProgress(0, 3, 846, 1000, END_END)
     expect(covered).not.toBeCloseTo(slotThresholds(3)[1] as number, 6)
@@ -72,9 +73,9 @@ describe('slotThresholds under SCROLL_OFFSET', () => {
   })
 
   test('every threshold is reachable within the scroll range', () => {
-    // Under `'end end'` the last card's arrival fell outside the range entirely
+    // Under `'end end'` the last slide's arrival fell outside the range entirely
     // for any slot shorter than the viewport, so clamping it to 1 marked the
-    // card before it inert while that card was still the visible, pinned one.
+    // slide before it inert while that slide was still the visible, pinned one.
     for (const count of [1, 2, 3, 7]) {
       for (const threshold of slotThresholds(count)) {
         expect(threshold).toBeGreaterThanOrEqual(0)
@@ -83,7 +84,7 @@ describe('slotThresholds under SCROLL_OFFSET', () => {
     }
   })
 
-  test('a single card, and a zero count, both yield one usable threshold', () => {
+  test('a single slide, and a zero count, both yield one usable threshold', () => {
     expect(slotThresholds(1)).toEqual([0])
     expect(slotThresholds(0)).toEqual([0])
   })
@@ -113,9 +114,9 @@ describe('activeIndexFor', () => {
     expect(activeIndexFor(1, thresholds)).toBe(2)
   })
 
-  test('never reports a card that has not arrived', () => {
+  test('never reports a slide that has not arrived', () => {
     // What `inert` is gated on: reporting an index too early takes the buttons
-    // of the card the visitor is reading out of the Tab order while they are
+    // of the slide the visitor is reading out of the Tab order while they are
     // still on screen. Measured at 154px of scrolling on a 1000px-tall window
     // before this change.
     for (let progress = 0; progress <= 1; progress += 0.001) {
@@ -124,7 +125,73 @@ describe('activeIndexFor', () => {
     }
   })
 
-  test('a single card is always index 0', () => {
+  test('a single slide is always index 0', () => {
     expect(activeIndexFor(0.9, slotThresholds(1))).toBe(0)
+  })
+})
+
+describe('revealStart', () => {
+  // Regression for a real, shipped bug: `StackSlide` used to hide a slide
+  // until `activeIndex === index` (the moment its reveal *finishes*, not
+  // starts), so the zoom/slide/fade animation played entirely while
+  // `visibility: hidden`. The invariant this guards is that a slide's reveal
+  // window opens exactly when its predecessor arrives, i.e. at
+  // `thresholds[index - 1]` — proved here against `activeIndexFor`'s own
+  // definition ("largest `i` with `progress >= thresholds[i]`") rather than
+  // re-implemented.
+  test('a slide has reached its reveal exactly when activeIndexFor says its predecessor arrived', () => {
+    // Cross-checked against `activeIndexFor` — the function `StackSlide`'s
+    // old, buggy `activeIndex`-based gate actually called — rather than
+    // against `thresholds[index - 1]` directly, which is `revealStart`'s own
+    // formula and would make this test pass for any implementation that
+    // happens to return that value, regression or not.
+    const thresholds = slotThresholds(4)
+    for (let progress = 0; progress <= 1; progress += 0.001) {
+      const activeIndex = activeIndexFor(progress, thresholds)
+      for (let index = 1; index < thresholds.length; index += 1) {
+        expect(progress >= revealStart(thresholds, index)).toBe(activeIndex >= index - 1)
+      }
+    }
+  })
+
+  // The bug this guards against, stated directly: the pre-fix predicate
+  // (`index > activeIndex`) kept a slide hidden for every progress value in
+  // its own reveal window, because it compared against the slide's own
+  // arrival rather than its predecessor's.
+  test('the pre-fix predicate would have failed across the whole reveal window', () => {
+    const thresholds = slotThresholds(3)
+    const index = 1
+    const buggyNotYetArrived = (activeIndex: number) => index > activeIndex
+    let sawTheBug = false
+    for (
+      let progress = thresholds[0] as number;
+      progress < (thresholds[1] as number);
+      progress += 0.001
+    ) {
+      const activeIndex = activeIndexFor(progress, thresholds)
+      if (buggyNotYetArrived(activeIndex) && progress >= revealStart(thresholds, index)) {
+        sawTheBug = true
+      }
+    }
+    expect(sawTheBug).toBe(true)
+  })
+
+  test('the first slide has no reveal window and is always already started', () => {
+    const thresholds = slotThresholds(4)
+    expect(revealStart(thresholds, 0)).toBe(0)
+    // 0 is the smallest value progress can ever be, so this holds trivially
+    // at every scroll position without index 0 needing a special case.
+    expect(0 >= revealStart(thresholds, 0)).toBe(true)
+  })
+
+  test("reverse scroll re-hides a slide once progress drops back below its predecessor's arrival", () => {
+    // A pure function of position, not a one-way latch: `progress >=
+    // revealStart(...)` must flip back to false when progress falls back
+    // below the threshold, exactly as it flips true crossing it forward.
+    const thresholds = slotThresholds(4)
+    const index = 3
+    expect(thresholds[index - 1] as number).toBeGreaterThan(0)
+    expect((thresholds[index - 1] as number) >= revealStart(thresholds, index)).toBe(true)
+    expect(0 >= revealStart(thresholds, index)).toBe(false)
   })
 })

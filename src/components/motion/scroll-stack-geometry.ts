@@ -27,7 +27,7 @@ export type ScrollOffset = typeof SCROLL_OFFSET | readonly ['start start', 'end 
 /**
  * How many pixels of scrolling the progress value 0 → 1 covers.
  *
- * Exists so a test can state the arrival of a card in pixels and convert, which
+ * Exists so a test can state the arrival of a slide in pixels and convert, which
  * is what makes the offset choice observable: swap the offset and this span
  * changes, and the thresholds below stop matching the layout.
  */
@@ -40,10 +40,10 @@ export function scrollSpan(
 }
 
 /**
- * Progress at which each card arrives at the top of the viewport.
+ * Progress at which each slide arrives at the top of the viewport.
  *
  * Every slot is the same height (`ScrollStack` gives them all one class), so
- * card `i` arrives after `i` slot-heights out of the section's `count` of them:
+ * slide `i` arrives after `i` slot-heights out of the section's `count` of them:
  * `i / count`. The slot height cancels, which is the point — correct at 700px
  * slots, at 846px slots, and at any other uniform height, so nothing has to ask
  * a future editor to keep the height and the arithmetic in step.
@@ -62,4 +62,25 @@ export function activeIndexFor(progress: number, thresholds: readonly number[]):
     if (progress >= (thresholds[i] ?? Infinity)) index = i
   }
   return index
+}
+
+/**
+ * Where slide `index`'s own reveal window begins — the single number both
+ * `ScrollStack.tsx`'s `MotionSlide` (the opacity fade, `[revealStart(...),
+ * thresholds[index]]`) and its `StackSlide` (the `invisible` gate, `progress
+ * >= revealStart(...)`) key off, so the two can't drift apart the way two
+ * independently hand-kept copies of the same threshold silently did before
+ * this function existed — see `scroll-stack-geometry.test.ts` for the
+ * regression this guards.
+ *
+ * A slide's reveal runs from its predecessor's arrival to its own arrival:
+ * `thresholds[index - 1]`. The first slide has no predecessor and is never
+ * revealed in (it is already the active slide the instant the section is
+ * reached), so its reveal is defined to have already started — `0`, the
+ * smallest value `progress` can ever be, so `progress >= revealStart(_, 0)`
+ * is always true without index 0 needing its own special case at each call
+ * site.
+ */
+export function revealStart(thresholds: readonly number[], index: number): number {
+  return index <= 0 ? 0 : (thresholds[index - 1] ?? 0)
 }

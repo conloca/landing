@@ -2,7 +2,7 @@ import { FeatureCard } from '@/components/sections/three-features/FeatureCard'
 import { JsonEditorMockup } from '@/components/sections/three-features/JsonEditorMockup'
 import { LocalesVisual } from '@/components/sections/three-features/LocalesVisual'
 import { DiffMockup } from '@/components/sections/three-features/DiffMockup'
-import { ScrollStackRoot, StackCard } from '@/components/motion/ScrollStack'
+import { ScrollStackRoot, StackSlide } from '@/components/motion/ScrollStack'
 import { CTA_LINKS } from '@/lib/nav'
 
 const CARDS = [
@@ -41,9 +41,9 @@ export function ThreeFeatures() {
     <section className="mx-auto max-w-[1440px] px-2 pt-8 pb-2 sm:px-2">
       <ScrollStackRoot>
         {CARDS.map((card, index) => (
-          <StackCard key={card.title} index={index}>
+          <StackSlide key={card.title} index={index}>
             <FeatureCard {...card} />
-          </StackCard>
+          </StackSlide>
         ))}
       </ScrollStackRoot>
     </section>
