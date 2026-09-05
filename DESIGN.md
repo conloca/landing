@@ -230,12 +230,20 @@ Letter-spacing is `0` everywhere except collaborator name chips (`0.14`).
 | Page horizontal padding | 32 px                                                                               |
 | Radius base             | `0.625rem` — the shadcn scale derives `sm`/`md`/`lg`/`xl`/`2xl`/`3xl`/`4xl` from it |
 | Bento card radius       | 32 px                                                                               |
-| Feature card            | radius 28, padding 24                                                               |
+| Feature card            | radius 28 — except the pinned S1 slide (see below); padding 24                      |
 | Button                  | radius 8, padding 10, gap 6                                                         |
 | Badge / pill radius     | 12 px                                                                               |
 
 Breakpoints follow the four frames drawn in Figma: below 640, 640–1023,
 1024–1279, and 1280 and up.
+
+**S1 (the three pinned feature cards) is a deliberate exception at 1024px and
+up, once pinned**: per designer request, the card surface fills the viewport
+edge to edge — no radius, no border — rather than the 1424×814/radius-28
+dimensions above. Its content still has a max width, just a different one
+(1344px). The reduced-motion/no-JS/prerender fallback keeps the dimensions
+above unchanged even at 1024px and up. See the note at the top of the S1
+section in `docs/figma/DESIGN-SPEC.md`.
 
 ## Motion
 

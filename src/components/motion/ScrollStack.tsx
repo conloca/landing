@@ -55,6 +55,7 @@ import {
   activeIndexFor,
   slotThresholds,
 } from '@/components/motion/scroll-stack-geometry'
+import { cn } from '@/lib/utils'
 
 /**
  * The slot height. Every card gets this one, which is what lets the thresholds
@@ -77,6 +78,12 @@ interface StackState {
    * downstream has to be told the same number twice.
    */
   thresholds: number[]
+  /**
+   * Whether cards are actually pinned right now (hydrated, motion allowed).
+   * The single source of truth for every `lg`-and-up full-bleed class in this
+   * file and in `FeatureCard` — see the `pinned` prop on `ScrollStackRoot`.
+   */
+  pinned: boolean
 }
 
 const ScrollStackContext = createContext<StackState | null>(null)
@@ -98,8 +105,23 @@ const ScrollStackContext = createContext<StackState | null>(null)
  * exactly `count` slots tall, so a heading or a spacer rendered as a direct
  * child here adds height that no card accounts for and shifts every arrival.
  * Put such an element outside `ScrollStackRoot`.
+ *
+ * `pinned`: an optional override for whether cards render pinned at all. Left
+ * unset, this component decides for itself from `useHydrated`/
+ * `useReducedMotion`, same as always. A caller that also needs the *same*
+ * pinned/not-pinned boolean for its own markup *outside* this tree — where
+ * `ScrollStackRoot`'s own context can't reach, since context only flows to
+ * descendants — passes it in instead, so there is exactly one computation of
+ * it rather than two independently-derived booleans that are only equal by
+ * assumption. `ThreeFeatures` does this for its full-bleed section styling.
  */
-export function ScrollStackRoot({ children }: { children: ReactNode }) {
+export function ScrollStackRoot({
+  children,
+  pinned: pinnedOverride,
+}: {
+  children: ReactNode
+  pinned?: boolean
+}) {
   const count = Children.toArray(children).length
   const sectionRef = useRef<HTMLDivElement>(null)
   // The offset comes from the same module as the thresholds because it is only
@@ -150,6 +172,10 @@ export function ScrollStackRoot({ children }: { children: ReactNode }) {
   // work, for the users who asked for less of it, to produce a value nobody
   // reads. A source that never changes means it never animates at all.
   const reducedMotion = useReducedMotion()
+  const hydrated = useHydrated()
+  // See the `pinned` prop doc above: an explicit override wins when given,
+  // otherwise this is exactly `StackCard`'s own pre-refactor formula.
+  const pinned = pinnedOverride ?? (hydrated && !reducedMotion)
   const inertSource = useMotionValue(0)
   const smoothProgress = useSpring(reducedMotion ? inertSource : scrollYProgress, {
     stiffness: 260,
@@ -183,8 +209,8 @@ export function ScrollStackRoot({ children }: { children: ReactNode }) {
   // `inert` — the covered cards' keyboard focusability — and that should track
   // the true scroll position rather than lag a spring's settle behind it.
   const state = useMemo(
-    () => ({ progress, activeIndex, thresholds }),
-    [progress, activeIndex, thresholds],
+    () => ({ progress, activeIndex, thresholds, pinned }),
+    [progress, activeIndex, thresholds, pinned],
   )
 
   return (
@@ -204,8 +230,6 @@ interface StackCardProps {
 }
 
 export function StackCard({ children, index }: StackCardProps) {
-  const hydrated = useHydrated()
-  const reducedMotion = useReducedMotion()
   const stack = useContext(ScrollStackContext)
   // `pinned` is the only thing that may differ between the prerender/first-paint
   // pass and later renders. The element tree below must stay the same shape
@@ -215,14 +239,33 @@ export function StackCard({ children, index }: StackCardProps) {
   // `h-…` (never a `min-h-…`) in both states too: `MotionCard` below is
   // `h-full`, so a non-fixed ancestor height would let it collapse to its
   // natural size pre-hydration and then visibly grow once `sticky` and the slot
-  // height land — same class of jump, one level down. Only `sticky`/`top-0`
-  // (pinning) toggles.
-  const pinned = hydrated && !reducedMotion && stack !== null
-  const wrapperClass = pinned
-    ? `sticky top-0 flex ${SLOT_CLASS} items-center p-4`
-    : `flex ${SLOT_CLASS} items-center p-4`
+  // height land — same class of jump, one level down. `sticky`/`top-0` is no
+  // longer the only thing that toggles on this flip: the `lg:p-0` full-bleed
+  // classes below, and `MotionCard`'s `lg:max-h-none`, `FeatureCard`'s
+  // `lg:rounded-none`/`lg:border-0`/`lg:max-w-[1344px]`, and the section's own
+  // `lg:max-w-none` in `ThreeFeatures` all flip with it too — a deliberately
+  // accepted, larger reflow at hydration for `lg`-and-up motion-allowed users
+  // (see `ThreeFeatures`'s doc comment). The tree-shape invariant above still
+  // holds regardless: only class strings change, never which elements exist.
+  //
+  // Read from context rather than recomputed from `useHydrated`/
+  // `useReducedMotion` directly: `ScrollStackRoot` is the single source of
+  // truth for this value now (see its `pinned` prop doc), so every consumer
+  // — this card, `MotionCard` below, and `FeatureCard` outside this file —
+  // agrees by construction instead of by three independently-derived
+  // booleans that happen to use the same formula.
+  const pinned = stack?.pinned ?? false
+  // `lg:p-0` rides along with `sticky top-0` rather than applying unconditionally:
+  // full-bleed is a property of the *pinned* presentation (see `ThreeFeatures`),
+  // not of the breakpoint alone. Gating it on breakpoint only would strip the
+  // 16px inset from the reduced-motion/no-JS/prerender fallback too — those
+  // cohorts render the plain-stacked layout the comment above describes, where
+  // three consecutive full-viewport, edge-to-edge cards with no gap or radius
+  // read as broken, not as "one full-screen frame". Below `lg` the card keeps
+  // its inset either way, matching the pre-full-bleed layout exactly.
+  const wrapperClass = cn(`flex ${SLOT_CLASS} items-center p-4`, pinned && 'sticky top-0 lg:p-0')
   const zIndexStyle = useMemo(() => (pinned ? { zIndex: index + 1 } : undefined), [pinned, index])
-  const isInert = pinned && stack !== null && index < stack.activeIndex
+  const isInert = stack !== null && stack.pinned && index < stack.activeIndex
 
   return (
     <div className={wrapperClass} style={zIndexStyle} inert={isInert}>
@@ -298,7 +341,11 @@ function MotionCard({
     // navigates by element position instead silently measures the wrong node
     // when the markup shifts, and reports confident numbers about it.
     <motion.div
-      className="h-full max-h-[46rem] w-full"
+      // `lg:max-h-none` only when `pinned`, for the same reason `StackCard`'s
+      // `lg:p-0` does — the reduced-motion/no-JS/prerender fallback keeps the
+      // 736px cap so its stacked cards stay readable as cards, not full-viewport
+      // panels with no visual boundary between them.
+      className={cn('h-full max-h-[46rem] w-full', pinned && 'lg:max-h-none')}
       style={style}
       data-scroll-stack-card={index}
     >
