@@ -251,50 +251,57 @@ function MotionCard({
   index: number
   pinned: boolean
 }) {
-  // The shrink runs from this card's arrival to its successor's, so it tracks
-  // the transition it depicts rather than a parallel guess at when that
-  // transition happens.
+  // The grow-in runs from this card's own predecessor's arrival to this
+  // card's own arrival, so it tracks the transition that brings *this* card
+  // in rather than a parallel guess at when that transition happens.
   //
-  // The last card has no successor, so `end` falls back to 0 and `hasRange`
-  // below is false: it is never animated. That is deliberate and it matters
-  // twice over.
-  // 1. A range ending above 1, once bound to a real motion.div's `style`,
-  //    reaches the native Web Animations API, which throws synchronously
-  //    ("Offsets must be null or in the range [0,1]") — during React's commit,
-  //    with no error boundary in this tree, unmounting the whole app to a blank
-  //    page.
-  // 2. Clamping such a range into [0,1] would not fix the last card anyway:
-  //    progress keeps climbing past its arrival while the card is still the
-  //    visible, pinned one, so a bound transform would shrink and dim it
-  //    exactly when it should be at its most visible, and hold that state while
-  //    the user scrolls on.
-  // Nothing ever covers the last card, so `style` stays `{}` for it regardless
-  // of `pinned`, same as the unhydrated path.
-  const start = thresholds?.[index] ?? 0
-  const end = thresholds?.[index + 1] ?? 0
+  // The first card has no predecessor, so it is never animated — it is
+  // already the active card the instant the section is reached, with
+  // nothing arriving to grow in from. That is deliberate and it matters
+  // twice over, mirroring exactly why the last card used to be the special
+  // case before this ran in the other direction:
+  // 1. A range starting below 0 (or otherwise not a real interval), once
+  //    bound to a real motion.div's `style`, reaches the native Web
+  //    Animations API, which throws synchronously ("Offsets must be null or
+  //    in the range [0,1]") — during React's commit, with no error boundary
+  //    in this tree, unmounting the whole app to a blank page.
+  // 2. Even a clamped range would be wrong for the first card anyway: there
+  //    is no scroll position at which it is arriving rather than already
+  //    being the visible, pinned one — animating it regardless would grow it
+  //    in from nothing right as the section first comes into view.
+  // Nothing ever grows the first card in, so `style` stays `{}` for it
+  // regardless of `pinned`, same as the unhydrated path.
+  const start = index > 0 ? (thresholds?.[index - 1] ?? 0) : 0
+  const end = index > 0 ? (thresholds?.[index] ?? 0) : 0
   // `slotThresholds` is strictly increasing within [0, 1) by construction, so
-  // every card that has a successor has a real interval. This asserts that
-  // rather than repairing it: a card whose range is not an interval simply does
-  // not animate. It is also the single test for "is this the last card", which
-  // is why no stack size is passed down here — being told the count as well as
-  // the thresholds is the same duplicated-source-of-truth seam `ScrollStackRoot`
-  // above exists to avoid.
-  const hasRange = start >= 0 && end > start && end <= 1
+  // every card that has a predecessor has a real interval. This asserts that
+  // rather than repairing it: a card whose range is not an interval simply
+  // does not animate. Gating on `index > 0` is the single test for "is this
+  // the first card", which is why no stack size is passed down here — being
+  // told the count as well as the thresholds is the same duplicated-source-
+  // of-truth seam `ScrollStackRoot` above exists to avoid.
+  const hasRange = index > 0 && start >= 0 && end > start && end <= 1
   const fallbackProgress = useMotionValue(0)
   const source = progress ?? fallbackProgress
-  const scale = useTransform(source, hasRange ? [start, end] : [0, 1], [1, 0.94])
+  const scale = useTransform(source, hasRange ? [start, end] : [0, 1], [0.94, 1])
+  // Mirrors the old covering-card fade exactly, time-reversed: opacity used
+  // to hold at 1 for the transition's first half and drop to 0.7 over the
+  // second, so the arriving card now rises 0.7 → 1 over the first half and
+  // holds at 1 for the second — fully opaque well before it becomes the
+  // active card, rather than still fading in right up to the moment it is.
   const opacity = useTransform(
     source,
-    hasRange ? [start + (end - start) * 0.5, end] : [0, 1],
-    [1, 0.7],
+    hasRange ? [start, start + (end - start) * 0.5] : [0, 1],
+    [0.7, 1],
   )
   const animated = pinned && hasRange
   const style = useMemo(() => (animated ? { scale, opacity } : {}), [animated, scale, opacity])
 
   return (
     // `data-scroll-stack-card` carries the index so tooling can address a
-    // specific card; scripts/scroll-perf-probe.mjs samples card 0's transform
-    // per frame. Same reasoning as `data-scroll-stack` on the root: a probe that
+    // specific card; scripts/scroll-perf-probe.mjs samples card 1's transform
+    // per frame (card 0 never animates, see above). Same reasoning as
+    // `data-scroll-stack` on the root: a probe that
     // navigates by element position instead silently measures the wrong node
     // when the markup shifts, and reports confident numbers about it.
     <motion.div
