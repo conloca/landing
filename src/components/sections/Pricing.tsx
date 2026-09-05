@@ -2,11 +2,7 @@ import { useState } from 'react'
 import { CtaButton } from '@/components/CtaButton'
 import { SegmentedControl, type SegmentIndex } from '@/components/ui/segmented-control'
 import { Reveal } from '@/components/motion/Reveal'
-import {
-  PricingCard,
-  type Plan,
-  type PlanFeature,
-} from '@/components/sections/pricing/PricingCard'
+import { PricingCard, type Plan, type PlanFeature } from '@/components/sections/pricing/PricingCard'
 import { CTA_LINKS } from '@/lib/nav'
 import type { BillingPeriod } from '@/lib/pricing'
 
