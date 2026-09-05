@@ -1,23 +1,22 @@
-import { Leaf } from 'lucide-react'
+import type { SVGProps } from 'react'
+import { ConlocaWordmark } from '@/components/icons/ConlocaWordmark'
 import { cn } from '@/lib/utils'
 
 /**
- * Stand-in for `conloca-logo` (Figma node 40002160:4377) — the real wordmark
- * mark was never exported (Figma image endpoint was rate-limited during
- * extraction). `data-placeholder` flags it for a follow-up asset swap.
+ * `conloca-logo` (Figma node 40002160:4377), ≈116.7×28 per docs/figma/DESIGN-SPEC.md's
+ * 117×28 (rounded), recoloured via `currentColor` for the `light` variant. Forwards the
+ * rest of `ConlocaWordmark`'s SVG props so a caller can pass `aria-hidden` per its own
+ * doc comment.
  */
-export function Logo({ light = false, className }: { light?: boolean; className?: string }) {
+export function Logo({
+  light = false,
+  className,
+  ...rest
+}: { light?: boolean; className?: string } & Omit<SVGProps<SVGSVGElement>, 'className'>) {
   return (
-    <span
-      className={cn(
-        'inline-flex items-center gap-2 text-lg font-semibold',
-        light ? 'text-stone-50' : 'text-stone-900',
-        className,
-      )}
-      data-placeholder="conloca-logo"
-    >
-      <Leaf className="size-6" strokeWidth={2.25} aria-hidden />
-      Conloca
-    </span>
+    <ConlocaWordmark
+      className={cn('h-7 w-auto', light ? 'text-stone-50' : 'text-stone-900', className)}
+      {...rest}
+    />
   )
 }
