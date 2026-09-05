@@ -15,12 +15,12 @@ points: Git history, pull-request review, and localisation.
 The target node in the shared URL (`40002391-9972`) is not a single frame — it is a **section
 containing four breakpoint frames**. All four are the "Developers" variant of the page:
 
-| Frame | Node id | Width | Height | Role |
-| --- | --- | --- | --- | --- |
-| Homepage - Developers - >1280 | `40002427:16387` | 1440 | 6459.6 | Desktop, the reference frame |
-| Homepage - Developers - 1280 / 1024 | `40002426:4064` | 1024 | 7976.9 | Tablet |
-| Homepage - Developers - 1024 / 640 | `40002427:20368` | 640 | 8757.3 | Large phone / small tablet |
-| Homepage - Developers - <640 | `40002441:868` | 393 | 8310.6 | Phone |
+| Frame                               | Node id          | Width | Height | Role                         |
+| ----------------------------------- | ---------------- | ----- | ------ | ---------------------------- |
+| Homepage - Developers - >1280       | `40002427:16387` | 1440  | 6459.6 | Desktop, the reference frame |
+| Homepage - Developers - 1280 / 1024 | `40002426:4064`  | 1024  | 7976.9 | Tablet                       |
+| Homepage - Developers - 1024 / 640  | `40002427:20368` | 640   | 8757.3 | Large phone / small tablet   |
+| Homepage - Developers - <640        | `40002441:868`   | 393   | 8310.6 | Phone                        |
 
 Reading the frame names as breakpoint ranges gives Tailwind-compatible boundaries:
 
@@ -53,6 +53,7 @@ Six top-level sections, vertical flow.
 
 **Header** (`conloca-header` instance, 1440×82, padding 24/32): inner bar 1376×34,
 `SPACE_BETWEEN`.
+
 - Left: `conloca-logo` 117×28, wordmark + glyph, fill `#1C1917`.
 - Right group (gap 31, centred): text links `How it works`, `Docs`, `Pricing`, `Blog`
   (Inter 400 16/19.36, `#1C1917`), then a button pair with gap 8:
@@ -78,8 +79,8 @@ Figma **grid, 1 row × 8 columns**, holding two children:
     - `Text carousel` (horizontal, gap 16): a 2 px wide vertical progress rail of three
       `conloca-carousel-progress` bars, track `#E7E5E4`, fill `#A8A29E`, radius 1000 — the
       first is partly filled. Beside it, 432×81 of body copy, Inter 700 16/27.2, `#44403C`:
-      *"Map your React components to typed schemas and MDS blocks in the IDE. Visual edits
-      respect the structure you define and stay in Git."*
+      _"Map your React components to typed schemas and MDS blocks in the IDE. Visual edits
+      respect the structure you define and stay in Git."_
       Three bars implies **three rotating slides; only one slide's copy exists.** Question 5.
     - `CTA Buttons` gap 12: `Get started` (dark) and `Try Demo` (white).
 - `Visual content` — 854×878, absolutely positioned children (no auto-layout).
@@ -98,6 +99,18 @@ Figma **grid, 1 row × 8 columns**, holding two children:
 
 Wrapper: vertical, gap 8, padding 72 top / 8 sides / 8 bottom.
 
+**Deliberate divergence from this frame at `lg` and up (≥1024px), once pinned, per
+designer request:** the card _surface_ fills the viewport edge to edge on both axes — no
+1424×814 cap, no radius, no border — instead of the dimensions below. The _content_
+(text and mockups) stays capped at a max width, just a different one (1344px, not this
+frame's 1374px content width) — see `src/components/sections/three-features/FeatureCard.tsx`
+for the exact derivation. This frame is still accurate below `lg`, for the reduced-motion/
+no-JS/prerender fallback even at `lg` and up, and for the 393/640 reference crops; the
+1024 and 1440 desktop crops will show an expected mismatch against a live capture until
+they're re-exported to match. See `src/components/sections/ThreeFeatures.tsx`,
+`src/components/motion/ScrollStack.tsx`, and
+`src/components/sections/three-features/FeatureCard.tsx`.
+
 Every card: **1424×814, radius 28, padding 24, 1 px `#F5F5F4` border, an image fill (blurred
 abstract photo) plus a `#000000` 20 % overlay.** All text on the cards is therefore light.
 Each card repeats the `Developers / Content editors` segmented control at top-left, here with a
@@ -106,10 +119,11 @@ translucent track (`#F5F5F4` at 10 %) and the inactive label in `#FAFAF9`.
 Card body is `Content` 1374×721.
 
 **Card 1 — "One source of truth, two ways to work"** (text left, visual right)
+
 - `Text container` 440 wide, vertical, gap 24, aligned to the **bottom** (`primaryAxis: MAX`).
   - H2 Inter Display 700 48/48, `#FAFAF9`.
-  - Body Inter 400 16/27.2, `#FFFFFF`: *"Developers work in the IDE. Editors work visually.
-    Every change goes back to the same MDX files in Git."*
+  - Body Inter 400 16/27.2, `#FFFFFF`: _"Developers work in the IDE. Editors work visually.
+    Every change goes back to the same MDX files in Git."_
   - Buttons: `Get started` (dark) + `Read docs` (white).
 - `Visual container` 860×721 holding a frame named **`Lootie animation` 1095×831** — larger
   than its container, so clipped. It is composed of two mockups:
@@ -119,35 +133,37 @@ Card body is `Content` 1374×721.
   - A visual-editor card 743×697, radius 24, white, three stacked shadows: a toolbar with a
     device segmented control (monitor / tablet / phone icons), undo/redo, and a dark `Publish`
     button; below it a rendered landing block with the lime `Open source` eyebrow, headline
-    *"Turn text to video in minutes"*, body copy, and a lime `#9AE600` CTA chip
-    *"Create a free AI video"*; a floating vertical toolbar (reorder / delete / more); a
+    _"Turn text to video in minutes"_, body copy, and a lime `#9AE600` CTA chip
+    _"Create a free AI video"_; a floating vertical toolbar (reorder / delete / more); a
     purple collaborator cursor labelled **`Mariam`** (`#A259FE`).
   - **This is a second Lottie animation that we have not been given.** See question 2.
 
 **Card 2 — "Localization without manual syncing"** (visual left, text right)
+
 - `Visual container` 687×721 (left) contains `Group 38`, **801×1334** — it overflows the
   container by 278 px above and 335 px below and 133 px to the right, and is clipped to the
   container box. **This is the `Banner 2 animation.lottie` we were given** (its canvas is
   849×1334; the extra ~48 px is blur bleed).
   - Content: a `Locales` panel — `English (en) · Source`, `Deutsch (de) · 1 Change`,
     `Français (fr) · 2 Changes`, `Español (en) · Up to date`, `日本語 (ja) · Up to date`,
-    footer *"2 locales need updates"* with a `Review` button, header action `+ New locale`.
+    footer _"2 locales need updates"_ with a `Review` button, header action `+ New locale`.
     A cyan collaborator cursor labelled **`Kyle`** (`#00BFFF`).
   - Behind it, a dimmed column of skeleton content cards; two of them carry amber `#FBBF24`
     ellipses with a **114 px layer blur** as highlight glows.
 - `Text container` 687 wide (right), vertical, gap 24, bottom-aligned.
   - H2 `Localization without manual syncing`, Inter Display 700 48/48.
-  - Body: *"Update the source structure once. Each locale follows the same versioned structure.
-    When content changes, Conloca flags the locales that need updating."*
+  - Body: _"Update the source structure once. Each locale follows the same versioned structure.
+    When content changes, Conloca flags the locales that need updating."_
   - Buttons `Get started` + `Read docs`.
 
 **Card 3 — "Review, merge, and revert content in Git"** (visual on top, text below)
+
 - `Content` switches to **vertical, `SPACE_BETWEEN`**.
 - `Visual container` 1374×625: a pull-request diff card — file `homepage.vx.json`, `+1` / `-1`
   chips, hunk header `@@ -39,10 +39 @@`, a removed line `"label": "Get started"` on
   `#FFDBDB` with `#FE3434` text and an added line `"label": "Create account"` on `#EBF8D9`;
   an amber cursor labelled **`Danny`**; a footer row with avatar, `Chris · 4h ago`,
-  *"Translated CTA text"*, and a dark `Merge pull request` button.
+  _"Translated CTA text"_, and a dark `Merge pull request` button.
 - `Text container` 1374×96 becomes **horizontal**, gap 24, bottom-aligned: H2 on the left,
   body copy in the middle, the two buttons pushed right.
 
@@ -156,12 +172,13 @@ Card body is `Content` 1374×721.
 Horizontal, centred, padding **196 top and bottom**, 32 sides. Plain white background.
 
 Two-line headline, **Inter Display 900, 72 px, line-height 72 px**, centred:
+
 - line 1 `Everything you need` — `#1C1917`
 - line 2 `nothing you don't` — lime `#9AE600`
 
 Four small elements float around the headline, each rotated a few degrees, overlapping the
-text: a white pill *"changes published"* with a lime status dot; a red Git glyph tile
-(`#F03C2E`); a purple Astro glyph tile (`#BC52EE`); a white pill *"homepage-eng.vx.json"* with
+text: a white pill _"changes published"_ with a lime status dot; a red Git glyph tile
+(`#F03C2E`); a purple Astro glyph tile (`#BC52EE`); a white pill _"homepage-eng.vx.json"_ with
 a file icon. Pills are Inter 500 14/16.94. This section is the strongest candidate for a
 scroll-parallax treatment — see question 12.
 
@@ -170,21 +187,21 @@ scroll-parallax treatment — see question 12.
 Figma **grid, 3 rows × 4 columns**, horizontal padding 32, card radius 32. Seven cards, all on
 a near-white sand tint (`#F5F6EF` / `#F6F7F1`) with a subtle noise effect:
 
-| Card | Title | Body | Span |
-| --- | --- | --- | --- |
-| 1 | Sceduled Publishing *(typo)* | Set a date and time for content to go live automatically | 2 cols × 2 rows, left |
-| 2 | Git-native workflow | Every change is a commit. Branch, preview, and merge | 2 cols, top right |
-| 3 | Type content in Markdown | Just type the page contents in Makrdown. Conloca will render it *(typo)* | 2 cols, right |
-| 4 | Media library | Upload assets once and reference them anywhere | 1 col, bottom |
-| 5 | Data collections | Model and reuse structured data collections | 1 col, bottom |
-| 6 | Reusable fragments | Define and reuse larger content as fragments | 1 col, bottom |
-| 7 | Full version history | Build a block once, reuse it across every page | 1 col, bottom |
+| Card | Title                        | Body                                                                     | Span                  |
+| ---- | ---------------------------- | ------------------------------------------------------------------------ | --------------------- |
+| 1    | Sceduled Publishing _(typo)_ | Set a date and time for content to go live automatically                 | 2 cols × 2 rows, left |
+| 2    | Git-native workflow          | Every change is a commit. Branch, preview, and merge                     | 2 cols, top right     |
+| 3    | Type content in Markdown     | Just type the page contents in Makrdown. Conloca will render it _(typo)_ | 2 cols, right         |
+| 4    | Media library                | Upload assets once and reference them anywhere                           | 1 col, bottom         |
+| 5    | Data collections             | Model and reuse structured data collections                              | 1 col, bottom         |
+| 6    | Reusable fragments           | Define and reuse larger content as fragments                             | 1 col, bottom         |
+| 7    | Full version history         | Build a block once, reuse it across every page                           | 1 col, bottom         |
 
 Card titles Inter 700 20/30, bodies Inter 400 20/30 in `#78716C`. Each card holds a bespoke
 illustration (a scheduling UI with a `Publish` button and an avatar ring; a branch diagram in
 lime; overlapping Markdown/preview cards; stacked `.PNG/.JPEG/.GIF/.MP4` file tiles; a data
 table; a drag-and-drop fragment outline; a version-history timeline with
-*"Edited homepage.mdx · 2m ago"*).
+_"Edited homepage.mdx · 2m ago"_).
 
 Note card 7's body text ("Build a block once, reuse it across every page") describes reusable
 fragments, not version history — the copy for cards 6 and 7 looks swapped. Question 16.
@@ -199,15 +216,16 @@ Header row: H2 `Choose a plan that fits you the best` (Inter Display 700 48/48) 
 Three cards, 1376 wide total, gap 12. Each card splits into a **white upper block** (radius,
 white fill) and a **tinted lower feature list** that visually extends below it:
 
-| | Simple | Pro | Business |
-| --- | --- | --- | --- |
-| Price | `$8` / Month | `$15` / Month | `$200` / Month |
-| Pitch | For small teams getting their site off the ground | For growing teams shipping content more often | For larger teams managing sites, brands & markets |
-| CTA | `Choose simple` (outline) | `Choose pro` (dark fill) | `Choose business` (outline) |
-| Badge | — | `Best value`, lime `#9AE600` pill | — |
-| Border | none | lime `#9AE600`, card lifted | none |
+|        | Simple                                            | Pro                                           | Business                                          |
+| ------ | ------------------------------------------------- | --------------------------------------------- | ------------------------------------------------- |
+| Price  | `$8` / Month                                      | `$15` / Month                                 | `$200` / Month                                    |
+| Pitch  | For small teams getting their site off the ground | For growing teams shipping content more often | For larger teams managing sites, brands & markets |
+| CTA    | `Choose simple` (outline)                         | `Choose pro` (dark fill)                      | `Choose business` (outline)                       |
+| Badge  | —                                                 | `Best value`, lime `#9AE600` pill             | —                                                 |
+| Border | none                                              | lime `#9AE600`, card lifted                   | none                                              |
 
 Feature lists (Inter 500 16/27.2, each row a check glyph + label):
+
 - **Simple**: 3 seats included ($5 per additional seat) · 5 seats max · 1 repository ·
   1GB repository storage · 1GB media storage
 - **Pro**: 10 seats included ($7 per additional seat) · 20 seats max · Unlimited repositories ·
@@ -247,6 +265,7 @@ viewport** rather than shrinking. Feature cards keep the side-by-side arrangemen
 visual clipped harder.
 
 **640** — a real breakpoint change, not just narrowing:
+
 - The header collapses to logo + `Try Demo` + `Get Started` + a **hamburger**. The text links
   disappear.
 - The hero inverts: it becomes a **dark, full-bleed rounded card** carrying the blurred
@@ -273,29 +292,29 @@ family that is not in Tailwind**.
 
 **Neutrals — exact Tailwind `stone` matches, no divergence:**
 
-| Hex | Uses | Tailwind | Role |
-| --- | --- | --- | --- |
-| `#FFFFFF` | 136 | `white` | card surfaces, light text |
-| `#1C1917` | 96 | `stone-900` | primary text, logo, icons |
-| `#FAFAF9` | 62 | `stone-50` | text on dark, icons on dark |
-| `#78716C` | 57 | `stone-500` | muted text, inactive tab labels |
-| `#A8A29E` | 37 | `stone-400` | line numbers, carousel fill, disabled icons |
-| `#F5F5F4` | 27 | `stone-100` | segmented-control track, card borders |
-| `#E7E5E4` | 21 | `stone-200` | button borders, carousel track |
-| `#292524` | 21 | `stone-800` | primary button fill, footer bar |
-| `#44403C` | 18 | `stone-700` | hero carousel body copy |
+| Hex       | Uses | Tailwind    | Role                                        |
+| --------- | ---- | ----------- | ------------------------------------------- |
+| `#FFFFFF` | 136  | `white`     | card surfaces, light text                   |
+| `#1C1917` | 96   | `stone-900` | primary text, logo, icons                   |
+| `#FAFAF9` | 62   | `stone-50`  | text on dark, icons on dark                 |
+| `#78716C` | 57   | `stone-500` | muted text, inactive tab labels             |
+| `#A8A29E` | 37   | `stone-400` | line numbers, carousel fill, disabled icons |
+| `#F5F5F4` | 27   | `stone-100` | segmented-control track, card borders       |
+| `#E7E5E4` | 21   | `stone-200` | button borders, carousel track              |
+| `#292524` | 21   | `stone-800` | primary button fill, footer bar             |
+| `#44403C` | 18   | `stone-700` | hero carousel body copy                     |
 
 **Lime accent — exact Tailwind `lime` matches:**
 
-| Hex | Tailwind | Role |
-| --- | --- | --- |
+| Hex       | Tailwind   | Role                                                                            |
+| --------- | ---------- | ------------------------------------------------------------------------------- |
 | `#9AE600` | `lime-400` | the brand accent: "nothing you don't", Pro card border and badge, in-mockup CTA |
-| `#7CCF00` | `lime-500` | JSON glyph, inline emphasis |
-| `#BBF451` | `lime-300` | mockup strokes |
-| `#ECFCCA` | `lime-100` | tint fills |
-| `#F7FEE7` | `lime-50` | Astro badge background |
-| `#5EA500` | `lime-600` | Astro badge text and glow |
-| `#497D00` | `lime-700` | dark lime text |
+| `#7CCF00` | `lime-500` | JSON glyph, inline emphasis                                                     |
+| `#BBF451` | `lime-300` | mockup strokes                                                                  |
+| `#ECFCCA` | `lime-100` | tint fills                                                                      |
+| `#F7FEE7` | `lime-50`  | Astro badge background                                                          |
+| `#5EA500` | `lime-600` | Astro badge text and glow                                                       |
+| `#497D00` | `lime-700` | dark lime text                                                                  |
 
 **Custom "sand / olive" family — NOT Tailwind, needs its own tokens.** This is the tint that
 gives the bento cards and mockups their warm cast:
@@ -305,12 +324,12 @@ gives the bento cards and mockups their warm cast:
 
 **Collaborator cursor colours** — one per named person, used as identity colours:
 
-| Hex | Person | Note |
-| --- | --- | --- |
-| `#F24835` | Niko | red |
-| `#A259FE` | Mariam | purple |
-| `#FBBF24` (`amber-400`) | Danny | amber |
-| `#00BFFF` | Kyle | deepskyblue, a raw CSS keyword colour — question 10 |
+| Hex                     | Person | Note                                                |
+| ----------------------- | ------ | --------------------------------------------------- |
+| `#F24835`               | Niko   | red                                                 |
+| `#A259FE`               | Mariam | purple                                              |
+| `#FBBF24` (`amber-400`) | Danny  | amber                                               |
+| `#00BFFF`               | Kyle   | deepskyblue, a raw CSS keyword colour — question 10 |
 
 **Semantic / diff:** `#FFDBDB` removed-line background, `#FE3434` removed-line text,
 `#EBF8D9` added-line background. Third-party brand: `#F03C2E` Git, `#BC52EE` Astro.
@@ -327,12 +346,12 @@ the amber in the banner is a local highlight, not a brand colour.
 
 Four families, all freely licensable — no licensing problem:
 
-| Family | Licence | Used for |
-| --- | --- | --- |
-| **Inter** | SIL Open Font License | all body, UI, labels, buttons |
-| **Inter Display** | same family, `opsz` display cut | every H1/H2 and the statement headline |
-| **Inter Variable** | the variable build of Inter | segmented-control labels only |
-| **Roboto Mono** | Apache 2.0 | file names, code snippets, diffs, line numbers |
+| Family             | Licence                         | Used for                                       |
+| ------------------ | ------------------------------- | ---------------------------------------------- |
+| **Inter**          | SIL Open Font License           | all body, UI, labels, buttons                  |
+| **Inter Display**  | same family, `opsz` display cut | every H1/H2 and the statement headline         |
+| **Inter Variable** | the variable build of Inter     | segmented-control labels only                  |
+| **Roboto Mono**    | Apache 2.0                      | file names, code snippets, diffs, line numbers |
 
 `Inter`, `Inter Display` and `Inter Variable` are three names for one family. Inter v4 exposes
 Display through the `opsz` axis, so a single variable font file can serve all three — but the
@@ -342,40 +361,40 @@ design treats them as separate styles, and one identical style (500 16/27.2) is 
 **Type ramp** (the styles that actually matter for the page; sizes below ~16 px belong to
 mockup interiors, not page chrome):
 
-| Role | Family | Weight | Size / line-height | Colour |
-| --- | --- | --- | --- | --- |
-| Statement headline | Inter Display | 900 | 72 / 72 | `#1C1917` + `#9AE600` |
-| H1, H2 | Inter Display | 700 | 48 / 48 | `#1C1917` on light, `#FAFAF9` on cards |
-| Price | Inter | 900 | 32 / 48 | `#1C1917` |
-| Plan name | Inter | 500 | 24 / 36 | `#1C1917` |
-| Bento card title | Inter | 700 | 20 / 30 | `#1C1917` |
-| Bento card body | Inter | 400 | 20 / 30 | `#78716C` |
-| Body / feature list | Inter | 500 | 16 / 27.2 | varies |
-| Card body copy | Inter | 400 | 16 / 27.2 | `#FFFFFF` |
-| Hero carousel copy | Inter | 700 | 16 / 27.2 | `#44403C` |
-| Nav link | Inter | 400 | 16 / 19.36 | `#1C1917` |
-| Button label | Inter | 500 | 14 / 14 | `#FAFAF9` / `#1C1917` |
-| Eyebrow (uppercase) | Inter | 700 | 12 / 20.4 or 14 / 16.94 | `#5EA500`, `#4F5833` |
-| Code / filename | Roboto Mono | 400 | 16 / 21.1 | `#1C1917` |
+| Role                | Family        | Weight | Size / line-height      | Colour                                 |
+| ------------------- | ------------- | ------ | ----------------------- | -------------------------------------- |
+| Statement headline  | Inter Display | 900    | 72 / 72                 | `#1C1917` + `#9AE600`                  |
+| H1, H2              | Inter Display | 700    | 48 / 48                 | `#1C1917` on light, `#FAFAF9` on cards |
+| Price               | Inter         | 900    | 32 / 48                 | `#1C1917`                              |
+| Plan name           | Inter         | 500    | 24 / 36                 | `#1C1917`                              |
+| Bento card title    | Inter         | 700    | 20 / 30                 | `#1C1917`                              |
+| Bento card body     | Inter         | 400    | 20 / 30                 | `#78716C`                              |
+| Body / feature list | Inter         | 500    | 16 / 27.2               | varies                                 |
+| Card body copy      | Inter         | 400    | 16 / 27.2               | `#FFFFFF`                              |
+| Hero carousel copy  | Inter         | 700    | 16 / 27.2               | `#44403C`                              |
+| Nav link            | Inter         | 400    | 16 / 19.36              | `#1C1917`                              |
+| Button label        | Inter         | 500    | 14 / 14                 | `#FAFAF9` / `#1C1917`                  |
+| Eyebrow (uppercase) | Inter         | 700    | 12 / 20.4 or 14 / 16.94 | `#5EA500`, `#4F5833`                   |
+| Code / filename     | Roboto Mono   | 400    | 16 / 21.1               | `#1C1917`                              |
 
 Letter-spacing is `0` everywhere except the collaborator name chips (`0.14`). Line-heights are
 pixel values, not ratios: 48/48 is a **1.0** ratio on headings, and 16/27.2 is **1.7** on body.
 
 ### Geometry
 
-| Token | Value |
-| --- | --- |
-| Page horizontal padding | 32 px (8 px for the feature-card wrapper and footer) |
-| Content max width | 1376 px |
-| Feature card | 1424×814, radius 28, padding 24 |
-| Bento card radius | 32 px |
-| Button radius | 8 px, padding 10 px, gap 6 px |
-| Segmented control | radius 14 outer / 12 inner, padding 2, gap 2 |
-| Badge / pill radius | 12 px |
-| Progress bar radius | 1000 px (full) |
-| Card stack gap | 8 px |
-| Section vertical padding | 196 px top (statement, pricing) |
-| Elevation | drop shadows at blur 6, 16 and 64 stacked |
+| Token                    | Value                                                |
+| ------------------------ | ---------------------------------------------------- |
+| Page horizontal padding  | 32 px (8 px for the feature-card wrapper and footer) |
+| Content max width        | 1376 px                                              |
+| Feature card             | 1424×814, radius 28, padding 24                      |
+| Bento card radius        | 32 px                                                |
+| Button radius            | 8 px, padding 10 px, gap 6 px                        |
+| Segmented control        | radius 14 outer / 12 inner, padding 2, gap 2         |
+| Badge / pill radius      | 12 px                                                |
+| Progress bar radius      | 1000 px (full)                                       |
+| Card stack gap           | 8 px                                                 |
+| Section vertical padding | 196 px top (statement, pricing)                      |
+| Elevation                | drop shadows at blur 6, 16 and 64 stacked            |
 
 ---
 
@@ -383,14 +402,14 @@ pixel values, not ratios: 48/48 is a **1.0** ratio on headings, and 16/27.2 is *
 
 **Maps cleanly onto shadcn:**
 
-| Design element | shadcn component | Notes |
-| --- | --- | --- |
-| `Try Demo` / `Get Started` / `Get started` / `Read docs` / `Choose *` | `button` | needs `default` (dark), `outline` (white + `stone-200` border) and a lime variant for the in-mockup CTA; all support leading **and** trailing icons |
-| `Developers / Content editors`, `Monthly / Annual` | `tabs` | styled as a pill segmented control, not shadcn's default underline |
-| Pricing cards, bento cards | `card` | the pricing card's split white-block-over-tinted-list needs custom structure |
-| `Best value` | `badge` | lime fill |
-| Mobile hamburger menu | `sheet` | contents not designed — question 4 |
-| Collaborator avatars | `avatar` | with a lime ring in one bento illustration |
+| Design element                                                        | shadcn component | Notes                                                                                                                                               |
+| --------------------------------------------------------------------- | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Try Demo` / `Get Started` / `Get started` / `Read docs` / `Choose *` | `button`         | needs `default` (dark), `outline` (white + `stone-200` border) and a lime variant for the in-mockup CTA; all support leading **and** trailing icons |
+| `Developers / Content editors`, `Monthly / Annual`                    | `tabs`           | styled as a pill segmented control, not shadcn's default underline                                                                                  |
+| Pricing cards, bento cards                                            | `card`           | the pricing card's split white-block-over-tinted-list needs custom structure                                                                        |
+| `Best value`                                                          | `badge`          | lime fill                                                                                                                                           |
+| Mobile hamburger menu                                                 | `sheet`          | contents not designed — question 4                                                                                                                  |
+| Collaborator avatars                                                  | `avatar`         | with a lime ring in one bento illustration                                                                                                          |
 
 **Bespoke, hand-built:**
 
@@ -425,7 +444,7 @@ Confirmed, with coordinates.
 
 **Practical consequence for the build**: the component must render the Lottie at its natural
 aspect ratio, anchored so the `Locales` panel lands in the visible window, with
-`overflow: hidden` on a 687×721 (fluid) container. Scaling it to *fit* the container would
+`overflow: hidden` on a 687×721 (fluid) container. Scaling it to _fit_ the container would
 shrink the panel to illegibility. On phone the same visual is scaled down and pushed to the
 bottom-right of the card, still clipped.
 
@@ -445,20 +464,20 @@ without hitting the limit at all.
 **One correction that matters for implementation:** the hero's product-dashboard panel is a
 single screenshot (`hero-panel.webp`), not a composition to rebuild in markup. It already
 contains the sidebar, the four stat cards, the full seven-entry activity list, and the video
-still. Section 2's description of that panel describes what is *inside the image*.
+still. Section 2's description of that panel describes what is _inside the image_.
 
 The vector assets in the table below (logo, glyphs, tiles) are still un-exported — they need
 `GET /v1/images?format=svg`, which is a per-node render rather than a fill:
 
-| Asset | Node id | Format |
-| --- | --- | --- |
-| `conloca-logo` (wordmark + mark) | `40002160:4377` | SVG |
-| Logo mark alone (`Union`) | `40002065:1894` | SVG |
-| Astro badge glyph | inside `40002427:16388` | SVG |
-| Git tile, Astro tile (statement section) | inside `40002427:16760` | SVG |
-| Hero video poster + gradient backdrops | image fills in `40002427:16388` | PNG @2x |
-| Feature-card background photos (×3) | image fills in `40002427:16418` | PNG @2x, or replace with CSS gradients |
-| Bento illustrations (×7) | inside `40002427:16814` | PNG @2x or SVG |
+| Asset                                    | Node id                         | Format                                 |
+| ---------------------------------------- | ------------------------------- | -------------------------------------- |
+| `conloca-logo` (wordmark + mark)         | `40002160:4377`                 | SVG                                    |
+| Logo mark alone (`Union`)                | `40002065:1894`                 | SVG                                    |
+| Astro badge glyph                        | inside `40002427:16388`         | SVG                                    |
+| Git tile, Astro tile (statement section) | inside `40002427:16760`         | SVG                                    |
+| Hero video poster + gradient backdrops   | image fills in `40002427:16388` | PNG @2x                                |
+| Feature-card background photos (×3)      | image fills in `40002427:16418` | PNG @2x, or replace with CSS gradients |
+| Bento illustrations (×7)                 | inside `40002427:16814`         | PNG @2x or SVG                         |
 
 Export command shape (token in `.env` as `FIGMA_PAT`, already git-ignored):
 
