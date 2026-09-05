@@ -1,0 +1,24 @@
+{
+  "source": "https://www.figma.com/design/OxxksZFS8hzKoFTeSRdFGs/Conloca",
+  "fetchedAt": "2026-08-27T08:05:39Z",
+  "figmaFileName": "Conloca",
+  "figmaLastModified": "2026-08-26T21:29:25Z",
+  "figmaVersion": "2392144292152080506",
+  "endpoint": "GET /v1/files/{key}?ids=...",
+  "note": "Fetched via the files endpoint, not /v1/files/{key}/nodes, which was rate-limited (429, x-figma-plan-tier: starter). See README.md.",
+  "postProcessing": "Pretty-printed (indent 1) and floats rounded to 4 decimals for diffability. absoluteRenderBounds, fillGeometry, strokeGeometry and other non-measurement fields stripped. Hashes below are of the files as stored, not of the raw API response.",
+  "files": {
+    "nodes-colors.json": {
+      "bytes": 744245,
+      "sha256": "a3d115b5ab4b6129fb291e477cdb7f94e3c7c5bb7e4edff993a13b2408be58ad"
+    },
+    "nodes-breakpoints.json": {
+      "bytes": 5892872,
+      "sha256": "881375c6a5a45259b08f968be5cc6f734928ee82e5a91abbe671f2c152749828"
+    },
+    "nodes-components.json": {
+      "bytes": 174825,
+      "sha256": "66c2ae8cc3f3b02e1307f94641d9b429b3a71cd0fd39e34b1ee3deb90ac25223"
+    }
+  }
+}

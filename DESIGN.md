@@ -51,13 +51,22 @@ Two details of that spec are easy to get wrong:
 ### What is emitted, and what is only recorded
 
 The generator emits **only** the tokens this project actually declares: the sand
-palette, the two font families, the light and dark semantic scheme, and the
-radius base.
+palette, the collaborator cursor colours, the two font families, the light and
+dark semantic scheme, and the radius base.
 
-`color.lime`, `color.stone`, `color.cursor` and the `layout` group are recorded
-in the token file as the design system's reference values but deliberately not
-emitted. Lime and stone are exact matches for Tailwind's own scales — emitting
-them would shadow Tailwind's defaults for no benefit.
+`color.lime`, `color.stone`, `color.diff`, `color.shadow` and the `layout` group
+are recorded in the token file as the design system's reference values but
+deliberately not emitted. Lime and stone match Tailwind v4's own scales exactly —
+emitting them would shadow Tailwind's defaults for no benefit (the generator
+enforces this: it refuses to emit any family named after a Tailwind default
+palette). The diff colours are reference values for a follow-up: the diff
+mockup renders its lines through nearest-Tailwind approximations today
+(v4 red-50 `#FEF2F2`, red-600 `#E7000B`, lime-50 `#F7FEE7` versus the design's
+`#FFDBDB` / `#FE3434` / `#EBF8D9`), tracked in
+[issue #99](https://github.com/conloca/landing/issues/99). The shadow colours
+are reference values: `standard` matches Tailwind v4 `gray-900` exactly
+(v4's oklch renders `#101828`); page shadows use Tailwind's default
+black-based utilities.
 
 ### Known wart
 
@@ -97,7 +106,10 @@ is exactly why it has to exist as a token.
 
 ### Lime — the brand accent
 
-Matches Tailwind `lime` exactly. Reference only; use the Tailwind utilities.
+Matches Tailwind **v4's** `lime` exactly — v4's oklch ramp renders as these
+hexes (lime-400 is `#9AE600`; the v3 hex `#A3E635` is not what this project
+ships, a distinction that once mislead a migration attempt). Reference only;
+use the Tailwind utilities.
 
 | Hex       | Tailwind   | Used for                                                                       |
 | --------- | ---------- | ------------------------------------------------------------------------------ |
@@ -124,12 +136,18 @@ Matches Tailwind `stone` exactly. Reference only.
 | `#44403C` | `stone-700` | hero carousel body copy               |
 | `#292524` | `stone-800` | primary button fill, footer bar       |
 | `#1C1917` | `stone-900` | primary text, logo, icons             |
+| `#0C0A09` | `stone-950` | the designer's pressed accent (`color.bg.accent.pressed`) |
 
 ### Collaborator colours
 
 Identity colours for the named cursors inside the product mockups: Niko
-`#F24835`, Mariam `#A259FE`, Danny `#FBBF24`, Kyle `#00BFFF`. Kyle's is a raw
-CSS keyword rather than a scale value — flagged for the designer in
+`#F24835`, Mariam `#A259FE`, Danny `#FBBF24`, Kyle `#00BFFF`. None of the four
+is a Tailwind colour (the nearest v4 steps — red-500 `#FB2C36`, violet-500
+`#8E51FF`, amber-400 `#FFB900`, sky-400 `#00BCFF` — are all visibly different),
+so they are recorded as `color.cursor.*` and emitted as `--color-cursor-*`;
+`CollaboratorCursor` consumes them, and all four previously rendered
+off-design through nearest-Tailwind approximations or a raw literal. Kyle's is
+a raw CSS keyword rather than a scale value — flagged for the designer in
 [`docs/QUESTIONS-DESIGNER.md`](docs/QUESTIONS-DESIGNER.md).
 
 ### Semantic scheme
