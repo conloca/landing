@@ -16,17 +16,22 @@ const BARS = [
   { id: 'upcoming-2', filled: false, width: 'w-[23px]' },
 ]
 
+interface CarouselRailProps {
+  text: string
+}
+
 /**
  * Three progress bars imply three rotating slides, but only one slide's copy
- * exists in the Figma file (see docs/QUESTIONS-DESIGNER.md). Rendered static
- * with the first bar filled, rather than fabricating rotation content.
+ * per audience exists in the Figma file — see `src/lib/content/hero-copy.ts`
+ * and docs/QUESTIONS-DESIGNER.md. Rendered static with the first bar filled,
+ * rather than fabricating rotation content.
  *
  * The design turns the rail through 90 degrees below `lg`: desktop runs it as
  * a vertical gutter beside left-aligned copy, mobile centres the copy and
  * lays the bars out horizontally beneath it. Same three tracks either way, so
  * this is one component with the axis flipped rather than two.
  */
-export function CarouselRail() {
+export function CarouselRail({ text }: CarouselRailProps) {
   return (
     <div className="flex flex-col items-center gap-4 lg:flex-row lg:items-start">
       <div className="order-2 flex gap-1 lg:order-1 lg:flex-col" aria-hidden>
@@ -43,9 +48,7 @@ export function CarouselRail() {
         ))}
       </div>
       <p className="order-1 max-w-[337px] text-center text-base leading-[1.7] font-bold text-stone-700 italic sm:max-w-[576px] lg:order-2 lg:max-w-[432px] lg:text-left lg:leading-normal lg:not-italic">
-        {/* "MDS" is verbatim from the Figma copy — likely a typo for "MDX", see docs/QUESTIONS-DESIGNER.md */}
-        Map your React components to typed schemas and MDS blocks in the IDE.
-        Visual edits respect the structure you define and stay in Git.
+        {text}
       </p>
     </div>
   )

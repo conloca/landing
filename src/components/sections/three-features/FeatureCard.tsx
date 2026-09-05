@@ -1,11 +1,10 @@
 import type { ReactNode } from 'react'
+import { AudienceSwitch } from '@/components/AudienceSwitch'
 import { CtaButton } from '@/components/CtaButton'
-import { SegmentedControl } from '@/components/ui/segmented-control'
-import { AUDIENCE_OPTIONS } from '@/lib/audience'
 import { CTA_LINKS } from '@/lib/nav'
 import { cn } from '@/lib/utils'
 
-interface FeatureCardProps {
+export interface FeatureCardProps {
   title: string
   body: string
   secondaryCta: string
@@ -17,6 +16,11 @@ interface FeatureCardProps {
   /** Card 1/2 sit text-and-visual side by side; card 3 stacks visual over text. */
   layout: 'visual-right' | 'visual-left' | 'stacked'
   background: string
+  /** Distinguishes this card's `AudienceSwitch` from the others' and the
+   * hero's when a screen reader lists every radiogroup on the page. Keyed to
+   * card position rather than the (audience-dependent) title, so the
+   * accessible name stays stable across an audience toggle. */
+  audienceSwitchLabel: string
 }
 
 export function FeatureCard({
@@ -27,6 +31,7 @@ export function FeatureCard({
   visual,
   layout,
   background,
+  audienceSwitchLabel,
 }: FeatureCardProps) {
   return (
     <div
@@ -36,23 +41,26 @@ export function FeatureCard({
       )}
     >
       <div className="absolute inset-0 bg-black/20" aria-hidden />
-      <SegmentedControl
-        options={AUDIENCE_OPTIONS}
-        activeIndex={0}
+      <AudienceSwitch
         variant="translucent"
         className="relative self-start"
+        label={audienceSwitchLabel}
       />
       <div
         className={cn(
           'relative mt-4 flex flex-1 flex-col gap-6 overflow-y-auto',
-          layout === 'stacked' ? 'justify-between md:flex-col' : 'md:flex-row md:items-end md:gap-8',
+          layout === 'stacked'
+            ? 'justify-between md:flex-col'
+            : 'md:flex-row md:items-end md:gap-8',
           layout === 'visual-left' && 'md:flex-row-reverse',
         )}
       >
         <div
           className={cn(
             'flex flex-col gap-6',
-            layout === 'stacked' ? 'md:flex-row md:items-end md:justify-between md:gap-8' : 'md:max-w-[440px]',
+            layout === 'stacked'
+              ? 'md:flex-row md:items-end md:justify-between md:gap-8'
+              : 'md:max-w-[440px]',
           )}
         >
           <div className={layout === 'stacked' ? 'md:max-w-md' : undefined}>

@@ -106,11 +106,12 @@ function Segment({ index, label, selected, variant, onSelect }: SegmentProps) {
  * arrow-key navigable, and exposing `aria-checked` — so a keyboard and assistive
  * technology reach the same states a mouse does.
  *
- * Without one it stays a static pill, which is why the Hero and feature-card
- * "Developers / Content editors" instances pass no handler: the design's second
- * audience is a separate page variant that has not been built, so a button there
- * would do nothing when clicked. A static pill is the honest rendering until it
- * exists. See docs/QUESTIONS-DESIGNER.md.
+ * Without one it stays a static pill — the honest rendering for a control
+ * with nothing to switch. Every "Developers / Content editors" instance (see
+ * `AudienceSwitch`) currently passes a handler, since a real content-editor
+ * page variant exists to switch to — but this primitive is `components/ui`
+ * surface, not owned by that one caller, and the static branch stays as
+ * supported API for a genuinely inert future use, not dead code to prune.
  */
 export function SegmentedControl({
   options,

@@ -2,6 +2,7 @@ import { describe, expect, test } from 'bun:test'
 import {
   SCROLL_OFFSET,
   activeIndexFor,
+  hasRevealStarted,
   scrollSpan,
   slotThresholds,
   type ScrollOffset,
@@ -126,5 +127,59 @@ describe('activeIndexFor', () => {
 
   test('a single card is always index 0', () => {
     expect(activeIndexFor(0.9, slotThresholds(1))).toBe(0)
+  })
+})
+
+describe('hasRevealStarted', () => {
+  // Regression for a real, shipped bug: `StackSlide` used to hide a slide
+  // until `activeIndex === index` (the moment its reveal *finishes*, not
+  // starts), so the zoom/slide/fade animation played entirely while
+  // `visibility: hidden`. The invariant this guards — proved directly from
+  // `activeIndexFor`'s own definition ("largest `i` with `progress >=
+  // thresholds[i]`") rather than re-implemented — is that a slide's reveal
+  // window opens exactly when its predecessor arrives, i.e. `activeIndex`
+  // reaches `index - 1`.
+  test('is exactly equivalent to "progress has reached this slide\'s reveal start"', () => {
+    const thresholds = slotThresholds(4)
+    for (let progress = 0; progress <= 1; progress += 0.001) {
+      const activeIndex = activeIndexFor(progress, thresholds)
+      for (let index = 1; index < thresholds.length; index += 1) {
+        const revealStartsAt = thresholds[index - 1] as number
+        expect(hasRevealStarted(activeIndex, index)).toBe(progress >= revealStartsAt)
+      }
+    }
+  })
+
+  // The bug this guards against, stated directly: the pre-fix predicate
+  // (`index > activeIndex`, i.e. `!hasRevealStarted` without the `+ 1`) kept
+  // a slide hidden for every progress value in its own reveal window.
+  test('the pre-fix predicate would have failed across the whole reveal window', () => {
+    const thresholds = slotThresholds(3)
+    const index = 1
+    const buggyNotYetArrived = (activeIndex: number) => index > activeIndex
+    let sawTheBug = false
+    for (
+      let progress = thresholds[0] as number;
+      progress < (thresholds[1] as number);
+      progress += 0.001
+    ) {
+      const activeIndex = activeIndexFor(progress, thresholds)
+      if (buggyNotYetArrived(activeIndex) && hasRevealStarted(activeIndex, index)) sawTheBug = true
+    }
+    expect(sawTheBug).toBe(true)
+  })
+
+  test('the first slide has no reveal window and is always already started', () => {
+    for (const activeIndex of [0, 1, 2, 99]) {
+      expect(hasRevealStarted(activeIndex, 0)).toBe(true)
+    }
+  })
+
+  test('reverse scroll re-hides a slide once its predecessor is no longer active', () => {
+    // activeIndex falling back below `index - 1` (scrolling back up) must
+    // flip this back to false — the gate is a pure function of the current
+    // position, not a one-way latch.
+    expect(hasRevealStarted(2, 3)).toBe(true)
+    expect(hasRevealStarted(1, 3)).toBe(false)
   })
 })
