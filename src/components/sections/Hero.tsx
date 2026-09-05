@@ -39,7 +39,9 @@ export function Hero() {
     // `overflow-x-clip`, not `-hidden`: the shot deliberately overhangs from
     // 1382px and this is what crops it at the 1440 box; `hidden` would make a
     // scroll container instead. Dropping it puts a horizontal scrollbar on
-    // every viewport below ~1680 and exposes the shot's squared right corner.
+    // every viewport below ~1680 and exposes HeroVisual's own clip mask edge
+    // (rounded now — see HeroVisual.tsx — but still a real crop line where
+    // none should show).
     // The desktop composition is the page's "first screen": it fills the
     // viewport height rather than sizing to its own content, clamped so a
     // very short window doesn't crush it below its design minimum and a very
