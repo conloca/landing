@@ -476,6 +476,18 @@ re-deriving the procedure from memory; it also tracks the edge cases this
 prose version doesn't fully close (the already-gone and
 detached-with-no-branch worktree states, and a defined verdict vocabulary).
 
+### Script: `bun run worktree:audit`
+
+`scripts/worktree-audit.ts` runs the gates above (clean status, the
+`clean -ndX` ignored-content check, the `.env` comparison, sequencer state,
+ancestry or merged-PR confirmation, and a best-effort liveness scan) against
+every `.claude/worktrees/agent-*` worktree, or against specific paths passed
+as arguments, and prints a PASS, FAIL, or UNCONFIRMED verdict per worktree.
+It is report-only: it never deletes a worktree, a branch, or any file, and
+never runs `git worktree remove` or `git branch -d` itself. Treat its output
+the same way as a manual audit under this section — evidence for a human to
+act on, not an automatic go-ahead.
+
 ## Figma asset export
 
 `bun run figma:export` pulls the design's raster assets into `src/assets/figma/`
