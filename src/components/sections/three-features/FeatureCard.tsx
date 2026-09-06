@@ -1,11 +1,10 @@
 import type { ReactNode } from 'react'
+import { AudienceSwitch } from '@/components/AudienceSwitch'
 import { CtaButton } from '@/components/CtaButton'
-import { SegmentedControl } from '@/components/ui/segmented-control'
-import { AUDIENCE_OPTIONS } from '@/lib/audience'
 import { CTA_LINKS } from '@/lib/nav'
 import { cn } from '@/lib/utils'
 
-interface FeatureCardProps {
+export interface FeatureCardProps {
   title: string
   body: string
   secondaryCta: string
@@ -17,6 +16,11 @@ interface FeatureCardProps {
   /** Card 1/2 sit text-and-visual side by side; card 3 stacks visual over text. */
   layout: 'visual-right' | 'visual-left' | 'stacked'
   background: string
+  /** Distinguishes this card's `AudienceSwitch` from the others' and the
+   * hero's when a screen reader lists every radiogroup on the page. Keyed to
+   * card position rather than the (audience-dependent) title, so the
+   * accessible name stays stable across an audience toggle. */
+  audienceSwitchLabel: string
   /**
    * Mirrors `ScrollStack`'s `pinned` state (computed once in `ThreeFeatures`,
    * not re-derived here): the `lg`-and-up full-bleed surface — no radius, no
@@ -38,6 +42,7 @@ export function FeatureCard({
   layout,
   background,
   fullBleed,
+  audienceSwitchLabel,
 }: FeatureCardProps) {
   return (
     <div
@@ -80,11 +85,10 @@ export function FeatureCard({
           fullBleed && 'lg:mx-auto lg:max-w-[1344px]',
         )}
       >
-        <SegmentedControl
-          options={AUDIENCE_OPTIONS}
-          activeIndex={0}
+        <AudienceSwitch
           variant="translucent"
           className="relative self-start"
+          label={audienceSwitchLabel}
         />
         <div
           className={cn(
