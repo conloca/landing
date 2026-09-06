@@ -1,6 +1,7 @@
+import { AudienceSwitch } from '@/components/AudienceSwitch'
 import { CtaButton } from '@/components/CtaButton'
-import { SegmentedControl } from '@/components/ui/segmented-control'
-import { AUDIENCE_OPTIONS } from '@/lib/audience'
+import { useAudience } from '@/lib/audience-context'
+import { HERO_COPY } from '@/lib/content/hero-copy'
 import { CTA_LINKS } from '@/lib/nav'
 import { Reveal } from '@/components/motion/Reveal'
 import { AstroBadge } from '@/components/sections/hero/AstroBadge'
@@ -27,6 +28,9 @@ import { HeroVisual } from '@/components/sections/hero/HeroVisual'
  * above the buttons in the left column and spans the shot down the right.
  */
 export function Hero() {
+  const { audience } = useAudience()
+  const copy = HERO_COPY[audience]
+
   return (
     // `items-stretch` below `lg` is load-bearing, not a default: the backdrop
     // is a zero-content grid item that has to grow to the height of the two
@@ -60,25 +64,23 @@ export function Hero() {
     // the 1440 desktop frame, `docs/figma/DESIGN-SPEC.md` §1), and only the
     // 1440 one resolves the text column to exactly 506px — it's a "1 row x 8
     // columns" auto-layout grid where the text column reads ~3/8 of the
-    // inner width, not a fixed pixel the designer picked. Baking 506px in
-    // from `lg` stretched a value that's only correct at >=1280 down across
-    // the whole tablet range, narrowing the actual available column and
-    // forcing the headline into an extra wrapped line there. `lg` gets the
-    // same ~3:5 share fluidly instead; `xl` (Tailwind's 1280, matching the
-    // spec's own "1024-1279 -> 1024 frame, >=1280 -> 1440 frame" table) locks
-    // back to Figma's exact 506px.
-    <section className="mx-auto grid max-w-[1440px] grid-cols-1 items-stretch overflow-x-clip px-1 lg:grid-cols-[3fr_5fr] lg:items-center lg:gap-12 lg:px-8 lg:py-0 xl:grid-cols-[506px_1fr] min-[1382px]:h-[clamp(835px,calc(100vh-82px),960px)] h-max">
+    // inner width, not a fixed pixel the designer picked. `lg` gets the same
+    // ~3:5 share fluidly instead; `xl` locks back to Figma's exact 506px.
+    // `grid-rows-[1fr_auto_auto]` (text/badge row, carousel row, CTA row) is
+    // the audience-switch layout-jump fix: Figma's own group wrapping the
+    // segmented control/headline/badge is sized "Fill" on both axes — it
+    // grows to the column's full height and stays top-anchored, with the
+    // carousel/CTA rows kept at their natural height below it. A longer
+    // headline (switching audience) then eats into that fill slack instead
+    // of growing the row and shoving the carousel/CTA down.
+    <section className="mx-auto grid max-w-[1440px] grid-cols-1 items-stretch overflow-x-clip px-1 lg:grid-cols-[3fr_5fr] lg:grid-rows-[1fr_auto_auto] lg:gap-12 lg:px-8 lg:py-0 xl:grid-cols-[506px_1fr] min-[1382px]:h-[clamp(835px,calc(100vh-82px),960px)] h-max">
       <HeroBackdrop />
 
       <Reveal
         direction="up"
         className="col-start-1 row-start-1 flex flex-col items-center gap-8 px-6 pt-[18.7%] text-center sm:pt-[22.6%] lg:items-start lg:px-0 lg:pt-[60px] lg:text-left"
       >
-        <SegmentedControl
-          options={AUDIENCE_OPTIONS}
-          activeIndex={0}
-          className="order-1 hidden lg:flex"
-        />
+        <AudienceSwitch className="order-1 hidden lg:flex" />
 
         {/* 32/32 at 393 and 52/52 at 640 are both drawn, so the step is the
             design's own, not an interpolation. No `lg:max-w`: the 432px
@@ -87,12 +89,14 @@ export function Hero() {
             `3fr` column's real width instead, and `xl` locks the exact
             Figma number back in once that column really is 506px again. */}
         <h1 className="font-display order-2 max-w-[337px] text-[32px] leading-[1] font-black text-stone-50 sm:max-w-[576px] sm:text-[52px] lg:text-5xl lg:font-bold lg:text-stone-900 xl:max-w-[432px]">
-          Keep content in your repo. Give editors a visual editing interface
+          {copy.headline}
         </h1>
 
-        <div className="order-1 lg:order-3">
-          <AstroBadge />
-        </div>
+        {copy.showAstroBadge && (
+          <div className="order-1 lg:order-3">
+            <AstroBadge />
+          </div>
+        )}
       </Reveal>
 
       {/* Reserves the empty lower third of the Figma card, which is not
@@ -118,10 +122,10 @@ export function Hero() {
         <CtaButton
           size="lg"
           variant="outline"
-          href={CTA_LINKS.tryDemo}
+          href={copy.secondaryCtaHref}
           className="h-[34px] px-4 text-sm lg:h-11 lg:px-6 lg:text-base"
         >
-          Try Demo
+          {copy.secondaryCta}
         </CtaButton>
       </div>
 
@@ -145,10 +149,6 @@ export function Hero() {
             anything cropping the square right corner, clipping the shot
             against the viewport edge instead. Establishing the container at
             the same breakpoint keeps the two gates from disagreeing.
-            The `-mr-[120px]` overhang is mirrored inside HeroVisual: its
-            clip-path insets the same 120px on the right, so the rounded edge
-            lands at the page box, not on the part the section clips away.
-            Change one number, change both.
             The 800px from 1382 is `min-w`, not `w`, on purpose: Tailwind v4
             emits the arbitrary `min-[1382px]` media block BEFORE the `lg`
             block, so a `min-[1382px]:w-[800px]` loses the cascade to
@@ -167,7 +167,7 @@ export function Hero() {
       </Reveal>
 
       <div className="col-start-1 row-start-4 px-6 pt-[18.4%] pb-18 lg:row-start-2 lg:px-0 lg:pt-0 lg:pb-0">
-        <CarouselRail />
+        <CarouselRail text={copy.carousel} />
       </div>
     </section>
   )
