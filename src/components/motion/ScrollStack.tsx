@@ -70,11 +70,12 @@ import {
 import { useHydrated } from '@/components/motion/Reveal'
 import { cn } from '@/lib/utils'
 import {
-  REVEAL_OPAQUE_AT,
   SCROLL_OFFSET,
   activeIndexFor,
   hasRevealStarted,
   interactiveIndexFor,
+  revealOpaqueAt,
+  revealWindow,
   slotThresholds,
 } from '@/components/motion/scroll-stack-geometry'
 
@@ -277,12 +278,19 @@ export function StackSlide({ children, index }: StackSlideProps) {
   // Gated on `interactiveIndex`, not `activeIndex`: an arriving state is drawn
   // above the active one and is fully opaque from half-way through its reveal
   // window (see `MotionCard`), a whole half-window before `activeIndex`
-  // reaches it. Gating on `activeIndex` left that arriving state — the only
-  // thing on screen — `inert`, so a visitor who stopped scrolling mid-
-  // transition (a normal resting position) got a dead CTA, and a click on it
-  // fell through to the covered state underneath. `interactiveIndexFor` flips
-  // at the same opacity handover `MotionCard` animates, shared via
-  // `scroll-stack-geometry.ts` so the two cannot drift apart.
+  // reaches it. Gating on `activeIndex` left that arriving state — the one
+  // the visitor is looking at — `inert`, so a visitor who stopped scrolling
+  // mid-transition (a normal resting position) got a dead CTA. The window and
+  // its opacity handover point come from `scroll-stack-geometry.ts`
+  // (`revealWindow` / `revealOpaqueAt`), the same functions `MotionCard`
+  // animates from, so this gate and that animation cannot be re-timed apart.
+  //
+  // Before the handover the arriving state is still translucent and drawn on
+  // top while `inert` — the state beneath shows through and stays the
+  // interactive one, so a click in that band reaches the state the visitor
+  // can still partly see, not a dead surface. Where that handover should sit
+  // is part of the placeholder reveal timing `MotionCard` notes is still
+  // pending from the designer.
   const isInert = pinned && index !== interactiveIndex
   // A state whose OWN reveal has not started yet still resolves a real
   // transform value (its scale/opacity/y clamp to their pre-arrival numbers,
@@ -365,8 +373,11 @@ function MotionCard({
   //    it in from nothing right as the section first comes into view.
   // Nothing ever reveals the first state in, so `style` stays `{}` for it
   // regardless of `pinned`, same as the unhydrated path.
-  const start = index > 0 ? (thresholds?.[index - 1] ?? 0) : 0
-  const end = index > 0 ? (thresholds?.[index] ?? 0) : 0
+  // `revealWindow` is the single definition of this state's window, shared
+  // with `StackSlide`'s interactivity gate (`interactiveIndexFor`); the two
+  // must agree on where the window is or the gate lands on a translucent or
+  // a not-yet-drawn state.
+  const [start, end] = revealWindow(thresholds ?? [], index)
   // `slotThresholds` is strictly increasing within [0, 1) by construction, so
   // every state that has a predecessor has a real interval. This asserts that
   // rather than repairing it: a state whose range is not an interval simply
@@ -388,12 +399,13 @@ function MotionCard({
   // at 1 for the transition's first half and drop to 0.7 over the second, so
   // the arriving state now rises 0.7 → 1 over the first half and holds at 1
   // for the second — fully opaque well before it becomes the active state.
-  // `REVEAL_OPAQUE_AT` is the same point `StackSlide` hands interactivity
-  // over at; the moment this state fully covers the one beneath it is the
-  // moment it must also be the one taking clicks and focus.
+  // `revealOpaqueAt` is also where `StackSlide` hands interactivity over: the
+  // moment this state is opaque and on top is the moment it takes clicks and
+  // focus. Scale and y keep settling to the end of the window, so a thin
+  // margin of the state beneath still shows around the edges until then.
   const opacity = useTransform(
     source,
-    hasRange ? [start, start + (end - start) * REVEAL_OPAQUE_AT] : [0, 1],
+    hasRange ? [start, revealOpaqueAt(thresholds ?? [], index)] : [0, 1],
     [0.7, 1],
   )
   const animated = pinned && hasRange

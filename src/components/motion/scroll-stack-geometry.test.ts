@@ -5,6 +5,8 @@ import {
   activeIndexFor,
   hasRevealStarted,
   interactiveIndexFor,
+  revealOpaqueAt,
+  revealWindow,
   scrollSpan,
   slotThresholds,
   type ScrollOffset,
@@ -132,13 +134,34 @@ describe('activeIndexFor', () => {
   })
 })
 
+describe('revealWindow', () => {
+  const thresholds = slotThresholds(3)
+
+  test("runs from the predecessor's arrival to the slide's own", () => {
+    // This is the contract `MotionCard` animates over and
+    // `interactiveIndexFor` hands over inside; both read it from here.
+    expect(revealWindow(thresholds, 1)).toEqual([0, 1 / 3])
+    expect(revealWindow(thresholds, 2)).toEqual([1 / 3, 2 / 3])
+  })
+
+  test('the first slide, and an index past the end, have no window', () => {
+    expect(revealWindow(thresholds, 0)).toEqual([0, 0])
+    expect(revealWindow(thresholds, 3)).toEqual([2 / 3, 0])
+    expect(revealWindow([], 1)).toEqual([0, 0])
+  })
+
+  test('the opaque point sits REVEAL_OPAQUE_AT of the way through', () => {
+    expect(revealOpaqueAt(thresholds, 1)).toBeCloseTo((1 / 3) * REVEAL_OPAQUE_AT, 12)
+    expect(revealOpaqueAt(thresholds, 2)).toBeCloseTo(1 / 3 + (1 / 3) * REVEAL_OPAQUE_AT, 12)
+  })
+})
+
 describe('interactiveIndexFor', () => {
   const thresholds = slotThresholds(3)
-  const opaqueAt = (index: number) => {
-    const start = thresholds[index - 1] as number
-    const end = thresholds[index] as number
-    return start + (end - start) * REVEAL_OPAQUE_AT
-  }
+  // Deliberately the shared helper, not a re-derivation: the property under
+  // test is that the gate flips at the exact point `MotionCard` reaches full
+  // opacity, and `revealOpaqueAt` is what `MotionCard` uses for that.
+  const opaqueAt = (index: number) => revealOpaqueAt(thresholds, index)
 
   test('hands over exactly where the arriving slide becomes fully opaque', () => {
     expect(interactiveIndexFor(0, thresholds)).toBe(0)
