@@ -100,8 +100,11 @@ await evaluate(`(() => {
   window.__frames = [];
   window.__values = [];
   window.__longTasks = [];
-  const card = document.querySelector('[data-scroll-stack-card="0"]');
-  if (!card) throw new Error('no [data-scroll-stack-card="0"] element to sample');
+  // Card 0 never animates (it has no predecessor to grow in from — see
+  // ScrollStack.tsx's MotionCard), so it would read as 100% held frames
+  // regardless of real smoothness. Card 1 is the first one that does.
+  const card = document.querySelector('[data-scroll-stack-card="1"]');
+  if (!card) throw new Error('no [data-scroll-stack-card="1"] element to sample');
   // Read the inline style motion writes, not the computed one. Calling
   // getComputedStyle on an element motion has just dirtied forces a style
   // recalculation every frame, which inflates the very recalcStyleCount and
