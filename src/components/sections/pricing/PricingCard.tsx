@@ -35,21 +35,12 @@ export interface Plan {
 }
 
 /**
- * Both periods are quoted per month, so the annual card must say what it actually
- * charges. Without this line a visitor reads "$6.67 / Month" and expects a $6.67 debit.
+ * Both billing periods quote the same per-month unit, so on its own the annual
+ * headline reads as a monthly price nobody is actually charged. "Billed monthly"
+ * was dropped as redundant with the visible toggle state — but the annual total
+ * isn't shown anywhere else, so dropping it too left the discounted per-month
+ * figure with no indication a visitor is really charged the full year up front.
  */
-function BillingNote({ plan, billing }: { plan: Plan; billing: BillingPeriod }) {
-  if (billing === 'monthly') {
-    return <p className="mt-1 text-sm text-stone-500">Billed monthly</p>
-  }
-
-  return (
-    <p className="mt-1 text-sm text-stone-500">
-      Billed annually — {formatUsd(annualTotal(plan.pricing))} per year
-    </p>
-  )
-}
-
 function Price({ plan, billing }: { plan: Plan; billing: BillingPeriod }) {
   return (
     <>
@@ -57,7 +48,11 @@ function Price({ plan, billing }: { plan: Plan; billing: BillingPeriod }) {
         {formatUsd(headlineAmount(plan.pricing, billing))}{' '}
         <span className="text-base font-normal text-stone-500">{HEADLINE_PERIOD_LABEL}</span>
       </p>
-      <BillingNote plan={plan} billing={billing} />
+      {billing === 'annual' && (
+        <p className="mt-1 text-sm text-stone-500">
+          Billed annually — {formatUsd(annualTotal(plan.pricing))} per year
+        </p>
+      )}
     </>
   )
 }
