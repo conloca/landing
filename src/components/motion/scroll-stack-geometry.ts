@@ -84,3 +84,64 @@ export function activeIndexFor(progress: number, thresholds: readonly number[]):
 export function hasRevealStarted(activeIndex: number, index: number): boolean {
   return index <= 0 || activeIndex >= index - 1
 }
+
+/**
+ * The progress window over which slide `index` reveals itself in: from its
+ * predecessor's arrival to its own. This is the one place that window is
+ * defined — `MotionCard` animates over it and `interactiveIndexFor` hands
+ * interactivity over inside it, and both read it from here so the two cannot
+ * be re-timed independently.
+ *
+ * The first slide has no predecessor and no window (`[0, 0]`, an empty
+ * interval — `MotionCard` treats that as "never animate"). An index beyond the
+ * thresholds yields an inverted interval (`end` falls back to 0) rather than
+ * throwing; `MotionCard`'s `hasRange` rejects that the same way.
+ */
+export function revealWindow(
+  thresholds: readonly number[],
+  index: number,
+): readonly [start: number, end: number] {
+  if (index <= 0) return [0, 0]
+  return [thresholds[index - 1] ?? 0, thresholds[index] ?? 0]
+}
+
+/**
+ * Fraction of a slide's reveal window after which it is fully opaque. The
+ * arriving slide fades 0.7 → 1 over this first part of its window and holds
+ * at 1 for the rest (`MotionCard` in `ScrollStack.tsx`). Its zoom and rise
+ * keep settling over the remainder, so at this point it is opaque and drawn
+ * on top but a thin margin of the slide beneath is still exposed around its
+ * edges — margin only, no control of the slide beneath lives there.
+ */
+export const REVEAL_OPAQUE_AT = 0.5
+
+/** Progress at which slide `index` becomes fully opaque (see `REVEAL_OPAQUE_AT`). */
+export function revealOpaqueAt(thresholds: readonly number[], index: number): number {
+  const [start, end] = revealWindow(thresholds, index)
+  return start + (end - start) * REVEAL_OPAQUE_AT
+}
+
+/**
+ * The slide that is visually on top, and therefore the only one that may be
+ * interactive.
+ *
+ * `activeIndexFor` flips at a slide's *arrival* (the end of its reveal window),
+ * but the arriving slide is drawn above the active one (higher z-index) and is
+ * fully opaque from `revealOpaqueAt` onwards. Gating `inert` on `activeIndex`
+ * alone therefore left the arriving slide — the one the visitor is looking
+ * at — dead to clicks and Tab for the second half of every transition, and a
+ * visitor who stops scrolling there hits a dead button. This flips at the
+ * opacity handover instead, so exactly one slide is interactive at every
+ * scroll position and it is always the one on top. Before the handover the
+ * arriving slide is still translucent, the slide beneath shows through, and
+ * that one stays the interactive one.
+ *
+ * The first slide has no reveal window, so it is interactive from progress 0.
+ */
+export function interactiveIndexFor(progress: number, thresholds: readonly number[]): number {
+  let index = 0
+  for (let i = 1; i < thresholds.length; i += 1) {
+    if (progress >= revealOpaqueAt(thresholds, i)) index = i
+  }
+  return index
+}

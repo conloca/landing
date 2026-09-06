@@ -1,8 +1,12 @@
 import { describe, expect, test } from 'bun:test'
 import {
+  REVEAL_OPAQUE_AT,
   SCROLL_OFFSET,
   activeIndexFor,
   hasRevealStarted,
+  interactiveIndexFor,
+  revealOpaqueAt,
+  revealWindow,
   scrollSpan,
   slotThresholds,
   type ScrollOffset,
@@ -127,6 +131,72 @@ describe('activeIndexFor', () => {
 
   test('a single card is always index 0', () => {
     expect(activeIndexFor(0.9, slotThresholds(1))).toBe(0)
+  })
+})
+
+describe('revealWindow', () => {
+  const thresholds = slotThresholds(3)
+
+  test("runs from the predecessor's arrival to the slide's own", () => {
+    // This is the contract `MotionCard` animates over and
+    // `interactiveIndexFor` hands over inside; both read it from here.
+    expect(revealWindow(thresholds, 1)).toEqual([0, 1 / 3])
+    expect(revealWindow(thresholds, 2)).toEqual([1 / 3, 2 / 3])
+  })
+
+  test('the first slide, and an index past the end, have no window', () => {
+    expect(revealWindow(thresholds, 0)).toEqual([0, 0])
+    expect(revealWindow(thresholds, 3)).toEqual([2 / 3, 0])
+    expect(revealWindow([], 1)).toEqual([0, 0])
+  })
+
+  test('the opaque point sits REVEAL_OPAQUE_AT of the way through', () => {
+    expect(revealOpaqueAt(thresholds, 1)).toBeCloseTo((1 / 3) * REVEAL_OPAQUE_AT, 12)
+    expect(revealOpaqueAt(thresholds, 2)).toBeCloseTo(1 / 3 + (1 / 3) * REVEAL_OPAQUE_AT, 12)
+  })
+})
+
+describe('interactiveIndexFor', () => {
+  const thresholds = slotThresholds(3)
+  // Deliberately the shared helper, not a re-derivation: the property under
+  // test is that the gate flips at the exact point `MotionCard` reaches full
+  // opacity, and `revealOpaqueAt` is what `MotionCard` uses for that.
+  const opaqueAt = (index: number) => revealOpaqueAt(thresholds, index)
+
+  test('hands over exactly where the arriving slide becomes fully opaque', () => {
+    expect(interactiveIndexFor(0, thresholds)).toBe(0)
+    expect(interactiveIndexFor(opaqueAt(1) - 1e-9, thresholds)).toBe(0)
+    expect(interactiveIndexFor(opaqueAt(1), thresholds)).toBe(1)
+    expect(interactiveIndexFor(opaqueAt(2) - 1e-9, thresholds)).toBe(1)
+    expect(interactiveIndexFor(opaqueAt(2), thresholds)).toBe(2)
+    expect(interactiveIndexFor(1, thresholds)).toBe(2)
+  })
+
+  // The bug this guards: gating `inert` on `activeIndex` leaves the arriving
+  // slide inert for the second half of its reveal window, while it is opaque
+  // and drawn on top — the only thing the visitor can see.
+  test('is one ahead of activeIndex for the opaque half of every reveal window, never elsewhere', () => {
+    for (let progress = 0; progress <= 1; progress += 0.001) {
+      const active = activeIndexFor(progress, thresholds)
+      const interactive = interactiveIndexFor(progress, thresholds)
+      const next = active + 1
+      const inOpaqueHalf = next < thresholds.length && progress >= opaqueAt(next)
+      expect(interactive).toBe(inOpaqueHalf ? next : active)
+    }
+  })
+
+  test('never names a slide whose reveal has not started', () => {
+    // Interactive implies visible: a slide that is still `invisible`
+    // (`hasRevealStarted` false) must never be the one taking focus.
+    for (let progress = 0; progress <= 1; progress += 0.001) {
+      const active = activeIndexFor(progress, thresholds)
+      const interactive = interactiveIndexFor(progress, thresholds)
+      expect(hasRevealStarted(active, interactive)).toBe(true)
+    }
+  })
+
+  test('a single card is always index 0', () => {
+    expect(interactiveIndexFor(0.9, slotThresholds(1))).toBe(0)
   })
 })
 

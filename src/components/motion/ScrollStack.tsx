@@ -73,6 +73,9 @@ import {
   SCROLL_OFFSET,
   activeIndexFor,
   hasRevealStarted,
+  interactiveIndexFor,
+  revealOpaqueAt,
+  revealWindow,
   slotThresholds,
 } from '@/components/motion/scroll-stack-geometry'
 
@@ -92,6 +95,11 @@ const SLOT_VH = 100
 interface StackState {
   progress: MotionValue<number>
   activeIndex: number
+  /** The slide that is visually on top right now — the only one not `inert`.
+   * Distinct from `activeIndex`: an arriving slide covers the active one
+   * (fully opaque, higher z-index) before it *becomes* the active one. See
+   * `interactiveIndexFor`. */
+  interactiveIndex: number
   /**
    * Carries the stack size too — `thresholds.length` is the count — so nothing
    * downstream has to be told the same number twice.
@@ -100,7 +108,9 @@ interface StackState {
   /** Whether the stack is actually pinning/animating right now — hydrated,
    * motion allowed. Shared from here because both `StackFrame` (does it
    * render one sticky frame or plain flow?) and `StackSlide` (does it
-   * position absolutely or in flow?) need the same answer. */
+   * position absolutely or in flow?) need the same answer. Also the single
+   * source of truth for every `lg`-and-up full-bleed class in this file and
+   * in `FeatureCard` — see the `pinned` prop on `ScrollStackRoot`. */
   pinned: boolean
 }
 
@@ -123,8 +133,23 @@ const ScrollStackContext = createContext<StackState | null>(null)
  * exactly `count` slots tall, so a heading or a spacer rendered as a direct
  * child here adds height that no slide accounts for and shifts every arrival.
  * Put such an element outside `ScrollStackRoot`.
+ *
+ * `pinned`: an optional override for whether slides render pinned at all. Left
+ * unset, this component decides for itself from `useHydrated`/
+ * `useReducedMotion`, same as always. A caller that also needs the *same*
+ * pinned/not-pinned boolean for its own markup *outside* this tree — where
+ * `ScrollStackRoot`'s own context can't reach, since context only flows to
+ * descendants — passes it in instead, so there is exactly one computation of
+ * it rather than two independently-derived booleans that are only equal by
+ * assumption. `ThreeFeatures` does this for its full-bleed section styling.
  */
-export function ScrollStackRoot({ children }: { children: ReactNode }) {
+export function ScrollStackRoot({
+  children,
+  pinned: pinnedOverride,
+}: {
+  children: ReactNode
+  pinned?: boolean
+}) {
   const count = Children.toArray(children).length
   const sectionRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({
@@ -134,20 +159,22 @@ export function ScrollStackRoot({ children }: { children: ReactNode }) {
     offset: [...SCROLL_OFFSET],
   })
   const [activeIndex, setActiveIndex] = useState(0)
+  const [interactiveIndex, setInteractiveIndex] = useState(0)
   const thresholds = useMemo(() => slotThresholds(count), [count])
 
   const syncActiveIndex = (value: number) => {
     setActiveIndex(activeIndexFor(value, thresholds))
+    setInteractiveIndex(interactiveIndexFor(value, thresholds))
   }
 
   useMotionValueEvent(scrollYProgress, 'change', syncActiveIndex)
 
   const reducedMotion = useReducedMotion()
-  const inertSource = useMotionValue(0)
   // See the file header point 1, and the original design note this file
   // inherits: the spring is tuned quick rather than floaty, and reduced
   // motion gets the raw, un-sprung value so nothing keeps animating once
   // scroll input stops.
+  const inertSource = useMotionValue(0)
   const smoothProgress = useSpring(reducedMotion ? inertSource : scrollYProgress, {
     stiffness: 260,
     damping: 38,
@@ -169,11 +196,13 @@ export function ScrollStackRoot({ children }: { children: ReactNode }) {
   }, [])
 
   const hydrated = useHydrated()
-  const pinned = hydrated && !reducedMotion
+  // See the `pinned` prop doc above: an explicit override wins when given,
+  // otherwise this is exactly the formula this component always used.
+  const pinned = pinnedOverride ?? (hydrated && !reducedMotion)
 
   const state = useMemo(
-    () => ({ progress, activeIndex, thresholds, pinned }),
-    [progress, activeIndex, thresholds, pinned],
+    () => ({ progress, activeIndex, interactiveIndex, thresholds, pinned }),
+    [progress, activeIndex, interactiveIndex, thresholds, pinned],
   )
   const sectionStyle = useMemo(
     () => (pinned ? { height: `${count * SLOT_VH}dvh` } : undefined),
@@ -200,14 +229,25 @@ export function ScrollStackRoot({ children }: { children: ReactNode }) {
 }
 
 /**
- * The one pinned frame. Unpinned (pre-hydration, reduced motion), there is no
- * frame at all — `children` (each a `StackSlide`) render directly, one per
- * flowed block, exactly as a reader without JS or who asked for less motion
- * should see them: stacked, fully visible, nothing overlapping.
+ * The one pinned frame. Unpinned (pre-hydration, reduced motion), the wrapper
+ * has no positioning of its own and `children` (each a `StackSlide`) render
+ * as plain flowed blocks, exactly as a reader without JS or who asked for
+ * less motion should see them: stacked, fully visible, nothing overlapping.
+ *
+ * Always renders the same `<div>` — never conditionally returns `children`
+ * bare — because `pinned` starts `false` pre-hydration and flips `true`
+ * after. Swapping the wrapper's presence in and out at that flip changes
+ * this element's type at its position in the tree, which unmounts and
+ * remounts every `StackSlide` beneath it (and everything they hold, a live
+ * `LottieBanner` mid-load included) right after hydration — a real, shipped
+ * regression this fixed. Toggling only the class string keeps the tree shape
+ * identical across both states, so nothing below ever remounts on the flip.
+ * `relative` is intentionally omitted from the pinned classes: a `sticky` box
+ * already establishes the containing block `StackSlide`'s `absolute inset-0`
+ * needs, so adding it would only be a redundant, same-property override.
  */
 function StackFrame({ children, pinned }: { children: ReactNode; pinned: boolean }) {
-  if (!pinned) return children
-  return <div className={`sticky top-0 relative ${SLOT_CLASS}`}>{children}</div>
+  return <div className={cn(pinned && `sticky top-0 ${SLOT_CLASS}`)}>{children}</div>
 }
 
 interface StackSlideProps {
@@ -228,12 +268,30 @@ export function StackSlide({ children, index }: StackSlideProps) {
   const stack = useContext(ScrollStackContext)
   const pinned = stack?.pinned ?? false
   const activeIndex = stack?.activeIndex ?? 0
-  // Both directions are inert once pinned: an earlier state is covered (by
-  // z-index, below) and a later one is either mid-arrival (visible and
-  // animating, but not yet the active state — see `notYetArrived` below) or
-  // has not arrived at all (hidden outright). None of the three should be in
-  // the Tab order — only the active state's own controls should be reachable.
-  const isInert = pinned && index !== activeIndex
+  const interactiveIndex = stack?.interactiveIndex ?? 0
+  // Exactly one state is interactive once pinned: the one visually on top.
+  // Every other state is inert — an earlier one is covered (by z-index,
+  // below), a later one is either still translucent mid-arrival or has not
+  // arrived at all (hidden outright) — so only the controls the visitor can
+  // actually see are in the Tab order or receive clicks.
+  //
+  // Gated on `interactiveIndex`, not `activeIndex`: an arriving state is drawn
+  // above the active one and is fully opaque from half-way through its reveal
+  // window (see `MotionCard`), a whole half-window before `activeIndex`
+  // reaches it. Gating on `activeIndex` left that arriving state — the one
+  // the visitor is looking at — `inert`, so a visitor who stopped scrolling
+  // mid-transition (a normal resting position) got a dead CTA. The window and
+  // its opacity handover point come from `scroll-stack-geometry.ts`
+  // (`revealWindow` / `revealOpaqueAt`), the same functions `MotionCard`
+  // animates from, so this gate and that animation cannot be re-timed apart.
+  //
+  // Before the handover the arriving state is still translucent and drawn on
+  // top while `inert` — the state beneath shows through and stays the
+  // interactive one, so a click in that band reaches the state the visitor
+  // can still partly see, not a dead surface. Where that handover should sit
+  // is part of the placeholder reveal timing `MotionCard` notes is still
+  // pending from the designer.
+  const isInert = pinned && index !== interactiveIndex
   // A state whose OWN reveal has not started yet still resolves a real
   // transform value (its scale/opacity/y clamp to their pre-arrival numbers,
   // not zero — see `MotionCard`), and it sits at a higher z-index than the
@@ -254,9 +312,18 @@ export function StackSlide({ children, index }: StackSlideProps) {
   // again the way this bug let them.
   const notYetArrived = pinned && !hasRevealStarted(activeIndex, index)
   const zIndexStyle = useMemo(() => (pinned ? { zIndex: index + 1 } : undefined), [pinned, index])
+  // `lg:p-0` rides along with the pinned/absolute presentation rather than
+  // applying unconditionally: full-bleed is a property of the *pinned*
+  // presentation (see `ThreeFeatures`), not of the breakpoint alone. Gating
+  // it on breakpoint only would strip the 16px inset from the
+  // reduced-motion/no-JS/prerender fallback too — those cohorts render the
+  // plain-stacked layout, where three consecutive full-viewport, edge-to-edge
+  // slides with no gap or radius read as broken, not as "one full-screen
+  // frame". Below `lg` the slide keeps its inset either way, matching the
+  // pre-full-bleed layout exactly.
   const wrapperClass = cn(
     pinned
-      ? 'absolute inset-0 flex items-center p-4'
+      ? 'absolute inset-0 flex items-center p-4 lg:p-0'
       : `flex ${SLOT_CLASS} w-full items-center p-4`,
     notYetArrived && 'invisible',
   )
@@ -306,8 +373,11 @@ function MotionCard({
   //    it in from nothing right as the section first comes into view.
   // Nothing ever reveals the first state in, so `style` stays `{}` for it
   // regardless of `pinned`, same as the unhydrated path.
-  const start = index > 0 ? (thresholds?.[index - 1] ?? 0) : 0
-  const end = index > 0 ? (thresholds?.[index] ?? 0) : 0
+  // `revealWindow` is the single definition of this state's window, shared
+  // with `StackSlide`'s interactivity gate (`interactiveIndexFor`); the two
+  // must agree on where the window is or the gate lands on a translucent or
+  // a not-yet-drawn state.
+  const [start, end] = revealWindow(thresholds ?? [], index)
   // `slotThresholds` is strictly increasing within [0, 1) by construction, so
   // every state that has a predecessor has a real interval. This asserts that
   // rather than repairing it: a state whose range is not an interval simply
@@ -329,9 +399,13 @@ function MotionCard({
   // at 1 for the transition's first half and drop to 0.7 over the second, so
   // the arriving state now rises 0.7 → 1 over the first half and holds at 1
   // for the second — fully opaque well before it becomes the active state.
+  // `revealOpaqueAt` is also where `StackSlide` hands interactivity over: the
+  // moment this state is opaque and on top is the moment it takes clicks and
+  // focus. Scale and y keep settling to the end of the window, so a thin
+  // margin of the state beneath still shows around the edges until then.
   const opacity = useTransform(
     source,
-    hasRange ? [start, start + (end - start) * 0.5] : [0, 1],
+    hasRange ? [start, revealOpaqueAt(thresholds ?? [], index)] : [0, 1],
     [0.7, 1],
   )
   const animated = pinned && hasRange
@@ -348,7 +422,10 @@ function MotionCard({
     // element position instead silently measures the wrong node when the
     // markup shifts, and reports confident numbers about it.
     <motion.div
-      className="h-full max-h-[46rem] w-full"
+      // `lg:max-h-none` only when `pinned` — the reduced-motion/no-JS/prerender
+      // fallback keeps the 736px cap so its stacked cards stay readable as
+      // cards, not full-viewport panels with no visual boundary between them.
+      className={cn('h-full max-h-[46rem] w-full', pinned && 'lg:max-h-none')}
       style={style}
       data-scroll-stack-card={index}
     >

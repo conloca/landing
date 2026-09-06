@@ -99,6 +99,18 @@ Figma **grid, 1 row × 8 columns**, holding two children:
 
 Wrapper: vertical, gap 8, padding 72 top / 8 sides / 8 bottom.
 
+**Deliberate divergence from this frame at `lg` and up (≥1024px), once pinned, per
+designer request:** the card _surface_ fills the viewport edge to edge on both axes — no
+1424×814 cap, no radius, no border — instead of the dimensions below. The _content_
+(text and mockups) stays capped at a max width, just a different one (1344px, not this
+frame's 1374px content width) — see `src/components/sections/three-features/FeatureCard.tsx`
+for the exact derivation. This frame is still accurate below `lg`, for the reduced-motion/
+no-JS/prerender fallback even at `lg` and up, and for the 393/640 reference crops; the
+1024 and 1440 desktop crops will show an expected mismatch against a live capture until
+they're re-exported to match. See `src/components/sections/ThreeFeatures.tsx`,
+`src/components/motion/ScrollStack.tsx`, and
+`src/components/sections/three-features/FeatureCard.tsx`.
+
 Every card: **1424×814, radius 28, padding 24, 1 px `#F5F5F4` border, an image fill (blurred
 abstract photo) plus a `#000000` 20 % overlay.** All text on the cards is therefore light.
 Each card repeats the `Developers / Content editors` segmented control at top-left, here with a
