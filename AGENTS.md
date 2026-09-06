@@ -11,17 +11,17 @@ server at runtime — `bun run build` emits a `dist/` directory of static files.
 
 ## Stack
 
-| Concern        | Choice                                                            |
-| -------------- | ----------------------------------------------------------------- |
-| Package manager| bun                                                               |
-| Bundler        | Vite 7, aliased to `rolldown-vite` (Rust bundler, Oxc-based)       |
-| React plugin   | `@vitejs/plugin-react` (uses Oxc, not Babel, under rolldown-vite)  |
-| Linter         | `oxlint` (Oxc). There is no ESLint.                                |
-| UI framework   | React 19                                                          |
-| Styling        | Tailwind CSS v4, CSS-first config inside `src/index.css`           |
-| Components     | shadcn/ui (radix base, nova preset) in `src/components/ui`         |
-| Animation      | `motion` (Framer Motion v13) + `@lottiefiles/dotlottie-react`      |
-| Types          | TypeScript, `strict` plus `exactOptionalPropertyTypes`             |
+| Concern         | Choice                                                            |
+| --------------- | ----------------------------------------------------------------- |
+| Package manager | bun                                                               |
+| Bundler         | Vite 7, aliased to `rolldown-vite` (Rust bundler, Oxc-based)      |
+| React plugin    | `@vitejs/plugin-react` (uses Oxc, not Babel, under rolldown-vite) |
+| Linter          | `oxlint` (Oxc). There is no ESLint.                               |
+| UI framework    | React 19                                                          |
+| Styling         | Tailwind CSS v4, CSS-first config inside `src/index.css`          |
+| Components      | shadcn/ui (radix base, nova preset) in `src/components/ui`        |
+| Animation       | `motion` (Framer Motion v13) + `@lottiefiles/dotlottie-react`     |
+| Types           | TypeScript, `strict` plus `exactOptionalPropertyTypes`            |
 
 `vite` in `package.json` is an alias: `"vite": "npm:rolldown-vite@^7.3.1"`. Keep the
 `overrides` and `resolutions` entries in sync with it, or transitive dependencies
@@ -164,7 +164,7 @@ reason the reference exports are 1x — the script has no notion of scale.
 **`eval` is refused outright inside an isolated agent worktree.** The isolation
 guard rejects any command containing the word `eval`, so `agent-browser eval
 '...'` never runs for a worktree-isolated agent. The refusal is easy to
-misdiagnose because it talks about *git*: "this command runs a string through
+misdiagnose because it talks about _git_: "this command runs a string through
 eval, which can't be verified to stay inside the worktree ... a worktree-isolated
 agent's git operations must target its own worktree". That is the guard, not
 `agent-browser`, and no amount of rewriting the JavaScript will get past it.
@@ -173,13 +173,13 @@ Two separate agents lost time to this independently.
 Use the structured readers instead — they cover most of what `eval` was reached
 for, and return parsed values rather than strings to re-parse:
 
-| Instead of `eval` | Use |
-| --- | --- |
-| Reading geometry (`getBoundingClientRect`) | `agent-browser get box <selector>` |
-| Reading computed style | `agent-browser get styles <selector>` |
-| Reading text content | `agent-browser get text <selector>` |
-| Counting matches | `agent-browser get count <selector>` |
-| Structure of the page | `agent-browser snapshot` |
+| Instead of `eval`                          | Use                                   |
+| ------------------------------------------ | ------------------------------------- |
+| Reading geometry (`getBoundingClientRect`) | `agent-browser get box <selector>`    |
+| Reading computed style                     | `agent-browser get styles <selector>` |
+| Reading text content                       | `agent-browser get text <selector>`   |
+| Counting matches                           | `agent-browser get count <selector>`  |
+| Structure of the page                      | `agent-browser snapshot`              |
 
 For anything genuinely beyond those, capture a screenshot and read it back, or
 hand the measurement to a non-isolated agent.
@@ -215,7 +215,7 @@ agent-browser session list   # active sessions, with the current one arrowed
 agent-browser session        # the name this shell is using
 ```
 
-**Close your own session; never `close --all`.** The `--all` form closes *every*
+**Close your own session; never `close --all`.** The `--all` form closes _every_
 session on the machine, including other agents' live browsers — one agent's
 cleanup killed a peer's session mid-run. Orphaned daemons accumulate at roughly
 11 Chrome processes each, and five orphans reached 55 processes during this
@@ -228,7 +228,7 @@ share one daemon and one Chrome pool. Four parallel visual-fidelity agents
 produced 79 concurrent Chrome processes here; the daemon's IPC socket started
 returning `EAGAIN` and no stable frame could be produced for anybody — including
 agents that needed a single screenshot. There is no host-wide lock, so this
-cannot be enforced from inside an agent: whoever *dispatches* the agents decides
+cannot be enforced from inside an agent: whoever _dispatches_ the agents decides
 which ones may capture, and holds the rest until those report back. Non-browser
 work (extraction, token generation, docs) parallelises freely; capture work does
 not. If you are an agent rather than the dispatcher, run `agent-browser session
@@ -298,7 +298,7 @@ in.
   off `main` with no agent behind it looks identical to an abandoned one by
   every check below; this section doesn't apply to it, full stop, not as a
   reap criterion but as a scope filter). Snapshot in this exact order —
-  `git worktree list --porcelain` first, *then* the live-agent list —
+  `git worktree list --porcelain` first, _then_ the live-agent list —
   because the reverse order is unsafe: a worktree dispatched between the
   two reads would be in the worktree snapshot but missing from an
   already-taken live list, and would look abandoned when it's brand new.
@@ -501,11 +501,11 @@ the places where a wrong answer would be silent rather than loud.
 incidental: Figma splits endpoints into three cost tiers, and the ones asset
 export needs are the most restricted.
 
-| Tier | Endpoints | Dev/Full seat budget |
-| --- | --- | --- |
-| 1 | `GET file`, `GET file nodes`, **`GET images`** | 10/min Starter, 15/min Professional, 20/min Org and Enterprise |
-| 2 | comments, variables, webhooks, projects | 25–100/min |
-| 3 | components, metadata, users, analytics | 50–150/min |
+| Tier | Endpoints                                      | Dev/Full seat budget                                           |
+| ---- | ---------------------------------------------- | -------------------------------------------------------------- |
+| 1    | `GET file`, `GET file nodes`, **`GET images`** | 10/min Starter, 15/min Professional, 20/min Org and Enterprise |
+| 2    | comments, variables, webhooks, projects        | 25–100/min                                                     |
+| 3    | components, metadata, users, analytics         | 50–150/min                                                     |
 
 A **View or Collab seat gets roughly six Tier 1 calls per month**, which is what
 silently defeated the first extraction attempt in this repo. Figma reports that
@@ -515,12 +515,12 @@ cannot fix a monthly quota, only a different seat can.
 
 **This project's token is in exactly that state.** Measured 2026-08-26:
 
-| Endpoint | Result |
-| --- | --- |
-| `GET /v1/files/:key/images` (image fills) | 200, repeatedly, no throttling |
-| `GET /v1/files/:key/nodes` | 429, `Retry-After` ≈ 3 days, plan `starter`, type `low` |
-| `GET /v1/files/:key/variables/local` | 403 — token lacks the `file_variables:read` scope |
-| `GET /v1/files/:key/styles` | 200, but an empty array (no published styles) |
+| Endpoint                                  | Result                                                  |
+| ----------------------------------------- | ------------------------------------------------------- |
+| `GET /v1/files/:key/images` (image fills) | 200, repeatedly, no throttling                          |
+| `GET /v1/files/:key/nodes`                | 429, `Retry-After` ≈ 3 days, plan `starter`, type `low` |
+| `GET /v1/files/:key/variables/local`      | 403 — token lacks the `file_variables:read` scope       |
+| `GET /v1/files/:key/styles`               | 200, but an empty array (no published styles)           |
 
 Two consequences. First, the image-fills endpoint is evidently metered
 separately from node fetches despite both being documented as Tier 1 — which is
@@ -530,13 +530,13 @@ SVGs from this file needs a Dev or Full seat**; no amount of retrying
 substitutes for it. `bun run figma:node <id>` waits far longer than the export
 does and still reports the seat quota rather than hanging.
 
-The `file_variables:read` failure is a *token scope* problem, not a plan one —
+The `file_variables:read` failure is a _token scope_ problem, not a plan one —
 personal access token scopes are fixed at creation, so it needs a new token
 rather than an upgrade. The client detects this and names the missing scope.
 
 The client honours `Retry-After` when present, falls back to exponential
 backoff with full jitter when it isn't, paces requests through a per-tier token
-bucket *before* hitting the limit, and caps concurrency. Defaults assume the
+bucket _before_ hitting the limit, and caps concurrency. Defaults assume the
 Starter allowance, since the plan is only revealed on a 429.
 
 Exit codes: `2` configuration, `3` auth, `4` transient rate limit that outlived
@@ -544,18 +544,21 @@ the retry budget, `5` seat quota.
 
 ### Prefer image fills over per-node renders
 
-`GET /v1/files/:key/images` returns the source URL for *every* image fill in the
+`GET /v1/files/:key/images` returns the source URL for _every_ image fill in the
 file in a single Tier 1 call. `GET /v1/images` renders one request per node.
-For the eight assets this project needs, that is one call instead of eight
-against the tightest budget in the API — use the fills endpoint unless a
-rendered vector export is specifically required.
+For the seven assets in `figma-export.ts`'s `WANTED` list, that is one call
+instead of seven against the tightest budget in the API — use the fills
+endpoint unless a rendered vector export is specifically required. (The bento
+feature grid's seven card illustrations are a separate case, exported via the
+Figma MCP `get_screenshot` tool instead — see `docs/figma/DESIGN-SPEC.md` —
+because they need per-card crops rather than a single combined fill.)
 
 Two traps worth knowing. Fill URLs serve whatever format was originally
 uploaded, so the file extension must come from the bytes rather than being
 assumed — two assets here are JPEGs that a naive exporter wrote as `.png`. And
 Figma stores originals, not rendered sizes: the 40×40 avatar arrives as a
 1392×1643 PNG. Everything is therefore downscaled to twice its design width and
-re-encoded as WebP by `scripts/figma/optimize.ts`, which took the eight assets
+re-encoded as WebP by `scripts/figma/optimize.ts`, which took the `WANTED` assets
 from roughly 50 MB to under 800 KB.
 
 ## Figma MCP servers
@@ -564,11 +567,11 @@ Three servers are registered in `.mcp.json` (project scope, so every agent on th
 repo picks them up). Project-scoped servers need a one-time approval: run `claude`
 in this directory and approve them, or they stay in `Pending approval`.
 
-| Server | Transport | Auth | Use it for |
-| --- | --- | --- | --- |
-| `figma` | HTTP, `https://mcp.figma.com/mcp` | OAuth | Figma's own hosted server. Broadest feature set, works on every plan and seat. Link-based: give it a Figma URL as context. |
-| `figma-desktop` | HTTP, `http://127.0.0.1:3845/mcp` | none (local) | Dev Mode server inside the Figma desktop app. Reads the current selection, and reaches Code Connect mappings and variables. Needs a Dev or Full seat on a paid plan. |
-| `figma-framelink` | stdio, `figma-developer-mcp` | `FIGMA_PAT` | Third-party (Framelink). Works headlessly with just a personal access token, no desktop app and no OAuth. Best fit for background agents. Tools: `get_figma_data`, `download_figma_images`. |
+| Server            | Transport                         | Auth         | Use it for                                                                                                                                                                                  |
+| ----------------- | --------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `figma`           | HTTP, `https://mcp.figma.com/mcp` | OAuth        | Figma's own hosted server. Broadest feature set, works on every plan and seat. Link-based: give it a Figma URL as context.                                                                  |
+| `figma-desktop`   | HTTP, `http://127.0.0.1:3845/mcp` | none (local) | Dev Mode server inside the Figma desktop app. Reads the current selection, and reaches Code Connect mappings and variables. Needs a Dev or Full seat on a paid plan.                        |
+| `figma-framelink` | stdio, `figma-developer-mcp`      | `FIGMA_PAT`  | Third-party (Framelink). Works headlessly with just a personal access token, no desktop app and no OAuth. Best fit for background agents. Tools: `get_figma_data`, `download_figma_images`. |
 
 ### Token
 
@@ -620,7 +623,7 @@ while the render endpoint was. It returns a map of every image fill in the file:
 imageRef -> pre-signed S3 URL
 ```
 
-So for anything that is an image *fill* (photos, screenshots, blurred colour
+So for anything that is an image _fill_ (photos, screenshots, blurred colour
 fields — most raster assets in this file), prefer it:
 
 1. Find the `imageRef` values in the node tree: walk `nodes.json` for nodes
@@ -663,7 +666,7 @@ AABB_h = W·|sin t| + H·|cos t|
 ```
 
 The absolute values matter: `rotation` is signed (`-180..180`), and dropping
-them on a negative angle silently yields a box *narrower* than the element.
+them on a negative angle silently yields a box _narrower_ than the element.
 Solve the pair for `W` and `H`, and keep the same centre — the rotation does
 not move it. Note also that Figma measures counter-clockwise-positive, the
 opposite of CSS `rotate()`, so negate `t` before putting it in a transform.
