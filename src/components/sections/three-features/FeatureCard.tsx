@@ -73,7 +73,7 @@ function StackedCopy({
   body,
   secondaryCta,
   secondaryCtaHref,
-}: Omit<FeatureCardProps, 'visual' | 'layout' | 'background'>) {
+}: Pick<FeatureCardProps, 'title' | 'body' | 'secondaryCta' | 'secondaryCtaHref'>) {
   return (
     <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
       <div className="flex flex-col gap-6 md:flex-1 md:flex-row md:items-end md:gap-12">
