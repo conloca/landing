@@ -172,7 +172,8 @@ export function FeatureCard({
           )}
           <div
             className={cn(
-              'relative min-h-56 overflow-hidden rounded-2xl sm:min-h-[28rem] lg:min-h-56',
+              'relative min-h-56 rounded-2xl sm:min-h-[28rem] lg:min-h-56',
+              layout === 'visual-right' ? 'overflow-visible' : 'overflow-hidden',
               isStacked ? 'order-last flex-1 lg:order-none' : 'flex-1 lg:self-stretch',
             )}
           >
