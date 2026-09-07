@@ -13,7 +13,7 @@ export interface FeatureCardProps {
    * would quietly keep pointing at the docs. */
   secondaryCtaHref: string | null
   visual: ReactNode
-  /** Card 1/2 sit text-and-visual side by side; card 3 stacks visual over text. */
+  /** Cards 1/2 sit text beside the visual; card 3 lays title, body and buttons in one bottom row. */
   layout: 'visual-right' | 'visual-left' | 'stacked'
   background: string
   /** Distinguishes this card's `AudienceSwitch` from the others' and the
@@ -33,17 +33,75 @@ export interface FeatureCardProps {
   fullBleed: boolean
 }
 
-export function FeatureCard({
+/** Figma S1 card headline per breakpoint frame: 32/38.4 (393), 40/48 (640),
+ * 48/48 (1024 and 1440); body 16/27.2 throughout. Shared by `CardCopy` and
+ * `StackedCopy` so a future typography tweak only needs one edit. */
+const FEATURE_CARD_TITLE_CLASS =
+  'font-display text-[2rem] leading-[1.2] font-bold text-stone-50 sm:text-[2.5rem] sm:leading-[1.2] lg:text-5xl lg:leading-none'
+
+function CardCopy({ title, body, className }: { title: string; body: string; className?: string }) {
+  return (
+    <div className={className}>
+      <h3 className={FEATURE_CARD_TITLE_CLASS}>{title}</h3>
+      <p className="mt-6 text-base leading-[1.7] text-white">{body}</p>
+    </div>
+  )
+}
+
+function CardActions({
+  secondaryCta,
+  secondaryCtaHref,
+}: {
+  secondaryCta: string
+  secondaryCtaHref: string | null
+}) {
+  return (
+    <div className="flex shrink-0 gap-3">
+      <CtaButton href={CTA_LINKS.getStarted}>Get started</CtaButton>
+      <CtaButton
+        variant="outline"
+        className="border-stone-200 bg-white text-stone-900 hover:bg-stone-100"
+        href={secondaryCtaHref}
+      >
+        {secondaryCta}
+      </CtaButton>
+    </div>
+  )
+}
+
+/** Card 3: title and body sit side by side (gap 48) with the buttons trailing (gap 24). */
+function StackedCopy({
   title,
   body,
   secondaryCta,
   secondaryCtaHref,
+}: Pick<FeatureCardProps, 'title' | 'body' | 'secondaryCta' | 'secondaryCtaHref'>) {
+  return (
+    <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+      <div className="flex flex-col gap-6 md:flex-1 md:flex-row md:items-end md:gap-12">
+        <h3 className={cn('max-w-[520px]', FEATURE_CARD_TITLE_CLASS)}>
+          {title}
+        </h3>
+        <p className="max-w-[520px] text-base leading-[1.7] text-white">{body}</p>
+      </div>
+      <CardActions secondaryCta={secondaryCta} secondaryCtaHref={secondaryCtaHref} />
+    </div>
+  )
+}
+
+export function FeatureCard({
+  title,
+  body,
+  secondaryCta,
   visual,
   layout,
   background,
+  secondaryCtaHref,
   fullBleed,
   audienceSwitchLabel,
 }: FeatureCardProps) {
+  const isStacked = layout === 'stacked'
+
   return (
     <div
       className={cn(
@@ -92,50 +150,33 @@ export function FeatureCard({
         />
         <div
           className={cn(
-            'relative mt-4 flex flex-1 flex-col gap-6 overflow-y-auto',
-            layout === 'stacked'
-              ? 'justify-between md:flex-col'
-              : 'md:flex-row md:items-end md:gap-8',
+            'relative mt-6 flex flex-1 flex-col gap-6 overflow-y-auto',
+            isStacked ? 'justify-between' : 'md:flex-row md:items-end md:justify-between md:gap-8',
             layout === 'visual-left' && 'md:flex-row-reverse',
           )}
         >
-          <div
-            className={cn(
-              'flex flex-col gap-6',
-              layout === 'stacked'
-                ? 'md:flex-row md:items-end md:justify-between md:gap-8'
-                : 'md:max-w-[440px]',
-            )}
-          >
-            <div className={layout === 'stacked' ? 'md:max-w-md' : undefined}>
-              {/* Figma S1 card headline per breakpoint frame: 32/38.4 (393),
-                  40/48 (640), 48/48 (1024 and 1440); body 16/27.2 throughout. */}
-              <h3 className="font-display text-[2rem] leading-[1.2] font-bold sm:text-[2.5rem] sm:leading-[1.2] lg:text-5xl lg:leading-none">
-                {title}
-              </h3>
-              <p className={cn('mt-4 text-base leading-[1.7]', layout === 'stacked' && 'mt-2')}>
-                {body}
-              </p>
+          {isStacked ? null : (
+            <div className="flex flex-col gap-6 md:max-w-[472px] md:shrink-0">
+              <CardCopy title={title} body={body} />
+              <CardActions secondaryCta={secondaryCta} secondaryCtaHref={secondaryCtaHref} />
             </div>
-            <div className="flex shrink-0 gap-3">
-              <CtaButton href={CTA_LINKS.getStarted}>Get started</CtaButton>
-              <CtaButton
-                variant="outline"
-                className="border-white/40 bg-white/10 text-stone-50 hover:bg-white/20"
-                href={secondaryCtaHref}
-              >
-                {secondaryCta}
-              </CtaButton>
-            </div>
-          </div>
+          )}
           <div
             className={cn(
               'relative min-h-56 overflow-hidden rounded-2xl',
-              layout === 'stacked' ? 'h-72 shrink-0' : 'flex-1 md:self-stretch',
+              isStacked ? 'order-last flex-1 md:order-none' : 'flex-1 md:self-stretch',
             )}
           >
             {visual}
           </div>
+          {isStacked ? (
+            <StackedCopy
+              title={title}
+              body={body}
+              secondaryCta={secondaryCta}
+              secondaryCtaHref={secondaryCtaHref}
+            />
+          ) : null}
         </div>
       </div>
     </div>

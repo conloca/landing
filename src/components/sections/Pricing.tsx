@@ -88,9 +88,9 @@ export function Pricing() {
   const billing = BILLING_PERIODS[billingIndex]
 
   return (
-    <section id="pricing" className="mx-auto max-w-[1440px] px-8 py-24 sm:py-[196px]">
-      <Reveal className="flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-center">
-        <h2 className="font-display max-w-xl text-5xl leading-[1] font-bold text-stone-900">
+    <section id="pricing" className="mx-auto max-w-[1440px] px-8 pt-24 pb-24 sm:pt-[196px] sm:pb-[96px]">
+      <Reveal className="flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-end">
+        <h2 className="font-display max-w-[572px] text-5xl leading-[1] font-bold text-stone-900">
           Choose a plan that fits you the best
         </h2>
         <SegmentedControl
