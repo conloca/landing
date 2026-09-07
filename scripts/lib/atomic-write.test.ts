@@ -14,6 +14,7 @@ import {
   lstatSync,
   openSync,
   closeSync,
+  chmodSync,
 } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -41,6 +42,20 @@ describe('atomicWriteFileSync', () => {
     writeFileSync(destination, 'OLD')
     atomicWriteFileSync(destination, 'NEW')
     expect(readFileSync(destination, 'utf8')).toBe('NEW')
+  })
+
+  // The destination's mode must survive being replaced — the rename swaps in
+  // a fresh inode, so without preserving it explicitly a private 0600 output
+  // would silently widen to the process's default umask mode.
+  test('preserves the mode of an existing regular file it overwrites', () => {
+    const destination = join(dir, 'private.png')
+    writeFileSync(destination, 'OLD', { mode: 0o600 })
+    chmodSync(destination, 0o600)
+
+    atomicWriteFileSync(destination, 'NEW')
+
+    expect(readFileSync(destination, 'utf8')).toBe('NEW')
+    expect(lstatSync(destination).mode & 0o777).toBe(0o600)
   })
 
   // The regression this module exists for: a plain writeFileSync to the same
