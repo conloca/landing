@@ -12,9 +12,24 @@
 // *containing directory* between the guard and the rename is still possible.
 // The value here is mostly the ordinary one: a crash mid-write cannot leave a
 // truncated file where a good one used to be.
-import { writeFileSync, renameSync, unlinkSync, lstatSync, chmodSync } from 'node:fs'
+import { writeFileSync, renameSync, unlinkSync, lstatSync } from 'node:fs'
 import { randomBytes } from 'node:crypto'
 import { dirname, basename, join } from 'node:path'
+
+// Mirrors same-file.ts's inodeIdentity: stat, extract a derived value, and
+// swallow ENOENT to a sentinel — the destination not existing yet means
+// there's nothing of its metadata worth carrying forward.
+function existingFileMode(path: string): number | null {
+  try {
+    const stats = lstatSync(path)
+    // Only a REGULAR file's mode is worth preserving. A symlink's lstat mode
+    // describes the link itself (always effectively 0777), not a permission
+    // worth carrying onto the real file that's about to replace it.
+    return stats.isFile() ? stats.mode & 0o777 : null
+  } catch {
+    return null
+  }
+}
 
 export function atomicWriteFileSync(path: string, data: Parameters<typeof writeFileSync>[1]): void {
   // Created as a sibling so the rename stays on one filesystem; a rename
@@ -22,27 +37,17 @@ export function atomicWriteFileSync(path: string, data: Parameters<typeof writeF
   const temp = join(dirname(path), `.${basename(path)}.tmp-${randomBytes(8).toString('hex')}`)
 
   // The rename replaces the destination's directory entry with a fresh inode,
-  // so the temp file's own (umask-derived) mode is what survives — an existing
-  // 0600 output would silently widen to the process's default (commonly 0644),
-  // exposing a previously private file. Preserve it, but only when the
-  // destination is currently a REGULAR file: a symlink's lstat mode describes
-  // the link itself (always effectively 0777), not a permission worth
-  // carrying onto the real file that's about to replace it.
-  let preserveMode: number | null = null
-  try {
-    const destinationStats = lstatSync(path)
-    if (destinationStats.isFile()) {
-      preserveMode = destinationStats.mode & 0o777
-    }
-  } catch {
-    // Destination doesn't exist yet — nothing to preserve.
-  }
+  // so the temp file's own mode is what survives onto the destination — an
+  // existing 0600 output must not widen to the process's default (commonly
+  // 0644) even for the instant between the write and the rename, since a
+  // concurrent reader watching the directory could open the temp file the
+  // moment it appears and see the sensitive content at the wider mode. Pass
+  // the preserved mode straight to the file's creation instead of `chmod`ing
+  // it afterward, so there is no window where it's ever wider than final.
+  const mode = existingFileMode(path) ?? 0o666
 
   try {
-    writeFileSync(temp, data, { flag: 'wx' })
-    if (preserveMode !== null) {
-      chmodSync(temp, preserveMode)
-    }
+    writeFileSync(temp, data, { flag: 'wx', mode })
     renameSync(temp, path)
   } catch (error) {
     try {
