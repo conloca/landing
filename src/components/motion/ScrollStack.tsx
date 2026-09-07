@@ -332,23 +332,18 @@ export function StackSlide({ children, index }: StackSlideProps) {
   // listener only fires on scroll, so a count/index update with the scroll
   // position held still would otherwise leave `hasReachedReveal` stale.
   useEffect(() => {
-    setHasReachedReveal(
-      hasRevealStarted(activeIndexFor(smoothedProgress.get(), thresholds), index),
-    )
+    setHasReachedReveal(hasRevealStarted(activeIndexFor(smoothedProgress.get(), thresholds), index))
   }, [thresholds, index, smoothedProgress])
   const notYetArrived = pinned && !hasReachedReveal
   const zIndexStyle = useMemo(() => (pinned ? { zIndex: index + 1 } : undefined), [pinned, index])
-  // `lg:p-0` rides along with the pinned/absolute presentation rather than
-  // applying unconditionally: full-bleed is a property of the *pinned*
-  // presentation (see `ThreeFeatures`), not of the breakpoint alone. Gating
-  // it on breakpoint only would strip the 16px inset from the
-  // reduced-motion/no-JS/prerender fallback too — those cohorts render the
-  // plain-stacked layout, where three consecutive full-viewport, edge-to-edge
-  // slides with no gap or radius read as broken, not as "one full-screen
-  // frame". Below `lg` the slide keeps its inset either way, matching the
-  // pre-full-bleed layout exactly.
+  // Pinned `lg:p-0` is a property of the pinned presentation, not of the
+  // breakpoint alone — gating it on `lg` only would also strip the 16px
+  // inset from the reduced-motion/no-JS/prerender fallback, which still
+  // stacks three bordered cards. Unpinned (393/640, and that fallback)
+  // takes its inset from `ThreeFeatures` (4/8/72 per Figma Frame 609), not
+  // a second 16px slide pad that shrinks the card box inside the frame.
   const wrapperClass = cn(
-    pinned ? 'absolute inset-0 flex items-center p-4 lg:p-0' : 'flex w-full items-stretch p-4',
+    pinned ? 'absolute inset-0 flex items-center p-4 lg:p-0' : 'flex w-full items-stretch',
     notYetArrived && 'invisible',
   )
 
@@ -449,10 +444,10 @@ function MotionCard({
     // element position instead silently measures the wrong node when the
     // markup shifts, and reports confident numbers about it.
     <motion.div
-      // `lg:max-h-none` only when `pinned` — the reduced-motion/no-JS/prerender
-      // fallback keeps the 736px cap so its stacked cards stay readable as
-      // cards, not full-viewport panels with no visual boundary between them.
-      className={cn('w-full', pinned ? 'h-full max-h-[46rem] lg:max-h-none' : 'max-h-[46rem]')}
+      // Pinned fallback keeps the 736px cap so reduced-motion/no-JS stacked
+      // cards at `lg` stay cards, not full-viewport panels. Unpinned 640
+      // Figma cards are 872px, so the same cap would clip them.
+      className={cn('w-full', pinned && 'h-full max-h-[46rem] lg:max-h-none')}
       style={style}
       data-scroll-stack-card={index}
     >

@@ -104,7 +104,7 @@ export function FeatureCard({
   return (
     <div
       className={cn(
-        'relative flex w-full flex-col overflow-hidden rounded-[28px] border border-stone-100 p-6 text-stone-50',
+        'relative flex w-full flex-col overflow-hidden rounded-[20px] border border-stone-100 p-5 text-stone-50 sm:rounded-[24px] sm:p-6 lg:rounded-[28px]',
         fullBleed && 'h-full lg:rounded-none lg:border-0',
       )}
     >
@@ -149,12 +149,12 @@ export function FeatureCard({
       >
         <AudienceSwitch
           variant="translucent"
-          className="relative self-start"
+          className="relative hidden self-start lg:block"
           label={audienceSwitchLabel}
         />
         <div
           className={cn(
-            'relative mt-6 flex flex-1 flex-col gap-6 overflow-y-auto',
+            'relative flex flex-1 flex-col gap-6 overflow-hidden lg:mt-6',
             isStacked ? 'justify-between' : 'lg:flex-row lg:items-end lg:justify-between lg:gap-8',
             layout === 'visual-left' && 'lg:flex-row-reverse',
           )}
@@ -163,7 +163,7 @@ export function FeatureCard({
             <div
               className={cn(
                 'flex flex-col gap-6 lg:shrink-0',
-                layout === 'visual-left' ? 'lg:max-w-[687px]' : 'lg:max-w-[472px]',
+                layout === 'visual-left' ? 'lg:max-w-[687px]' : 'max-w-[440px]',
               )}
             >
               <CardCopy title={title} body={body} />
@@ -172,7 +172,7 @@ export function FeatureCard({
           )}
           <div
             className={cn(
-              'relative min-h-56 rounded-2xl sm:min-h-[28rem] lg:min-h-56',
+              'relative min-h-[327px] rounded-2xl sm:min-h-[590px] lg:min-h-56',
               layout === 'visual-right' ? 'overflow-visible' : 'overflow-hidden',
               isStacked ? 'order-last flex-1 lg:order-none' : 'flex-1 lg:self-stretch',
             )}
