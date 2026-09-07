@@ -412,6 +412,32 @@ than merely having happened at some point in the past (a force-push to
 correctly fails). If any of these don't hold, leave the worktree and name
 it in your report for a human decision.
 
+A branch whose PR shows `state == CLOSED` (not `MERGED`) has no defined
+removal path above, and none is implied: GitHub's "closed" covers both
+"abandoned, definitely dead" and "closed for now, might reopen or get
+cherry-picked later," and the two look identical from the API. Treat a
+closed-but-unmerged PR's worktree the same as a no-PR-ever branch with a
+non-trivial diff — leave it and name it for a human decision, even when it
+looks obviously superseded by an already-merged v2 of the same work.
+
+A single blanket instruction from the repository owner to clean up "all the
+worktrees" widens which worktrees an agent may **audit and report on** in
+one pass, and — only when paired with proof (a) from the liveness gate
+below (the operator's own written attestation that every session on the
+machine has been checked, not the instruction by itself; the instruction
+alone is neither proof (a) nor proof (b)) — satisfies that one gate for
+every worktree in the sweep. It does **not** touch who may run the
+**removal** steps: the top of this section's rule still applies
+unchanged — only a human operator removes a worktree, or an agent a human
+has separately named for that one specific worktree, never an agent
+self-directing removal across the whole fleet on the strength of a
+blanket instruction alone. Nor does the blanket instruction supply the
+ancestor-or-merged-PR verdict, the `.env` verdict, or a verdict for a
+closed-but-unmerged branch — those still have to be established per
+worktree as described above. It widens the scope of evaluation, never
+who is allowed to pull the trigger or what counts as evidence of safety
+for any individual worktree.
+
 Once every gate above has passed — including a fresh `fetch`, not just
 clean status, the `clean -ndX` verdict, the `.env` verdict, and ancestry or
 merged-PR confirmation — re-run all of them immediately before this step,
@@ -501,17 +527,20 @@ the places where a wrong answer would be silent rather than loud.
 incidental: Figma splits endpoints into three cost tiers, and the ones asset
 export needs are the most restricted.
 
-| Tier | Endpoints                                      | Dev/Full seat budget                                           |
-| ---- | ---------------------------------------------- | -------------------------------------------------------------- |
-| 1    | `GET file`, `GET file nodes`, **`GET images`** | 10/min Starter, 15/min Professional, 20/min Org and Enterprise |
-| 2    | comments, variables, webhooks, projects        | 25–100/min                                                     |
-| 3    | components, metadata, users, analytics         | 50–150/min                                                     |
+| Tier | Endpoints                                                  | Dev/Full seat budget                                           |
+| ---- | ---------------------------------------------------------- | -------------------------------------------------------------- |
+| 1    | `GET file`, `GET file nodes`, **`GET images`**             | 10/min Starter, 15/min Professional, 20/min Org and Enterprise |
+| 2    | `GET image fills`, comments, variables, webhooks, projects | 25–100/min                                                     |
+| 3    | components, metadata, users, analytics                     | 50–150/min                                                     |
 
-A **View or Collab seat gets roughly six Tier 1 calls per month**, which is what
-silently defeated the first extraction attempt in this repo. Figma reports that
-case as `X-Figma-Rate-Limit-Type: low`, and the client fails fast on it with
-exit code 5 rather than sleeping through a multi-day `Retry-After` — waiting
-cannot fix a monthly quota, only a different seat can.
+A **View or Collab seat gets up to 20 Tier 1 calls per month, often fewer in
+practice under high demand** (verified against
+[developers.figma.com/docs/rest-api/rate-limits](https://developers.figma.com/docs/rest-api/rate-limits),
+updated 2025-11-17), which is what silently defeated the first extraction
+attempt in this repo. Figma reports that case as
+`X-Figma-Rate-Limit-Type: low`, and the client fails fast on it with exit code
+5 rather than sleeping through a multi-day `Retry-After` — waiting cannot fix
+a monthly quota, only a different seat can.
 
 **This project's token is in exactly that state.** Measured 2026-08-26:
 
@@ -522,13 +551,15 @@ cannot fix a monthly quota, only a different seat can.
 | `GET /v1/files/:key/variables/local`      | 403 — token lacks the `file_variables:read` scope       |
 | `GET /v1/files/:key/styles`               | 200, but an empty array (no published styles)           |
 
-Two consequences. First, the image-fills endpoint is evidently metered
-separately from node fetches despite both being documented as Tier 1 — which is
-the only reason asset export works on this seat, and why the exporter is built
-on fills rather than node renders. Second, **reading node trees or rendering
-SVGs from this file needs a Dev or Full seat**; no amount of retrying
-substitutes for it. `bun run figma:node <id>` waits far longer than the export
-does and still reports the seat quota rather than hanging.
+Two consequences. First, `GET /v1/files/:key/images` (image fills) is Tier 2
+in Figma's own tier table — a separate, more generous budget (View/Collab: up
+to 5/min) than the Tier 1 endpoints (`GET file`, `GET file nodes`, `GET
+images` render) that node fetches use, by design rather than by empirical
+accident — which is why asset export works on this seat, and why the
+exporter is built on fills rather than node renders. Second, **reading node
+trees or rendering SVGs from this file needs a Dev or Full seat**; no amount
+of retrying substitutes for it. `bun run figma:node <id>` waits far longer
+than the export does and still reports the seat quota rather than hanging.
 
 The `file_variables:read` failure is a _token scope_ problem, not a plan one —
 personal access token scopes are fixed at creation, so it needs a new token
@@ -592,7 +623,8 @@ token into `.mcp.json`, which is committed.
 2. The target file open in it.
 3. Dev Mode MCP server enabled: Figma menu -> Preferences -> Enable Dev Mode MCP server.
 4. A Dev or Full seat on a Professional, Organization, or Enterprise plan. View or
-   Collab seats and the Starter plan are capped at 6 tool calls per month.
+   Collab seats are capped at up to 20 tool calls per month, often fewer in
+   practice under demand (see the Figma quota discussion above).
 5. A frame selected, for the tools that act on the current selection.
 
 ### Authenticating the official server
@@ -613,8 +645,10 @@ the release.
 
 `/v1/images/:key?ids=...` renders nodes on demand and is metered by **render
 cost**. Exporting a few tall frames exhausts it, after which it returns HTTP 429
-for a long time. This is what blocked the original design extraction and left
-the hero as a hand-built DOM approximation.
+for a long time. This is what blocked the original design extraction and
+initially left the hero as a hand-built DOM approximation — since replaced by
+the real Figma image fill (see `HeroVisual.tsx`) once the fills endpoint
+below was in place.
 
 `/v1/files/:key/images` is a **different quota** and was not rate-limited even
 while the render endpoint was. It returns a map of every image fill in the file:
