@@ -17,10 +17,15 @@ const DATA_ILLUSTRATION = <DataCollectionsIllustration />
 const FRAGMENTS_ILLUSTRATION = <FragmentsIllustration />
 const VERSION_HISTORY_ILLUSTRATION = <VersionHistoryIllustration />
 
-/** Document order matches `.bento-grid`'s nth-child grid-area mapping in index.css. */
+/**
+ * Document order matches `.bento-grid`'s nth-child grid-area mapping in
+ * index.css, so document order is the single thing that decides layout,
+ * including which card is the large one (see the note on `FeatureGrid`
+ * below). No separate "is this the big one" flag here — the illustration
+ * sizing rationale lives in `feature-grid/illustrations.tsx`.
+ */
 const CARDS = [
   {
-    tall: true,
     title: 'Sceduled Publishing', // verbatim Figma copy — likely a typo for "Scheduled", see docs/QUESTIONS-DESIGNER.md
     body: 'Set a date and time for content to go live automatically',
     illustration: SCHEDULED_ILLUSTRATION,
@@ -58,6 +63,15 @@ const CARDS = [
 ]
 
 /**
+ * The first card is the large one, because `.bento-grid > :nth-child(1)` is
+ * what claims the `big` grid area. Only `scheduledPublishing`'s crop
+ * (`bento-assets.ts`, 682×440) is exported at the big slot's proportions —
+ * the other six are 192px-tall strip crops. Moving a different card to the
+ * front does NOT "just work": its crop upscales into the 2x2 area at the
+ * wrong aspect ratio, and its actual big-card artwork needs a fresh
+ * `get_screenshot` export (see `docs/figma/DESIGN-SPEC.md`) before the swap
+ * looks right.
+ *
  * Card 6/7 body copy looks swapped in the Figma file (card 7's body describes
  * fragments, not version history) — kept verbatim, see docs/QUESTIONS-DESIGNER.md.
  */

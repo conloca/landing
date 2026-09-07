@@ -5,6 +5,11 @@ dist-ssr
 *.local
 .vite
 
+# Generated from tokens/tokens.json by `bun run tokens`, which both `dev` and
+# `build` run first. Ignored because it is a build artifact, the same reason
+# dist/ is — not as a Tailwind workaround (see the "Known wart" in DESIGN.md).
+src/tokens.generated.css
+
 # Local secrets
 .env
 .env.*

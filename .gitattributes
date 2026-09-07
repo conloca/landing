@@ -1,0 +1,15 @@
+# Figma extraction data is machine-generated: a raw node dump from the Figma REST API, not
+# hand-written source. Marking it `-diff` states that plainly — git will not try to produce a
+# textual diff for it, and tooling that asks `git check-attr diff` gets an honest answer.
+#
+# This matters beyond cosmetics. `docs/figma/nodes-breakpoints.json` alone is ~221k lines; no
+# reviewer, human or otherwise, reads that as a diff. The declaration below is what lets the
+# repository's code-review gate treat these paths as generated data rather than source.
+#
+# Scope is deliberately narrow: only serialisation formats under `docs/figma/`. It grants nothing
+# to scripts, lockfiles, or anything outside this directory.
+#
+# `**/` is load-bearing: a bare `docs/figma/*.json` would be non-recursive, so a dump later filed
+# in a subdirectory would silently lose the declaration — and then be uncommittable for exactly
+# the reason this exists.
+docs/figma/**/*.json -diff linguist-generated=true

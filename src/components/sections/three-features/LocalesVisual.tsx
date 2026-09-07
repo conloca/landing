@@ -11,7 +11,11 @@ export function LocalesVisual() {
   return (
     <div className="relative h-full w-full overflow-hidden">
       <div className="absolute inset-x-[-18%] top-[-16%] aspect-[849/1334]">
-        <LottieBanner className="h-full w-full" label="Locales panel showing sync status across five languages" />
+        <LottieBanner
+          src="banner-2.lottie"
+          className="h-full w-full"
+          label="Locales panel showing sync status across five languages"
+        />
       </div>
     </div>
   )
