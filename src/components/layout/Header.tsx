@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Menu } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { CtaButton } from '@/components/CtaButton'
@@ -5,7 +6,6 @@ import { Logo } from '@/components/layout/Logo'
 import { CTA_LINKS, NAV_LINKS } from '@/lib/nav'
 import {
   Sheet,
-  SheetClose,
   SheetContent,
   SheetDescription,
   SheetHeader,
@@ -57,8 +57,14 @@ export function Header() {
  * repeats the desktop nav in a stacked layout as the most reasonable default.
  */
 function MobileNav() {
+  // Controlled (not `SheetClose asChild`) so the nav items stay plain
+  // <a> links: Base UI's Close/asChild composition forces `role="button"`
+  // onto whatever it wraps, which mislabels real navigation links to
+  // assistive tech. Closing on click here needs no button semantics at all.
+  const [open, setOpen] = useState(false)
+
   return (
-    <Sheet>
+    <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         <Button variant="outline" size="icon" className="md:hidden" aria-label="Open menu">
           <Menu />
@@ -73,14 +79,14 @@ function MobileNav() {
         </SheetHeader>
         <nav className="flex flex-col gap-1 px-4" aria-label="Primary">
           {NAV_LINKS.map((link) => (
-            <SheetClose asChild key={link.label}>
-              <a
-                href={link.href}
-                className="rounded-md px-2 py-2.5 text-base text-stone-900 hover:bg-stone-100"
-              >
-                {link.label}
-              </a>
-            </SheetClose>
+            <a
+              key={link.label}
+              href={link.href}
+              onClick={() => setOpen(false)}
+              className="rounded-md px-2 py-2.5 text-base text-stone-900 hover:bg-stone-100"
+            >
+              {link.label}
+            </a>
           ))}
         </nav>
       </SheetContent>
