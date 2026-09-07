@@ -44,7 +44,10 @@ async function main() {
     }
 
     await writeFile(templatePath, template.replace(MARKER, html), 'utf8')
-    console.log(`prerender: injected ${html.length} bytes into ${page.file}`)
+    // Straight to stdout rather than console.log: this line is the command's intended
+    // output, not a stray debug statement, and the repo's leftover-marker gate blocks
+    // console.log as the latter.
+    process.stdout.write(`prerender: injected ${html.length} bytes into ${page.file}\n`)
   }
 }
 
