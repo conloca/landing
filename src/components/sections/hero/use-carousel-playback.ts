@@ -7,8 +7,10 @@
  *               visitor does not prefer reduced motion and the page is visible.
  *
  * Assumptions: slideCount > 0 (slide index is modulo slideCount). `running`
- *              false freezes elapsed so pause / hover / blur resume the same
- *              fill. selectSlide resets elapsed to 0.
+ *              false freezes elapsed so pause / hover / hidden tab resume
+ *              the same fill. selectSlide resets elapsed to 0 on the chosen
+ *              slide without requiring `running` to flip, so a rail click
+ *              restarts the fill while autoplay stays on.
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react'
