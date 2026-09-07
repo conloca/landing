@@ -217,10 +217,9 @@ export function ScrollStackRoot({
     // the measurement at any other sticky element the page later grows.
     //
     // The explicit height only applies once pinned: unpinned, the states
-    // render as plain flowed blocks (see `StackFrame`) whose combined height
-    // already sums to the same `count * 100dvh`, so forcing it here too would
-    // be redundant, and doing it unconditionally would strand that layout at
-    // a fixed height before its content has a reason to be that tall.
+    // render as plain flowed blocks sized to their cards (see `StackFrame`),
+    // so forcing `count * 100dvh` here would stretch 393/640 into empty
+    // viewport slots instead of the Figma stacked composition.
     <div ref={sectionRef} data-scroll-stack style={sectionStyle}>
       <ScrollStackContext.Provider value={state}>
         <StackFrame pinned={pinned}>{children}</StackFrame>
@@ -261,9 +260,9 @@ interface StackSlideProps {
  * (`absolute inset-0` inside `StackFrame`'s one sticky box) rather than each
  * having its own flowed slot to scroll up from below into — that shared rect
  * is what makes this read as one frame with changing content instead of a
- * new slide arriving from off-screen. Unpinned, each is its own flowed
- * `h-dvh` block, same shape the old per-slide sticky slots used before they
- * were sticky.
+ * new slide arriving from off-screen. Unpinned (below `lg`, reduced motion,
+ * prerender), each is its own flowed block sized to the card, matching the
+ * Figma 393/640 stacked composition rather than a sticky `h-dvh` slot.
  */
 export function StackSlide({ children, index }: StackSlideProps) {
   const stack = useContext(ScrollStackContext)
@@ -326,9 +325,7 @@ export function StackSlide({ children, index }: StackSlideProps) {
   // frame". Below `lg` the slide keeps its inset either way, matching the
   // pre-full-bleed layout exactly.
   const wrapperClass = cn(
-    pinned
-      ? 'absolute inset-0 flex items-center p-4 lg:p-0'
-      : `flex ${SLOT_CLASS} w-full items-center p-4`,
+    pinned ? 'absolute inset-0 flex items-center p-4 lg:p-0' : 'flex w-full items-stretch p-4',
     notYetArrived && 'invisible',
   )
 
@@ -432,7 +429,7 @@ function MotionCard({
       // `lg:max-h-none` only when `pinned` — the reduced-motion/no-JS/prerender
       // fallback keeps the 736px cap so its stacked cards stay readable as
       // cards, not full-viewport panels with no visual boundary between them.
-      className={cn('h-full max-h-[46rem] w-full', pinned && 'lg:max-h-none')}
+      className={cn('w-full', pinned ? 'h-full max-h-[46rem] lg:max-h-none' : 'max-h-[46rem]')}
       style={style}
       data-scroll-stack-card={index}
     >

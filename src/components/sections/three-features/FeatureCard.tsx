@@ -15,6 +15,7 @@ export interface FeatureCardProps {
   visual: ReactNode
   /** Cards 1/2 sit text beside the visual; card 3 lays title, body and buttons in one bottom row. */
   layout: 'visual-right' | 'visual-left' | 'stacked'
+  /** Bundled photo URL for the card fill (under the existing 20% black overlay). */
   background: string
   /** Distinguishes this card's `AudienceSwitch` from the others' and the
    * hero's when a screen reader lists every radiogroup on the page. Keyed to
@@ -69,7 +70,7 @@ function CardActions({
   )
 }
 
-/** Card 3: title and body sit side by side (gap 48) with the buttons trailing (gap 24). */
+/** Card 3: title, body and buttons in one row (gap 24) at `lg`. */
 function StackedCopy({
   title,
   body,
@@ -77,11 +78,9 @@ function StackedCopy({
   secondaryCtaHref,
 }: Pick<FeatureCardProps, 'title' | 'body' | 'secondaryCta' | 'secondaryCtaHref'>) {
   return (
-    <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-      <div className="flex flex-col gap-6 md:flex-1 md:flex-row md:items-end md:gap-12">
-        <h3 className={cn('max-w-[520px]', FEATURE_CARD_TITLE_CLASS)}>
-          {title}
-        </h3>
+    <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+      <div className="flex flex-col gap-6 lg:flex-1 lg:flex-row lg:items-end">
+        <h3 className={cn('max-w-[520px]', FEATURE_CARD_TITLE_CLASS)}>{title}</h3>
         <p className="max-w-[520px] text-base leading-[1.7] text-white">{body}</p>
       </div>
       <CardActions secondaryCta={secondaryCta} secondaryCtaHref={secondaryCtaHref} />
@@ -105,11 +104,16 @@ export function FeatureCard({
   return (
     <div
       className={cn(
-        'relative flex h-full w-full flex-col overflow-hidden rounded-[28px] border border-stone-100 p-6 text-stone-50',
-        fullBleed && 'lg:rounded-none lg:border-0',
-        background,
+        'relative flex w-full flex-col overflow-hidden rounded-[28px] border border-stone-100 p-6 text-stone-50',
+        fullBleed && 'h-full lg:rounded-none lg:border-0',
       )}
     >
+      <img
+        src={background}
+        alt=""
+        className="absolute inset-0 size-full object-cover"
+        aria-hidden
+      />
       <div className="absolute inset-0 bg-black/20" aria-hidden />
       {/*
        * The card surface/background above bleeds to the viewport edge once
@@ -139,8 +143,8 @@ export function FeatureCard({
        */}
       <div
         className={cn(
-          'relative flex h-full w-full flex-col',
-          fullBleed && 'lg:mx-auto lg:max-w-[1344px]',
+          'relative flex w-full flex-col',
+          fullBleed && 'h-full lg:mx-auto lg:max-w-[1344px]',
         )}
       >
         <AudienceSwitch
@@ -151,20 +155,25 @@ export function FeatureCard({
         <div
           className={cn(
             'relative mt-6 flex flex-1 flex-col gap-6 overflow-y-auto',
-            isStacked ? 'justify-between' : 'md:flex-row md:items-end md:justify-between md:gap-8',
-            layout === 'visual-left' && 'md:flex-row-reverse',
+            isStacked ? 'justify-between' : 'lg:flex-row lg:items-end lg:justify-between lg:gap-8',
+            layout === 'visual-left' && 'lg:flex-row-reverse',
           )}
         >
           {isStacked ? null : (
-            <div className="flex flex-col gap-6 md:max-w-[472px] md:shrink-0">
+            <div
+              className={cn(
+                'flex flex-col gap-6 lg:shrink-0',
+                layout === 'visual-left' ? 'lg:max-w-[687px]' : 'lg:max-w-[472px]',
+              )}
+            >
               <CardCopy title={title} body={body} />
               <CardActions secondaryCta={secondaryCta} secondaryCtaHref={secondaryCtaHref} />
             </div>
           )}
           <div
             className={cn(
-              'relative min-h-56 overflow-hidden rounded-2xl',
-              isStacked ? 'order-last flex-1 md:order-none' : 'flex-1 md:self-stretch',
+              'relative min-h-56 overflow-hidden rounded-2xl sm:min-h-[28rem] lg:min-h-56',
+              isStacked ? 'order-last flex-1 lg:order-none' : 'flex-1 lg:self-stretch',
             )}
           >
             {visual}
