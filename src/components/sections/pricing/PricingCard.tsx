@@ -46,7 +46,9 @@ function Price({ plan, billing }: { plan: Plan; billing: BillingPeriod }) {
     <>
       <p className="mt-6 flex items-baseline gap-2 text-[2rem] leading-[3rem] font-black text-stone-900">
         {formatUsd(headlineAmount(plan.pricing, billing))}
-        <span className="text-base leading-6 font-normal text-stone-700">{HEADLINE_PERIOD_LABEL}</span>
+        <span className="text-base leading-6 font-normal text-stone-700">
+          {HEADLINE_PERIOD_LABEL}
+        </span>
       </p>
       {billing === 'annual' && (
         <p className="mt-1 text-sm text-stone-500">
@@ -64,7 +66,7 @@ function FeatureRow({ feature }: { feature: PlanFeature }) {
     <li
       className={cn(
         'flex items-start gap-1.5 text-base leading-[1.7] font-medium',
-        feature.included ? 'text-stone-500' : 'text-stone-400',
+        feature.included ? 'text-stone-700' : 'text-stone-400',
       )}
     >
       <Icon className="mt-1 size-4 shrink-0 text-stone-500" aria-hidden="true" />
@@ -102,7 +104,7 @@ export function PricingCard({ plan, billing }: { plan: Plan; billing: BillingPer
           {plan.cta}
         </CtaButton>
       </div>
-      <ul className="flex flex-1 flex-col gap-4 p-3">
+      <ul className="flex flex-1 flex-col gap-4 rounded-b-3xl bg-sand-200 p-3">
         {plan.features.map((feature) => (
           <FeatureRow key={feature.label} feature={feature} />
         ))}
