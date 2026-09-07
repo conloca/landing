@@ -77,6 +77,11 @@ export function activeIndexFor(progress: number, thresholds: readonly number[]):
  * silently drifting apart if one is ever re-timed without the other — see
  * `scroll-stack-geometry.test.ts` for the regression this guards.
  *
+ * Opening the window is not the same as being visible: at the window's start
+ * the arriving slide is at `REVEAL_OPACITY_FLOOR` (fully transparent) and
+ * fades in from there — see `MotionCard`. This gate only decides when the
+ * slide stops being `visibility: hidden` so the fade has a frame to play in.
+ *
  * The first slide has no predecessor and is never revealed in (it is already
  * the active slide the instant the section is reached), so it always reports
  * started.
@@ -84,6 +89,23 @@ export function activeIndexFor(progress: number, thresholds: readonly number[]):
 export function hasRevealStarted(activeIndex: number, index: number): boolean {
   return index <= 0 || activeIndex >= index - 1
 }
+
+/**
+ * Opacity of an arriving slide at the very start of its reveal window.
+ *
+ * Zero, so the slide beneath is shown clean until the next one actually
+ * starts fading in on top of it. The previous value here was 0.7 — a
+ * placeholder carried over from the old covering-state fade — and it meant
+ * the *next* slide was always drawn at 70 % over the current one from the
+ * first frame of every window, so the first two states of the stack never
+ * read as a single card (confirmed on production at 1440/1024/393). The
+ * design file (`docs/figma/anim.json`, frame `40002450:2700`) specifies no
+ * scroll timeline at all — only button hover transitions — so the shape of
+ * the fade (linear 0 → 1 over the first `REVEAL_OPAQUE_AT` of the window) is
+ * still this codebase's choice, not the designer's; the floor itself is not a
+ * guess: anything above 0 draws two cards at once.
+ */
+export const REVEAL_OPACITY_FLOOR = 0
 
 /**
  * The progress window over which slide `index` reveals itself in: from its
@@ -107,11 +129,12 @@ export function revealWindow(
 
 /**
  * Fraction of a slide's reveal window after which it is fully opaque. The
- * arriving slide fades 0.7 → 1 over this first part of its window and holds
- * at 1 for the rest (`MotionCard` in `ScrollStack.tsx`). Its zoom and rise
- * keep settling over the remainder, so at this point it is opaque and drawn
- * on top but a thin margin of the slide beneath is still exposed around its
- * edges — margin only, no control of the slide beneath lives there.
+ * arriving slide fades `REVEAL_OPACITY_FLOOR` → 1 over this first part of its
+ * window and holds at 1 for the rest (`MotionCard` in `ScrollStack.tsx`). Its
+ * zoom and rise keep settling over the remainder, so at this point it is
+ * opaque and drawn on top but a thin margin of the slide beneath is still
+ * exposed around its edges — margin only, no control of the slide beneath
+ * lives there.
  */
 export const REVEAL_OPAQUE_AT = 0.5
 

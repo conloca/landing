@@ -70,6 +70,7 @@ import {
 import { useHydrated } from '@/components/motion/Reveal'
 import { cn } from '@/lib/utils'
 import {
+  REVEAL_OPACITY_FLOOR,
   SCROLL_OFFSET,
   activeIndexFor,
   hasRevealStarted,
@@ -285,19 +286,22 @@ export function StackSlide({ children, index }: StackSlideProps) {
   // (`revealWindow` / `revealOpaqueAt`), the same functions `MotionCard`
   // animates from, so this gate and that animation cannot be re-timed apart.
   //
-  // Before the handover the arriving state is still translucent and drawn on
-  // top while `inert` — the state beneath shows through and stays the
-  // interactive one, so a click in that band reaches the state the visitor
-  // can still partly see, not a dead surface. Where that handover should sit
-  // is part of the placeholder reveal timing `MotionCard` notes is still
-  // pending from the designer.
+  // Before the handover the arriving state is still fading in (from fully
+  // transparent, see `REVEAL_OPACITY_FLOOR`) and drawn on top while `inert` —
+  // the state beneath shows through and stays the interactive one, so a click
+  // in that band reaches the state the visitor can still mostly see, not a
+  // dead surface. Where that handover should sit is part of the reveal timing
+  // `MotionCard` notes the design file does not specify.
   const isInert = pinned && index !== interactiveIndex
   // A state whose OWN reveal has not started yet still resolves a real
-  // transform value (its scale/opacity/y clamp to their pre-arrival numbers,
-  // not zero — see `MotionCard`), and it sits at a higher z-index than the
-  // active state (later index, drawn on top once both are opaque). Left
-  // unhidden it would float above the active state, partially see-through,
-  // before its turn.
+  // transform value (its scale/y clamp to their pre-arrival numbers — see
+  // `MotionCard`), and it sits at a higher z-index than the active state
+  // (later index, drawn on top once both are opaque). Its opacity clamps to
+  // `REVEAL_OPACITY_FLOOR`, currently 0, so today it would not be *seen*
+  // before its turn — but `visibility: hidden` is kept regardless: it is what
+  // takes the not-yet-arrived state out of hit-testing and the accessibility
+  // tree, which opacity alone does not, and it keeps the gate correct if the
+  // floor is ever raised again.
   //
   // `hasRevealStarted` (not a bare `index > activeIndex` comparison) because
   // a state's own reveal window is `[thresholds[index-1], thresholds[index]]`
@@ -389,16 +393,19 @@ function MotionCard({
   const fallbackProgress = useMotionValue(0)
   const source = progress ?? fallbackProgress
   const range = hasRange ? [start, end] : [0, 1]
-  // Placeholder reveal — designer has not sent the real timeline for this yet
-  // (see docs/QUESTIONS-DESIGNER.md). Zoom (scale) + a short rise (y) +
-  // fade (opacity), all driven off the same arrival window so they read as
-  // one motion rather than three independent ones.
+  // The reveal's shape is this codebase's choice: the design file
+  // (`docs/figma/anim.json`, frame `40002450:2700`) names the block
+  // `Scrolling` but specifies no scroll timeline — its only transitions are
+  // button hovers (see docs/QUESTIONS-DESIGNER.md). Zoom (scale) + a short
+  // rise (y) + fade (opacity), all driven off the same arrival window so they
+  // read as one motion rather than three independent ones. The scale/y
+  // amounts and the fade shape are the placeholder parts; the fade *floor* is
+  // not — see `REVEAL_OPACITY_FLOOR`.
   const scale = useTransform(source, range, [0.94, 1])
   const y = useTransform(source, range, [24, 0])
-  // Mirrors the old covering-state fade, time-reversed: opacity used to hold
-  // at 1 for the transition's first half and drop to 0.7 over the second, so
-  // the arriving state now rises 0.7 → 1 over the first half and holds at 1
-  // for the second — fully opaque well before it becomes the active state.
+  // The arriving state rises from `REVEAL_OPACITY_FLOOR` (fully transparent)
+  // to 1 over the first `REVEAL_OPAQUE_AT` of its window and holds at 1 for
+  // the rest — fully opaque well before it becomes the active state.
   // `revealOpaqueAt` is also where `StackSlide` hands interactivity over: the
   // moment this state is opaque and on top is the moment it takes clicks and
   // focus. Scale and y keep settling to the end of the window, so a thin
@@ -406,7 +413,7 @@ function MotionCard({
   const opacity = useTransform(
     source,
     hasRange ? [start, revealOpaqueAt(thresholds ?? [], index)] : [0, 1],
-    [0.7, 1],
+    [REVEAL_OPACITY_FLOOR, 1],
   )
   const animated = pinned && hasRange
   const style = useMemo(

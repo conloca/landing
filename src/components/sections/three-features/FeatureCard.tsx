@@ -108,8 +108,14 @@ export function FeatureCard({
             )}
           >
             <div className={layout === 'stacked' ? 'md:max-w-md' : undefined}>
-              <h3 className="font-display text-4xl leading-none font-bold">{title}</h3>
-              <p className={cn('mt-4 text-base', layout === 'stacked' && 'mt-2')}>{body}</p>
+              {/* Figma S1 card headline per breakpoint frame: 32/38.4 (393),
+                  40/48 (640), 48/48 (1024 and 1440); body 16/27.2 throughout. */}
+              <h3 className="font-display text-[2rem] leading-[1.2] font-bold sm:text-[2.5rem] sm:leading-[1.2] lg:text-5xl lg:leading-none">
+                {title}
+              </h3>
+              <p className={cn('mt-4 text-base leading-[1.7]', layout === 'stacked' && 'mt-2')}>
+                {body}
+              </p>
             </div>
             <div className="flex shrink-0 gap-3">
               <CtaButton href={CTA_LINKS.getStarted}>Get started</CtaButton>

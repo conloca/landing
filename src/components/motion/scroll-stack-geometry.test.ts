@@ -1,5 +1,6 @@
 import { describe, expect, test } from 'bun:test'
 import {
+  REVEAL_OPACITY_FLOOR,
   REVEAL_OPAQUE_AT,
   SCROLL_OFFSET,
   activeIndexFor,
@@ -154,6 +155,27 @@ describe('revealWindow', () => {
     expect(revealOpaqueAt(thresholds, 1)).toBeCloseTo((1 / 3) * REVEAL_OPAQUE_AT, 12)
     expect(revealOpaqueAt(thresholds, 2)).toBeCloseTo(1 / 3 + (1 / 3) * REVEAL_OPAQUE_AT, 12)
   })
+
+  // Regression for a shipped bug: the floor was 0.7, so from the first frame
+  // of every window the *next* slide was drawn at 70 % over the current one
+  // and the first two states of the stack never read as a single card
+  // (measured on production at 1440/1024/393). A slide whose window has just
+  // opened must be fully transparent — the slide beneath shows clean until
+  // the fade actually starts.
+  test('an arriving slide starts fully transparent', () => {
+    expect(REVEAL_OPACITY_FLOOR).toBe(0)
+  })
+
+  test('the opaque point is strictly inside the window, so the fade has room to play', () => {
+    expect(REVEAL_OPAQUE_AT).toBeGreaterThan(0)
+    expect(REVEAL_OPAQUE_AT).toBeLessThanOrEqual(1)
+    for (const index of [1, 2]) {
+      const [start, end] = revealWindow(thresholds, index)
+      const opaqueAt = revealOpaqueAt(thresholds, index)
+      expect(opaqueAt).toBeGreaterThan(start)
+      expect(opaqueAt).toBeLessThanOrEqual(end)
+    }
+  })
 })
 
 describe('interactiveIndexFor', () => {
@@ -192,6 +214,22 @@ describe('interactiveIndexFor', () => {
       const active = activeIndexFor(progress, thresholds)
       const interactive = interactiveIndexFor(progress, thresholds)
       expect(hasRevealStarted(active, interactive)).toBe(true)
+    }
+  })
+
+  test('never names a slide that is still transparent', () => {
+    // The gate hands over at `revealOpaqueAt`, and the fade runs floor → 1
+    // across `[start, revealOpaqueAt]`, so at every progress the interactive
+    // slide's own fade is complete: linearly interpolating the floor to 1
+    // over that sub-window yields exactly 1 at and after the handover.
+    for (let progress = 0; progress <= 1; progress += 0.001) {
+      const interactive = interactiveIndexFor(progress, thresholds)
+      if (interactive === 0) continue
+      const [start] = revealWindow(thresholds, interactive)
+      const handover = opaqueAt(interactive)
+      const t = Math.min(1, Math.max(0, (progress - start) / (handover - start)))
+      const opacity = REVEAL_OPACITY_FLOOR + (1 - REVEAL_OPACITY_FLOOR) * t
+      expect(opacity).toBe(1)
     }
   })
 
