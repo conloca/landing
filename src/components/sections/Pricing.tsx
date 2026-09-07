@@ -10,12 +10,12 @@ const BILLING_OPTIONS: [string, string] = ['Monthly', 'Annual']
 const BILLING_PERIODS: readonly [BillingPeriod, BillingPeriod] = ['monthly', 'annual']
 
 const has = (label: string): PlanFeature => ({ label, included: true })
-const lacks = (label: string): PlanFeature => ({ label, included: false })
 
 /**
- * Every plan lists the same eight capabilities in the same order, so a visitor can
- * read down a column and compare like with like. A tier that lacks something still
- * shows the row, marked as excluded — omitting it reads as an oversight, not a limit.
+ * Simple lists only the five included checks from Figma S4. Pro and Business
+ * add residency, access control, and support. Capabilities Simple does not
+ * offer are omitted rather than shown as dashes — the design never draws
+ * those rows.
  */
 const PLANS: Plan[] = [
   {
@@ -30,9 +30,6 @@ const PLANS: Plan[] = [
       has('1 repository'),
       has('1GB repository storage'),
       has('1GB media storage'),
-      lacks('Data residency choice'),
-      lacks('Access control'),
-      has('Community support'),
     ],
   },
   {
@@ -88,20 +85,28 @@ export function Pricing() {
   const billing = BILLING_PERIODS[billingIndex]
 
   return (
-    <section id="pricing" className="mx-auto max-w-[1440px] px-8 pt-24 pb-24 sm:pt-[196px] sm:pb-[96px]">
-      <Reveal className="flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-end">
+    <section
+      id="pricing"
+      className="mx-auto max-w-[1440px] px-8 pt-24 pb-24 sm:pt-[196px] sm:pb-[96px]"
+    >
+      <Reveal className="flex flex-col items-start justify-between gap-6 lg:flex-row lg:items-end">
         <h2 className="font-display max-w-[572px] text-5xl leading-[1] font-bold text-stone-900">
           Choose a plan that fits you the best
         </h2>
-        <SegmentedControl
-          options={BILLING_OPTIONS}
-          activeIndex={billingIndex}
-          onChange={setBillingIndex}
-          label="Billing period"
-        />
+        <div className="flex w-full items-center justify-between gap-4 lg:w-auto">
+          <CtaButton variant="outline" href={CTA_LINKS.comparePlans} className="lg:hidden">
+            Compare plans
+          </CtaButton>
+          <SegmentedControl
+            options={BILLING_OPTIONS}
+            activeIndex={billingIndex}
+            onChange={setBillingIndex}
+            label="Billing period"
+          />
+        </div>
       </Reveal>
 
-      <div className="mt-12 flex flex-col gap-3 sm:flex-row">
+      <div className="mt-12 flex flex-col gap-3 lg:flex-row">
         {PLANS.map((plan, index) => (
           <Reveal key={plan.name} delay={index * 0.1} className="flex flex-1">
             <PricingCard plan={plan} billing={billing} />
@@ -109,7 +114,7 @@ export function Pricing() {
         ))}
       </div>
 
-      <div className="mt-8 flex justify-center">
+      <div className="mt-8 hidden justify-center lg:flex">
         <CtaButton variant="outline" href={CTA_LINKS.comparePlans}>
           Compare plans
         </CtaButton>

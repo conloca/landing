@@ -80,13 +80,13 @@ function FeatureRow({ feature }: { feature: PlanFeature }) {
 
 export function PricingCard({ plan, billing }: { plan: Plan; billing: BillingPeriod }) {
   return (
-    <div
-      className={cn(
-        'flex flex-1 flex-col gap-3 rounded-t-3xl bg-gradient-to-b from-stone-100 to-white p-2',
-        plan.highlighted && '-translate-y-2 ring-2 ring-lime-400',
-      )}
-    >
-      <div className="rounded-[18px] bg-white p-5 shadow-[0_9.7px_24px_rgba(0,0,0,0.06)]">
+    <div className="flex flex-1 flex-col gap-3 rounded-t-[20px] rounded-b-none bg-gradient-to-b from-stone-100 from-[74%] to-white p-2">
+      <div
+        className={cn(
+          'rounded-[18px] bg-white p-5 shadow-[0_9.7px_24px_rgba(0,0,0,0.06)]',
+          plan.highlighted && '-translate-y-2 ring-2 ring-lime-400',
+        )}
+      >
         <div className="flex items-center justify-between">
           <h3 className="text-2xl leading-9 font-medium text-stone-900">{plan.name}</h3>
           {plan.highlighted ? (
@@ -104,7 +104,7 @@ export function PricingCard({ plan, billing }: { plan: Plan; billing: BillingPer
           {plan.cta}
         </CtaButton>
       </div>
-      <ul className="flex flex-1 flex-col gap-4 rounded-b-3xl bg-sand-200 p-3">
+      <ul className="flex flex-1 flex-col gap-4 p-3">
         {plan.features.map((feature) => (
           <FeatureRow key={feature.label} feature={feature} />
         ))}
