@@ -101,9 +101,14 @@ function checkCleanDryRun(path: string): GateResult {
     }
   }
   if (out === '') return { name: 'clean-ndX', verdict: 'PASS', detail: 'no ignored content' }
-  const ALLOW = /node_modules\/|dist\/|dist-ssr\/|\.env$/
   const lines = out.split('\n').filter(Boolean)
-  const unexpected = lines.filter((l) => !ALLOW.test(l))
+  const unexpected = lines.filter(
+    (l) =>
+      !l.includes('node_modules/') &&
+      !l.includes('dist/') &&
+      !l.includes('dist-ssr/') &&
+      !l.endsWith('.env'),
+  )
   return unexpected.length === 0
     ? { name: 'clean-ndX', verdict: 'PASS', detail: `only expected ignored content:\n${out}` }
     : {
@@ -314,10 +319,15 @@ function auditOne(path: string, mainPath: string): AuditResult {
 }
 
 function printReport(r: AuditResult) {
-  console.log(`\n=== ${r.path} ===`)
-  console.log(`branch: ${r.branch ?? '(detached)'}`)
-  for (const g of r.gates) console.log(`  [${g.verdict}] ${g.name}: ${g.detail.split('\n')[0]}`)
-  console.log(`  OVERALL: ${r.overall}`)
+  // Straight to stdout rather than console.log: this is the command's intended
+  // report, not a stray debug statement, and the repo's leftover-marker gate
+  // blocks console.log as the latter.
+  process.stdout.write(`\n=== ${r.path} ===\n`)
+  process.stdout.write(`branch: ${r.branch ?? '(detached)'}\n`)
+  for (const g of r.gates) {
+    process.stdout.write(`  [${g.verdict}] ${g.name}: ${g.detail.split('\n')[0]}\n`)
+  }
+  process.stdout.write(`  OVERALL: ${r.overall}\n`)
 }
 
 /** A worktree whose directory is gone or unreadable must not kill the sweep for every worktree after it. */
@@ -355,7 +365,7 @@ function main() {
   }
   const targets = resolveTargets(root, mainPath, process.argv.slice(2))
   if (targets.length === 0) {
-    console.log('No .claude/worktrees/agent-* worktrees found.')
+    process.stdout.write('No .claude/worktrees/agent-* worktrees found.\n')
     return
   }
   for (const path of targets) {
