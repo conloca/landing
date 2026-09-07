@@ -34,13 +34,15 @@ export interface FeatureCardProps {
 }
 
 /** Figma S1 card headline per breakpoint frame: 32/38.4 (393), 40/48 (640),
- * 48/48 (1024 and 1440); body 16/27.2 throughout. */
+ * 48/48 (1024 and 1440); body 16/27.2 throughout. Shared by `CardCopy` and
+ * `StackedCopy` so a future typography tweak only needs one edit. */
+const FEATURE_CARD_TITLE_CLASS =
+  'font-display text-[2rem] leading-[1.2] font-bold text-stone-50 sm:text-[2.5rem] sm:leading-[1.2] lg:text-5xl lg:leading-none'
+
 function CardCopy({ title, body, className }: { title: string; body: string; className?: string }) {
   return (
     <div className={className}>
-      <h3 className="font-display text-[2rem] leading-[1.2] font-bold text-stone-50 sm:text-[2.5rem] sm:leading-[1.2] lg:text-5xl lg:leading-none">
-        {title}
-      </h3>
+      <h3 className={FEATURE_CARD_TITLE_CLASS}>{title}</h3>
       <p className="mt-6 text-base leading-[1.7] text-white">{body}</p>
     </div>
   )
@@ -77,7 +79,7 @@ function StackedCopy({
   return (
     <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
       <div className="flex flex-col gap-6 md:flex-1 md:flex-row md:items-end md:gap-12">
-        <h3 className="font-display max-w-[520px] text-[2rem] leading-[1.2] font-bold text-stone-50 sm:text-[2.5rem] sm:leading-[1.2] lg:text-5xl lg:leading-none">
+        <h3 className={cn('max-w-[520px]', FEATURE_CARD_TITLE_CLASS)}>
           {title}
         </h3>
         <p className="max-w-[520px] text-base leading-[1.7] text-white">{body}</p>
