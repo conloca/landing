@@ -3,7 +3,7 @@ import { Menu } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { CtaButton } from '@/components/CtaButton'
 import { Logo } from '@/components/layout/Logo'
-import { CTA_LINKS, NAV_LINKS } from '@/lib/nav'
+import { CTA_LINKS, HOME_HREF, NAV_LINKS } from '@/lib/nav'
 import {
   Sheet,
   SheetContent,
@@ -21,7 +21,9 @@ export function Header() {
     // not cosmetic — the header's height sets where every section below starts.
     <header className="mx-auto flex h-[66px] max-w-[1440px] items-center px-4 sm:h-[82px] sm:px-6 lg:px-8">
       <div className="flex w-full items-center justify-between">
-        <Logo />
+        <a href={HOME_HREF} className="inline-flex text-stone-900" aria-label="Conloca home">
+          <Logo aria-hidden />
+        </a>
         {/* Figma's "Right group" is one auto-layout frame (gap 31) holding the
             nav links AND the button pair together, not two independently
             justified blocks — `justify-between` across three top-level

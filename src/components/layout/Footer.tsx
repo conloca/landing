@@ -1,6 +1,6 @@
 import { CtaButton } from '@/components/CtaButton'
 import { Logo } from '@/components/layout/Logo'
-import { CTA_LINKS, NAV_LINKS } from '@/lib/nav'
+import { CTA_LINKS, HOME_HREF, NAV_LINKS } from '@/lib/nav'
 
 const FOOTER_LINKS = [...NAV_LINKS, { label: 'Open source', href: '#' }]
 
@@ -13,7 +13,9 @@ export function Footer() {
   return (
     <footer className="px-2 pb-2">
       <div className="mx-auto flex max-w-[1440px] flex-col items-center gap-6 rounded-[24px] bg-stone-800 p-6 lg:flex-row lg:justify-between">
-        <Logo light />
+        <a href={HOME_HREF} className="inline-flex text-stone-50" aria-label="Conloca home">
+          <Logo light aria-hidden />
+        </a>
         <nav
           className="flex flex-wrap items-center justify-center gap-x-[31px] gap-y-4"
           aria-label="Footer"
