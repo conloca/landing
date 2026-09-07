@@ -149,7 +149,9 @@ export function FeatureCard({
         <div
           className={cn(
             'relative mt-6 flex flex-1 flex-col gap-6 overflow-y-auto',
-            isStacked ? 'justify-between' : 'md:flex-row md:items-end md:justify-between md:gap-8',
+            isStacked
+              ? 'order-last justify-between md:order-none'
+              : 'md:flex-row md:items-end md:justify-between md:gap-8',
             layout === 'visual-left' && 'md:flex-row-reverse',
           )}
         >
@@ -162,7 +164,7 @@ export function FeatureCard({
           <div
             className={cn(
               'relative min-h-56 overflow-hidden rounded-2xl',
-              isStacked ? 'order-first flex-1' : 'flex-1 md:self-stretch',
+              isStacked ? 'flex-1' : 'flex-1 md:self-stretch',
             )}
           >
             {visual}
