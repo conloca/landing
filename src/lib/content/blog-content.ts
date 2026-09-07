@@ -37,7 +37,6 @@ export interface BlogArticle {
 export interface BlogHeroContent {
   compactBreadcrumbs: readonly string[]
   description: string
-  dispatchLabel: string
   largeBreadcrumbs: readonly string[]
   mobileHeading: string
   heading: string
@@ -58,7 +57,6 @@ export const blogHeroContent: BlogHeroContent = {
   compactBreadcrumbs: ['Stories', 'Insights', 'Updates'],
   description:
     'Field notes, practical guides, and honest conversations about building visual editing into modern developer workflows.',
-  dispatchLabel: 'Conloca dispatch',
   largeBreadcrumbs: ['Home', 'Stories', 'Updates'],
   mobileHeading: 'Notes from space between code and content',
   heading: 'Notes on content, code, and the space between',

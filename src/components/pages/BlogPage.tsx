@@ -90,10 +90,6 @@ export function BlogPage() {
     <main id="main-content">
       <section className="blog-hero" aria-labelledby="blog-heading">
         <div className="blog-hero__topline">
-          <p className="blog-hero__dispatch">
-            <span aria-hidden="true" />
-            {blogHeroContent.dispatchLabel}
-          </p>
           <div className="blog-hero__breadcrumbs-large">
             <Breadcrumbs items={blogHeroContent.largeBreadcrumbs} />
           </div>
