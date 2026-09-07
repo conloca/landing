@@ -9,17 +9,25 @@ export function Statement() {
     <section className="relative mx-auto max-w-[1440px] px-8 py-32 sm:py-[196px]">
       <div className="relative mx-auto max-w-3xl text-center">
         <FloatingChip className="top-[-3rem] left-[2%] -rotate-6" delay={0}>
-          <span className="size-[11px] shrink-0 rounded-full bg-[#9AE600]" />
+          <span className="size-[7px] shrink-0 rounded-full bg-[#9AE600] sm:size-[11px]" />
           changes published
         </FloatingChip>
-        <FloatingChip className="top-[-4.5rem] right-[10%] rotate-12" delay={0.1} tile="bg-[#F03C2E]">
+        <FloatingChip
+          className="top-[-4.5rem] right-[10%] rotate-12"
+          delay={0.1}
+          tile="bg-[#F03C2E]"
+        >
           <GitTileGlyph />
         </FloatingChip>
-        <FloatingChip className="bottom-[-4rem] left-[18%] -rotate-6" delay={0.2} tile="bg-[#BC52EE]">
-          <AstroGlyph className="size-14" />
+        <FloatingChip
+          className="bottom-[-4rem] left-[18%] -rotate-6"
+          delay={0.2}
+          tile="bg-[#BC52EE]"
+        >
+          <AstroGlyph className="relative z-[1] size-8 sm:size-14" />
         </FloatingChip>
         <FloatingChip className="right-[-2%] bottom-[-1rem] -rotate-3" delay={0.3}>
-          <FileText className="size-[17px] shrink-0 text-stone-400" />
+          <FileText className="size-[10px] shrink-0 text-stone-400 sm:size-[17px]" />
           homepage-eng.vx.json
         </FloatingChip>
 
@@ -27,7 +35,7 @@ export function Statement() {
           <h2 className="font-display text-4xl leading-[1] font-black text-stone-900 sm:text-6xl lg:text-7xl">
             Everything you need
             <br />
-            <span className="text-lime-400">nothing you don&apos;t</span>
+            <span className="text-[#9AE600]">nothing you don&apos;t</span>
           </h2>
         </Reveal>
       </div>
@@ -50,16 +58,16 @@ function FloatingChip({
     <Reveal
       direction="none"
       delay={delay}
-      className={`absolute hidden items-center gap-1.5 sm:flex ${className}`}
+      className={`absolute flex items-center gap-1.5 ${className}`}
     >
       {tile ? (
         <span
-          className={`flex size-[92px] items-center justify-center rounded-2xl text-white shadow-[0_6px_16px_rgba(0,0,0,0.16)] ${tile}`}
+          className={`relative flex size-[57px] items-center justify-center rounded-2xl text-white shadow-[0_6px_6px_rgb(16_24_40_/_0.03),0_12px_16px_rgb(16_24_40_/_0.08)] before:pointer-events-none before:absolute before:inset-0 before:rounded-2xl before:bg-[radial-gradient(circle_at_100%_100%,rgba(0,0,0,0.30),transparent)] sm:size-[92px] ${tile}`}
         >
           {children}
         </span>
       ) : (
-        <span className="flex items-center gap-2 rounded-xl border border-stone-200 bg-white px-2.5 py-[18px] text-sm font-medium text-stone-900 shadow-[0_6px_16px_rgba(0,0,0,0.10)]">
+        <span className="flex items-center gap-2 rounded-xl border border-stone-200 bg-white p-[7px] text-[10px] font-medium text-stone-900 shadow-[0_4px_6px_rgb(16_24_40_/_0.03),0_12px_16px_rgb(16_24_40_/_0.08),0_12px_64px_rgb(0_0_0_/_0.05)] sm:p-2.5 sm:text-sm">
           {children}
         </span>
       )}
@@ -69,7 +77,7 @@ function FloatingChip({
 
 function GitTileGlyph() {
   return (
-    <svg viewBox="0 0 24 24" className="size-[58px] fill-current">
+    <svg viewBox="0 0 24 24" className="relative z-[1] size-9 fill-current sm:size-[58px]">
       <path d="M22.5 11.2 12.8 1.5a1.7 1.7 0 0 0-2.4 0L8.2 3.7l2.8 2.8a2 2 0 0 1 2.5 2l2.7 2.7a2 2 0 1 1-1.2 1.2l-2.5-2.5v6.6a2 2 0 1 1-1.7 0V9a2 2 0 0 1-1-2.6L7.3 4.2l-5.8 5.8a1.7 1.7 0 0 0 0 2.4l9.7 9.7a1.7 1.7 0 0 0 2.4 0l9-9a1.7 1.7 0 0 0-.1-2.3Z" />
     </svg>
   )
