@@ -28,7 +28,7 @@ export function Header() {
             children would space the nav away from the buttons it belongs
             beside instead of keeping them as one right-aligned unit. */}
         <div className="flex items-center gap-[31px]">
-          <nav className="hidden items-center gap-8 md:flex" aria-label="Primary">
+          <nav className="hidden items-center gap-8 lg:flex" aria-label="Primary">
             {NAV_LINKS.map((link) => (
               <a
                 key={link.label}
@@ -41,7 +41,7 @@ export function Header() {
           </nav>
           <div className="flex items-center gap-2">
             <CtaButton variant="outline" className="hidden sm:inline-flex" href={CTA_LINKS.tryDemo}>
-              Try Demo
+              Try editor
             </CtaButton>
             <CtaButton href={CTA_LINKS.getStarted}>Get Started</CtaButton>
             <MobileNav />
@@ -82,7 +82,7 @@ function MobileNav() {
           ref={triggerRef}
           variant="outline"
           size="icon"
-          className="md:hidden"
+          className="lg:hidden"
           aria-label="Open menu"
         >
           <Menu />
