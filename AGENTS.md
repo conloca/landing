@@ -613,7 +613,10 @@ orphaned daemon holds roughly eleven Chrome processes; five of them reached 55
 processes here and degraded capture for every agent on the machine. The
 `--all` form is worse than leaking, because it terminates sessions belonging to
 other agents that are still working — that happened in this project and cost a
-concurrent agent its in-flight run. Use plain `agent-browser close`.
+concurrent agent its in-flight run. Use `agent-browser close --session <yours>`,
+the same scoped form as the canonical rule above — plain `agent-browser close`
+with no `--session` closes the shared default session instead of the one you
+opened, which still strands your own daemon.
 
 ## Figma MCP servers
 
