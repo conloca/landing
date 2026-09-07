@@ -43,7 +43,7 @@ export function Header() {
             <CtaButton variant="outline" className="hidden sm:inline-flex" href={CTA_LINKS.tryDemo}>
               Try Demo
             </CtaButton>
-            <CtaButton href={CTA_LINKS.getStarted}>Get Started</CtaButton>
+            <CtaButton href={CTA_LINKS.getStarted}>Get started</CtaButton>
             <MobileNav />
           </div>
         </div>
