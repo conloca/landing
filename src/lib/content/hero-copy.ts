@@ -42,10 +42,9 @@ interface HeroCopy {
 export const HERO_COPY: Record<Audience, HeroCopy> = {
   developer: {
     headline: 'Keep content in your repo. Give editors a visual editing interface',
-    // "MDS" is verbatim from the Figma copy — likely a typo for "MDX"
     carousel: [
       [
-        'Map your React components to typed schemas and MDS blocks in the IDE.',
+        'Map your React components to typed schemas and MDX blocks in the IDE.',
         ' Visual edits respect the structure you define and stay in Git.',
       ],
       [
