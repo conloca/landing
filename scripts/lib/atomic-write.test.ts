@@ -12,6 +12,8 @@ import {
   readdirSync,
   symlinkSync,
   lstatSync,
+  openSync,
+  closeSync,
 } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -52,8 +54,18 @@ describe('atomicWriteFileSync', () => {
     atomicWriteFileSync(destination, 'DIFF')
 
     expect(readFileSync(protectedFile, 'utf8')).toBe('REFERENCE')
-    expect(lstatSync(destination).isSymbolicLink()).toBe(false)
-    expect(readFileSync(destination, 'utf8')).toBe('DIFF')
+
+    // Open first and read through the resulting descriptor rather than
+    // re-opening by path after the lstat check below — that check-then-open
+    // ordering is exactly the TOCTOU pattern CodeQL's js/file-system-race
+    // flags, since a race could swap what the path resolves to in between.
+    const fd = openSync(destination, 'r')
+    try {
+      expect(lstatSync(destination).isSymbolicLink()).toBe(false)
+      expect(readFileSync(fd, 'utf8')).toBe('DIFF')
+    } finally {
+      closeSync(fd)
+    }
   })
 
   test('leaves no temporary file behind on success', () => {
