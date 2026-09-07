@@ -14,6 +14,7 @@ import {
   lstatSync,
   openSync,
   closeSync,
+  chmodSync,
 } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -54,6 +55,32 @@ describe('atomicWriteFileSync', () => {
 
     expect(readFileSync(destination, 'utf8')).toBe('NEW')
     expect(lstatSync(destination).mode & 0o777).toBe(0o600)
+  })
+
+  // The fixed-point 0o600 case above passes even if the mode were silently
+  // masked by the process umask, since 0o600 has no bits in the positions a
+  // common umask (022, 002, 077) clears — this one specifically forces that
+  // failure mode: a restrictive umask active during the write, on a
+  // destination mode (0o664) whose group-write bit sits exactly where a 022
+  // umask would strip it if `mode` were passed to `writeFileSync` unguarded.
+  test('preserves a mode the process umask would otherwise narrow', () => {
+    const destination = join(dir, 'group-writable.txt')
+    writeFileSync(destination, 'OLD')
+    // `writeFileSync`'s own `mode` option would be masked by whatever umask
+    // this test happens to run under, same as the bug under test — chmod
+    // isn't subject to umask, so this is the only way to guarantee the
+    // fixture genuinely starts at 0o664 regardless of the ambient umask.
+    chmodSync(destination, 0o664)
+
+    const previousUmask = process.umask(0o022)
+    try {
+      atomicWriteFileSync(destination, 'NEW')
+    } finally {
+      process.umask(previousUmask)
+    }
+
+    expect(readFileSync(destination, 'utf8')).toBe('NEW')
+    expect(lstatSync(destination).mode & 0o777).toBe(0o664)
   })
 
   // The regression this module exists for: a plain writeFileSync to the same

@@ -44,10 +44,26 @@ export function atomicWriteFileSync(path: string, data: Parameters<typeof writeF
   // moment it appears and see the sensitive content at the wider mode. Pass
   // the preserved mode straight to the file's creation instead of `chmod`ing
   // it afterward, so there is no window where it's ever wider than final.
+  //
+  // A `mode` passed to `writeFileSync` is still masked by the process umask
+  // at creation time — `open(2)`'s `mode` argument is `mode & ~umask`, exactly
+  // as if no mode had been given — so an existing mode with bits in
+  // umask-cleared positions (e.g. 0664 under the common 022 umask) would
+  // silently narrow to 0644, the opposite of "preserve". Clearing the umask
+  // for the single creation call (and restoring it immediately after, in a
+  // `finally`) makes the requested mode land exactly, with the same no-window
+  // guarantee as above: `process.umask` changes the process-wide mask
+  // in-place, so a concurrent reader observes either the un-widened mode from
+  // this call or the still-applicable prior mask, never an intermediate one.
   const mode = existingFileMode(path) ?? 0o666
 
   try {
-    writeFileSync(temp, data, { flag: 'wx', mode })
+    const previousUmask = process.umask(0)
+    try {
+      writeFileSync(temp, data, { flag: 'wx', mode })
+    } finally {
+      process.umask(previousUmask)
+    }
     renameSync(temp, path)
   } catch (error) {
     try {
