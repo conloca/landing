@@ -12,15 +12,12 @@ interface BentoCardProps {
 /**
  * One bento card, S3 (`40002427:16814`).
  *
- * Radius and surface are written as explicit values, not theme tokens: this
- * theme's `rounded-3xl` resolves to 22px, close enough to the design's figure
- * to look right and wrong enough to drift silently.
+ * Radius is an explicit 24px, not `rounded-3xl` (that token is 22px here and
+ * would drift silently).
  *
- * The two sources we have disagree — `docs/figma/DESIGN-SPEC.md` records
- * radius 32 on a sand tint (`#F5F6EF`), while a later pass measuring the node
- * tree read radius 24 on `#FAFAF9`. The measurement wins here because it came
- * from the tree rather than a summary of it, but the conflict is unresolved
- * and is in docs/QUESTIONS-DESIGNER.md.
+ * Surface is `bg-sand-200` (`#F5F6EF`), the Figma sand tint for this grid.
+ * Some node-tree fills also record `#FAFAF9` (stone-50); sand is the palette
+ * for this section — see layout question 9 in docs/QUESTIONS-DESIGNER.md.
  *
  * Grid placement is by document order (`.bento-grid > :nth-child(N)` in
  * index.css), not a per-card prop — see FeatureGrid.tsx.
@@ -39,7 +36,7 @@ interface BentoCardProps {
 export function BentoCard({ title, body, illustration, delay = 0 }: BentoCardProps) {
   return (
     <Reveal as="div" delay={delay} className="min-h-0">
-      <div className="bento-card flex h-full flex-col overflow-hidden rounded-[24px] bg-[#FAFAF9]">
+      <div className="bento-card flex h-full flex-col overflow-hidden rounded-[24px] bg-sand-200">
         <div className="overflow-hidden">
           <div className="bento-card-visual">{illustration}</div>
         </div>

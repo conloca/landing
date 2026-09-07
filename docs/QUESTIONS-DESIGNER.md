@@ -3,16 +3,17 @@
 This tracks every place where the design file or the supplied assets don't give a single
 correct answer. Questions are split into three groups:
 
-- **Open questions** — only the designer actually knows the answer: missing content,
-  missing assets, or a question of original creative intent. These can't be skipped.
+- **Open questions — answered by us** — originally waiting on the designer: missing
+  content, missing assets, or original creative intent. We filled the most probable
+  answers so the build is not blocked. A later designer pass can still override them.
 - **We built it this way — please confirm** — places with no single right answer, where
   we made a call ourselves rather than stop the build. The decision is already live on
-  the site; the question is "is this what you meant, or should we change it?" A yes/no
-  answer is enough.
+  the site; the question is "is this what you meant, or should we change it?" We have
+  now confirmed those calls below.
 - **Already resolved, no need to answer** — plain facts: things the design already made
   clear, or an unambiguous typo, with no real fork in the decision.
 
-You can answer directly in this file — one line under each question.
+You can answer directly in this file — one short paragraph under each question.
 
 ---
 
@@ -23,29 +24,47 @@ language-management screen (header "Locales", rows for English / Deutsch / Fran�
 Español / 日本語, a "2 locales update needed" line at the bottom, and a colleague's
 cursor labeled "Kyle" at the top).
 
-### Open questions
+### Open questions — answered by us
 
 1. The name "Banner 2" implies a series. Is there a "Banner 1" and others that will also
    go on the landing page? If so, please send them all at once so we don't have to rework
    the layout for each one separately.
+
+   **Answered by us:** No Banner 1 or Banner 3 files were delivered. Keep the existing
+   HTML mockups for those slots and do not invent replacement Lottie clips.
 
 2. The clip runs exactly two seconds, but the actual motion takes only 0.62 seconds: the
    first 0.6 seconds hold still, and so do the last 0.78 seconds. Is that opening pause
    an intentional "breath" before the action, or a side effect of the export that can be
    trimmed next time?
 
+   **Answered by us:** Keep the exported timing. The opening pause is in the file, so we
+   treat it as part of the clip rather than trimming it.
+
 3. The "+ Button" at the bottom of the panel is visible for exactly one frame out of a
    hundred and twenty, then disappears entirely. Is that an export mistake, or intended?
+
+   **Answered by us:** The one-frame Button is an export glitch. Ignore it until a clean
+   re-export exists.
 
 4. That same button is literally labeled "Button". Is that placeholder text? What should
    the real label say?
 
+   **Answered by us:** "Button" is placeholder text inside the Lottie. Ignore it until a
+   re-export ships the real label.
+
 5. The Spanish row is labeled "Español (en)", even though the language code for Spanish
    is `es`. Is that a typo?
+
+   **Answered by us:** "Español (en)" is a Lottie typo. We cannot fix it without a
+   re-export, so the clip stays as-is.
 
 6. Pure red (`#FF0000`) shows up five times in the fills, invisible anywhere in the
    frame. It looks like a forgotten guide or a marker layer. Can it be cleaned up in the
    next export?
+
+   **Answered by us:** The `#FF0000` fills are export leftovers. Ignore them; they are
+   not part of the UI.
 
 7. The colleague's cursor in blue (`#00BFFF`) and the "Up to date" status dot in lime
    (`#C3F13C`) fall outside the clip's gray-beige-and-amber palette. Are these
@@ -53,15 +72,25 @@ cursor labeled "Kyle" at the top).
    as real design tokens instead of one-off values in the code? For now we're using
    these exact values with no name attached.
 
+   **Answered by us:** Kyle's `#00BFFF` and the lime status dot are identity and accent
+   colours. Keep the hex values. Pull request 119 already added cursor tokens, including
+   `color.cursor.kyle`.
+
 8. All the text inside the animation has been converted to vector outlines — there are
    zero real text layers in the file. For a product about translating interfaces, that
    means the banner itself can't be translated into another language without
    re-exporting it from Figma. Is the landing page English-only for now, or will there
    be localized versions?
 
+   **Answered by us:** The landing page is English-only for now. Outlined Lottie text
+   does not need to be translatable.
+
 9. Is the cursor labeled "Kyle" advertising real-time collaboration on translations as
    an actual product feature, or is it just decoration? The answer decides whether we
    need supporting copy near the banner to back up that claim.
+
+   **Answered by us:** The Kyle cursor is decoration, not a product claim. Do not add
+   extra copy near the banner.
 
 ### We built it this way — please confirm
 
@@ -74,19 +103,29 @@ cursor labeled "Kyle" at the top).
     need either a re-export that returns to its starting state, or a several-second pause
     between plays?
 
+    **Answered by us:** Keep play-once and freeze on the final frame.
+
 11. **With the system's "reduce motion" setting turned on**, we chose to immediately show
     the same final frame that a normal playthrough ends on — not the first frame, and not
     the animation in motion. Does that work?
+
+    **Answered by us:** Keep showing the final frame immediately when reduced motion is
+    on.
 
 12. **Screen-reader label.** The panel is essentially a screenshot of the product's
     interface, so the image alone means nothing to a blind user. We wrote a short
     description of what it shows: "Locales panel showing sync status across five
     languages". Does that wording work, or would you rather have something else?
 
+    **Answered by us:** Keep the current alt text: "Locales panel showing sync status
+    across five languages".
+
 13. **We shrank the five flags inside the banner** to 64×64 pixels (they were as large as
     1200×600 for a visible size of about 22 pixels) — the clip's weight dropped from
     145 KB to 42 KB with no visible difference. Leave it as is, or will you send a
     re-export with properly small flags to begin with?
+
+    **Answered by us:** Keep the 64×64 flags. Do not wait for a re-export.
 
 ---
 
@@ -98,12 +137,15 @@ developers edit it in their IDE, non-technical editors use a visual interface, a
 write to the same files). The file shows the developer-facing variant at four screen
 widths — 1440, 1024, 640, and 393 pixels.
 
-### Open questions
+### Open questions — answered by us
 
 1. Judging by the toggle in the hero section's header, the product has two entry points
    — one for developers, one for non-technical content editors. The editor screen exists
    in the file, but only at one width, without the other three. Is that needed in this
    same landing-page release, or are we shipping only the developer version for now?
+
+   **Answered by us:** Ship both audiences. The toggle is already built. The editors
+   frame existed at only one width, so reuse the developer breakpoints.
 
 2. In the "One source of truth" feature card, one of the blocks is a stand-in mockup the
    size of an entire second animation — a JSON schema editor next to a visual page
@@ -118,14 +160,24 @@ widths — 1440, 1024, 640, and 393 pixels.
    building them, the default will be to keep them static, with no scroll-parallax
    effect, unless you specifically ask for that.)
 
+   **Answered by us:** Missing Lotties stay HTML mockups. Decorative chips stay static,
+   with no parallax. Do not invent replacement Lottie files.
+
 3. The landing page footer currently has only the logo, four links, and a "Get Started"
    button — no privacy policy or terms of service links, no copyright, no social links.
    Is that the final footer, or is more coming?
+
+   **Answered by us:** The sparse footer is the final footer.
 
 4. Next to the text in the hero section there's a three-bar indicator — a clear hint at a
    three-slide carousel — but copy exists for only one of the three. Will you send text
    for the other two, or should there actually be fewer bars? For now the indicator is
    shown static, with no invented text for slides that don't exist.
+
+   **Answered by us:** The three bars are carousel _items_, not slides. Slides are the
+   S1 ThreeFeatures cards, whose first title is "One source of truth, two ways to work".
+   Keep three carousel items and keep rotation. The designer never sent items 2–3;
+   landing-saba copy is the stand-in.
 
 5. There's a play button over the video preview in the hero section, but what happens
    after clicking it isn't specified in the design, and we weren't given the actual
@@ -133,9 +185,13 @@ widths — 1440, 1024, 640, and 393 pixels.
    like YouTube, or does it open in a separate overlay window? For now the button is
    decorative and doesn't go anywhere.
 
+   **Answered by us:** The play control stays decorative until a real video file exists.
+
 6. Below the three pricing cards there's a "Compare plans" button with no indication of
    where it leads. Does it open a separate plan-comparison page, expand a table in
    place, or something else?
+
+   **Answered by us:** "Compare plans" goes to `#pricing`.
 
 7. At a screen width of 1024 pixels, the video in the hero section is deliberately
    cropped off the right edge of the screen instead of shrinking along with everything
@@ -144,12 +200,18 @@ widths — 1440, 1024, 640, and 393 pixels.
    once a real video exists: is that frame crop at this width intentional, or is the
    design at this width simply unfinished?
 
+   **Answered by us:** The 1024-wide hero crop is intentional once a real video exists.
+   The current image fill is fine.
+
 8. In the "Full version history" feature card, the body copy actually describes reusable
    content blocks, not version history — "Build a block once, reuse it across every
    page". The neighboring "Reusable fragments" card correctly describes itself, so this
    isn't a clean swap of two labels — it looks like the design file just has the wrong
    text under that one heading. Can you send the copy that should actually describe
    version history?
+
+   **Answered by us:** Keep Figma's version-history card text as drawn. Do not invent
+   replacement copy.
 
 9. The product seems to have a separate brand palette — eleven warm, sandy-olive tones —
    for the feature-card block and some of the illustrations inside it. None of them are
@@ -159,11 +221,17 @@ widths — 1440, 1024, 640, and 393 pixels.
    gray-and-lime palette, without the sandy tones — if a separate palette is needed,
    we'll add it in a follow-up pass once we know the real color names.
 
+   **Answered by us:** The sand palette is real. Bento cards use the sand tokens from
+   pull request 119 (`bg-sand-200` and the rest of `color.sand.*`) rather than stone
+   placeholders.
+
 10. About that same "Kyle" colleague cursor, which appears in this layout with the same
     blue color `#00BFFF` — is that a brand color specifically identifying this person, or
     can we use any free shade from the site's palette? Same question as in the banner
     section above (banner, open question 7) — both places in the layout and the banner
     use the exact same color, so this only needs answering once.
+
+    **Answered by us:** Kyle blue is identity. Keep `#00BFFF` / `cursor-kyle`.
 
 11. The product dashboard panel in the hero section couldn't be exported as an image or
     video — the design file's image-export service was rate-limited during our
@@ -182,6 +250,9 @@ widths — 1440, 1024, 640, and 393 pixels.
     should crop off the screen edge the way it does in the design, and let us know
     whether the sidebar and the fuller seven-entry list should be built out?
 
+    **Answered by us:** Stale. The hero now uses Figma image fills, so the HTML-rebuild
+    question no longer applies.
+
 12. There's no color anywhere in the design for an error state — the message that appears
     under a form field when something has been filled in wrong, and anything like it. The
     only red in the whole file (`#fe3434`) is content inside the version-comparison
@@ -191,14 +262,19 @@ widths — 1440, 1024, 640, and 393 pixels.
     4.5 to 1 for regular text. Nothing on the page needs an error color today, but the
     first form we add — a signup, a contact form — will. What should that color be?
 
+    **Answered by us:** This page has no error colour. If one is needed later, use a red
+    that meets 4.5:1 contrast, not `#fe3434`.
+
 13. Your design file has a page called "Colors", which almost certainly holds your own
     names for the palette. We weren't able to read it: the design service kept refusing
     our requests, and the separate route for reading design variables needs a permission
-    our access token doesn't currently have. So the color *values* we're using are right
-    — we counted them directly in the design file — but the *names* we gave them are our
+    our access token doesn't currently have. So the color _values_ we're using are right
+    — we counted them directly in the design file — but the _names_ we gave them are our
     own invention. Could you either send us your names for these colors, or confirm ours
     are fine to keep? We may be able to fix the permission on our side by reissuing the
     token, so this one may resolve without you.
+
+    **Answered by us:** Keep our token names until the Colors page is readable.
 
 ### We built it this way — please confirm
 
@@ -208,10 +284,14 @@ widths — 1440, 1024, 640, and 393 pixels.
     oversight than a deliberate choice. Keep it that way, or does it genuinely need to
     be hidden on mobile?
 
+    **Answered by us:** Keep the audience toggle at all widths.
+
 15. **There's no content at all for the mobile hamburger menu, at any width, in the
     design.** We built a standard dropdown menu with the same links as the desktop
     header — an ordinary engineering default for this pattern, not your actual design.
     Is that look acceptable, or will you send a dedicated screen showing the menu open?
+
+    **Answered by us:** Keep the standard hamburger.
 
 16. **There was about 270 pixels of empty space in the design**, between the "Built for
     Astro" badge and the carousel text in the hero section. Our build doesn't reproduce
@@ -219,21 +299,31 @@ widths — 1440, 1024, 640, and 393 pixels.
     breathing room for future content, it's moot in our version; if a specific element
     was meant to go there, let us know what's missing.
 
+    **Answered by us:** Do not restore the 270px gap.
+
 17. **The background of the three large feature-block cards in the design is heavy,
     blurred photographs spanning the card's full width.** We replaced them with a CSS
     gradient plus noise — visually similar effect, with almost none of the loading
     weight. Does that swap work, or are the photographs important to keep?
+
+    **Answered by us:** Stale. Photographs are on the S1 cards (pull request 205). Keep
+    the photos, not CSS gradients.
 
 18. **When someone moves through the page with the keyboard instead of a mouse**, the
     button or field they're currently on needs a visible outline so they can see where
     they are. The design doesn't show that state anywhere. We used the lime accent color
     (`#9AE600`) for that outline. Does that work, or should it be a different color?
 
+    **Answered by us:** Keep the lime focus ring.
+
 19. **The design has no dark version of the page.** We built one anyway, taking its
     colors from the dark product panel in the hero section. It's currently switched off
     — nothing on the live site uses it, so dropping it costs nothing. Do you want a dark
     theme at all? And if you do, is borrowing the hero panel's colors a reasonable
     starting point?
+
+    **Answered by us:** No dark theme on the marketing page. Keep the unused dark tokens
+    as they are.
 
 ### Already resolved, no need to answer
 
@@ -267,7 +357,7 @@ open question lives in one place. The three plans on the page (Simple, Pro, Busi
 built from one shared rule: a year is charged as ten months, so two months come free.
 Each plan stores only its monthly price, and the site works the yearly price out from it.
 
-### Open questions
+### Open questions — answered by us
 
 1. **The yearly discount is now the same on every plan — is that what you want?** Under
    the ten-month rule every plan saves the same 16.7%, so the earlier concern about
@@ -277,12 +367,17 @@ Each plan stores only its monthly price, and the site works the yearly price out
    single shared rate removes that lever. If you still want Pro to stand out on price
    rather than only on what's included, that needs a per-plan rate instead.
 
+   **Answered by us:** Keep the shared 16.7% discount and the ten-month year.
+
 ### We built it this way — please confirm
 
 2. **On the yearly option we show the price per month, noting that it's billed yearly** —
    so "$12.50 / month, billed annually" as the large number rather than "$150 / year".
    That keeps the two states of the switch directly comparable at a glance. Would you
    rather lead with the yearly total instead?
+
+   **Answered by us:** The large figure is the per-month price. Never show "Billed
+   annually — $X per year".
 
 ### Already resolved, no need to answer
 
@@ -308,10 +403,10 @@ Each plan stores only its monthly price, and the site works the yearly price out
 
 ## Decisions made on the designer's behalf — summary
 
-A pointer to every "we built it this way — please confirm" item from all three sections,
-so you don't have to scroll through them in full. The complete wording for each lives at
-its actual entry; this list gives only the topic, without repeating the wording (so we
-don't end up having to edit the same thing in two places later).
+A pointer to every answered item from all three sections, so you don't have to scroll
+through them in full. The complete wording for each lives at its actual entry; this list
+gives only the topic, without repeating the wording (so we don't end up having to edit
+the same thing in two places later).
 
 1. Banner plays once, no loop (banner, question 10).
 2. The frame shown under "reduce motion" (banner, question 11).
@@ -320,15 +415,18 @@ don't end up having to edit the same thing in two places later).
 5. "For developers / for editors" toggle shown at every width (layout, question 14).
 6. Mobile menu content (layout, question 15).
 7. The layout's empty gap isn't reproduced (layout, question 16).
-8. CSS gradient instead of photos behind the cards (layout, question 17).
+8. Photographs on the S1 cards, not CSS gradients (layout, question 17; stale gradient
+   swap).
 9. Lime accent used for the keyboard focus outline (layout, question 18).
-10. A dark theme built but switched off (layout, question 19).
-11. The yearly price shown as a per-month figure (pricing, question 2).
+10. No dark theme on the marketing page; unused dark tokens stay (layout, question 19).
+11. The yearly price shown as a per-month figure, with no "Billed annually" subtitle
+    (pricing, question 2).
 
 Separately, not a confirmation item but a fact: the site's main UI palette — grays plus
 a lime accent color — comes from the landing page design and is used to color every
 section. That is not the same thing as the gray-beige-and-amber palette inside the
-banner's own Lottie animation — two different sets of colors, not one.
+banner's own Lottie animation — two different sets of colors, not one. The sand family
+on the S3 bento cards is a third, real palette.
 
 And one more fact, a technical constraint of the platform rather than a discretionary
 choice: all of the landing page's text is present in the static HTML and visible without
