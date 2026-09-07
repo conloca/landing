@@ -12,8 +12,9 @@
 // AGENTS.md) as the reliable signal, and a full-page run as a sanity check.
 import { PNG } from 'pngjs'
 import pixelmatch from 'pixelmatch'
-import { readFileSync, writeFileSync } from 'node:fs'
-import { resolve } from 'node:path'
+import { readFileSync } from 'node:fs'
+import { isSameFile } from './lib/same-file.ts'
+import { atomicWriteFileSync } from './lib/atomic-write.ts'
 
 const [, , refPath, livePath, outPath] = process.argv
 
@@ -24,10 +25,16 @@ if (!refPath || !livePath || !outPath) {
   process.exit(1)
 }
 
-const resolvedOut = resolve(outPath)
-if (resolvedOut === resolve(refPath) || resolvedOut === resolve(livePath)) {
+// Reference renders come from a rate-limited Figma export, so overwriting one
+// is expensive and slow to undo. isSameFile asks the filesystem rather than
+// comparing strings, which is what catches a case-only difference on the
+// case-insensitive filesystem this is developed on.
+const collidingInput = [refPath, livePath].find((input) =>
+  isSameFile(outPath, input),
+)
+if (collidingInput !== undefined) {
   console.error(
-    `refusing to write the diff over an input file (output path resolves to ${resolvedOut})`,
+    `refusing to write the diff over an input file: "${outPath}" is the same file as "${collidingInput}"`,
   )
   process.exit(1)
 }
@@ -73,7 +80,9 @@ const mismatchedPixels = pixelmatch(
   { threshold: 0.1 },
 )
 
-writeFileSync(outPath, PNG.sync.write(diff))
+// Not a plain writeFileSync: the guard above runs before the decode-and-diff
+// work, so the output path can still change underneath it. See atomic-write.ts.
+atomicWriteFileSync(outPath, PNG.sync.write(diff))
 
 const totalPixels = width * height
 const mismatchPercent = (mismatchedPixels / totalPixels) * 100
