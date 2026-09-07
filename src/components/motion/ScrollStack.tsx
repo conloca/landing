@@ -267,8 +267,8 @@ interface StackSlideProps {
 export function StackSlide({ children, index }: StackSlideProps) {
   const stack = useContext(ScrollStackContext)
   const pinned = stack?.pinned ?? false
-  const activeIndex = stack?.activeIndex ?? 0
   const interactiveIndex = stack?.interactiveIndex ?? 0
+  const thresholds = stack?.thresholds ?? []
   // Exactly one state is interactive once pinned: the one visually on top.
   // Every other state is inert — an earlier one is covered (by z-index,
   // below), a later one is either still translucent mid-arrival or has not
@@ -313,7 +313,30 @@ export function StackSlide({ children, index }: StackSlideProps) {
   // `hasRevealStarted` is shared with `MotionCard`'s own window math (via
   // `scroll-stack-geometry.ts`) specifically so the two can't drift apart
   // again the way this bug let them.
-  const notYetArrived = pinned && !hasRevealStarted(activeIndex, index)
+  //
+  // The progress this gate reads is the same sprung value `MotionCard`
+  // animates from (`stack.progress`), not the raw `activeIndex` in context.
+  // Raw scroll can drop below this slide's reveal-start while the spring is
+  // still easing opacity down, so `invisible` would land mid-fade — a pop
+  // instead of a fade-out. Keeping both on the smoothed value holds them in
+  // lockstep in both scroll directions.
+  const fallbackProgress = useMotionValue(0)
+  const smoothedProgress = stack?.progress ?? fallbackProgress
+  const [hasReachedReveal, setHasReachedReveal] = useState(() =>
+    hasRevealStarted(activeIndexFor(smoothedProgress.get(), thresholds), index),
+  )
+  useMotionValueEvent(smoothedProgress, 'change', (value) => {
+    setHasReachedReveal(hasRevealStarted(activeIndexFor(value, thresholds), index))
+  })
+  // Resync when the threshold this slide reads changes: the 'change'
+  // listener only fires on scroll, so a count/index update with the scroll
+  // position held still would otherwise leave `hasReachedReveal` stale.
+  useEffect(() => {
+    setHasReachedReveal(
+      hasRevealStarted(activeIndexFor(smoothedProgress.get(), thresholds), index),
+    )
+  }, [thresholds, index, smoothedProgress])
+  const notYetArrived = pinned && !hasReachedReveal
   const zIndexStyle = useMemo(() => (pinned ? { zIndex: index + 1 } : undefined), [pinned, index])
   // `lg:p-0` rides along with the pinned/absolute presentation rather than
   // applying unconditionally: full-bleed is a property of the *pinned*
