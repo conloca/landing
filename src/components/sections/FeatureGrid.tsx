@@ -81,8 +81,8 @@ export function FeatureGrid() {
   return (
     <section className="mx-auto max-w-[1440px] px-8 py-16">
       <div className="bento-grid">
-        {CARDS.map((card) => (
-          <BentoCard key={card.title} {...card} />
+        {CARDS.map((card, index) => (
+          <BentoCard key={card.title} {...card} delay={index * 0.08} />
         ))}
       </div>
     </section>

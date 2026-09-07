@@ -5,6 +5,8 @@ interface BentoCardProps {
   title: string
   body: string
   illustration: ReactNode
+  /** Scroll-entrance stagger, seconds. Same unit `Reveal` uses. */
+  delay?: number
 }
 
 /**
@@ -28,12 +30,19 @@ interface BentoCardProps {
  * different ratios, and the illustration is the one thing that already
  * knows which it is. No `tall`/size prop here; see the sizing rationale in
  * `feature-grid/illustrations.tsx`.
+ *
+ * Hover is visual-only: Figma's prototype has no ON_CLICK on these frames,
+ * so this is a `div`, not a link. The illustration clip is the stand-in
+ * for the 2–3s Lottie the designer specified (Figma sections
+ * `40002554:37060` / `40002599:20717`); those files are not in the repo.
  */
-export function BentoCard({ title, body, illustration }: BentoCardProps) {
+export function BentoCard({ title, body, illustration, delay = 0 }: BentoCardProps) {
   return (
-    <Reveal as="div" className="min-h-0">
-      <div className="flex h-full flex-col overflow-hidden rounded-[24px] bg-[#FAFAF9]">
-        {illustration}
+    <Reveal as="div" delay={delay} className="min-h-0">
+      <div className="bento-card flex h-full flex-col overflow-hidden rounded-[24px] bg-[#FAFAF9]">
+        <div className="overflow-hidden">
+          <div className="bento-card-visual">{illustration}</div>
+        </div>
         {/* `mt-auto`: the card still stretches to its grid row's full height
             (`h-full` above), and nothing else absorbs the slack now that the
             illustration is a natural-height `<img>` rather than a `flex-1`
@@ -41,7 +50,9 @@ export function BentoCard({ title, body, illustration }: BentoCardProps) {
             visible empty space below the text instead of the text sitting
             flush at the card's bottom, as Figma's `Rectangle 20` does. */}
         <div className="mt-auto p-6 pt-0">
-          <h4 className="text-xl leading-[30px] font-bold text-stone-900">{title}</h4>
+          <h4 className="bento-card-title text-xl leading-[30px] font-bold text-stone-900">
+            {title}
+          </h4>
           <p className="mt-2 max-w-[320px] text-xl leading-[30px] text-stone-700">{body}</p>
         </div>
       </div>
