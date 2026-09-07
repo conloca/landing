@@ -1,13 +1,17 @@
+import { publicUrl } from '@/lib/publicUrl'
+
 /**
- * Shared primary nav links. `href="#"` entries have no destination yet (no
- * Docs/Blog page exists) — `#pricing` is the one real in-page anchor, see
- * the `id="pricing"` on the Pricing section.
+ * Shared primary nav links. Docs still has no page (`href="#"`). Pricing is
+ * the homepage `#pricing` section — `publicUrl('#pricing')` keeps that
+ * working from `/blog/` and `/how-it-works/` as well as from `/`.
  */
+export const HOME_HREF = publicUrl('')
+
 export const NAV_LINKS = [
-  { label: 'How it works', href: '#' },
+  { label: 'How it works', href: publicUrl('how-it-works/') },
   { label: 'Docs', href: '#' },
-  { label: 'Pricing', href: '#pricing' },
-  { label: 'Blog', href: '#' },
+  { label: 'Pricing', href: publicUrl('#pricing') },
+  { label: 'Blog', href: publicUrl('blog/') },
 ]
 
 /**
