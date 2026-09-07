@@ -240,6 +240,10 @@ Below the cards, centred: a `Compare plans` button (Inter 500 14).
 Price numerals are Inter 900 32/48; the `/ Month` suffix Inter 400 16/24; plan names Inter 500
 24/36.
 
+Do not add a "Billed annually — $… per year" subtitle under the price. A year is
+charged as ten months in the pricing model; that subtitle is forbidden on every
+plan.
+
 ### S5 — Footer (`40002427:17255`, 1440×92)
 
 A single dark bar, padding 8, radius (rounded, matching the card language). Logo left in

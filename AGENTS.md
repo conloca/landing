@@ -108,6 +108,19 @@ array in `src/components/sections/Pricing.tsx`.
 The reasoning behind each figure, and the questions still open with the designer, are
 recorded in `docs/QUESTIONS-DESIGNER.md`.
 
+The year-is-ten-months rule is still the pricing model (two months free). Do **not**
+render a yearly-total subtitle on the cards — specifically the line that starts
+"Billed annually". That subtitle is forbidden and must never return, on Simple,
+Pro, or Business. The per-month headline already reflects the ten-month year.
+
+## "Slides" means the hero carousel, not S1
+
+When this project says "slides", it means the hero `CarouselRail` copy — the
+rotating messages whose first developer slide begins "Map your React components
+to typed schemas and MDX blocks in the IDE." — not the S1 `ThreeFeatures`
+pinned feature cards. A task about slides is a carousel-copy task, not a
+three-features task.
+
 ## Conventions
 
 - Conventional commits, one logical change each.
