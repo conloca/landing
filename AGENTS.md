@@ -156,6 +156,15 @@ for a comparison you can actually act on. The diff image highlights mismatched
 pixels in red; treat placeholder-asset regions as expected noise, not a fidelity
 bug to chase to zero.
 
+**A mismatch is a work order, not a finished report.** After `visual-diff` or a
+user-supplied Figma screenshot shows a real layout or animation defect, start
+the fix in a worktree in the same session. Then send `tg --tag report`
+describing what code is changing and why, in full sentences a person can read
+on a phone — not a table of mismatch percentages. Do not treat a high mismatch
+as "expected designer divergence" and stop. Named exceptions (pricing
+*figures* vs the design file; full-bleed pin at `lg+` vs a flattened three-card
+crop) belong in that report; every other mismatch still gets a fixer.
+
 ### `agent-browser` caveats
 
 Every one of these cost an agent on this project real time, and none of them is
