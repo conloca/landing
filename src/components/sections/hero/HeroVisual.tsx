@@ -1,71 +1,83 @@
 import { Play } from 'lucide-react'
 
-const STATS = [
-  { label: 'Pages', value: '7 pages' },
-  { label: 'Media', value: '1 asset' },
-  { label: 'Fragments', value: '20 fragments' },
-]
-
-const ACTIVITY = [
-  'Saba Test',
-  'CorpOS Terms and Conditions',
-  'QA Sweep Test',
-  'Homepage',
-]
+import backdropUrl from '@/assets/figma/hero-backdrop.webp'
+import dashboardUrl from '@/assets/figma/hero-dashboard.webp'
 
 /**
- * Approximation of the dashboard screenshot fill on `Video frame` — the real
- * screenshot was never exported (rate-limited), so this reconstructs its
- * structure in DOM rather than shipping a missing/broken image.
+ * Figma `Visual content` (node 40002427:16412) — the hero's product shot.
  *
- * The Figma frame's 932:782 crop only has room for every element below at
- * widths from `xl` up — narrower than that the same content needs more
- * height than that ratio gives it. Rather than deleting content to fit a
- * ratio meant for a fixed-crop photo (which a real screenshot could satisfy
- * by cropping pixels, not by dropping rows of text), the container keeps
- * the Figma ratio only from `xl` and is intrinsic-height below it, and the
- * picture-in-picture thumbnail is a normal flow child instead of
- * absolutely positioned, so nothing can overlap the activity list at any
- * width.
+ * In the design this is NOT a composed UI: `Video frame` (40002427:16414) is a
+ * single image fill of a dashboard screenshot with only a play button drawn on
+ * top, sitting on `Video container` (40002427:16413) whose own image fill is
+ * the blurred colour field. An earlier revision reconstructed the screenshot's
+ * contents as DOM because the asset had not been exported yet; it could never
+ * match, because there is nothing to match structurally — it is a photo.
+ *
+ * This component owns only its internal geometry. Where it sits and how wide
+ * it is are the parent's business, because only the parent knows the grid.
+ *
+ * One part of that geometry escapes this box and the parent must know it: at
+ * full size the shot bleeds 121.8px past the container's left edge (131.5px
+ * once rotated). The parent's grid has to leave room for that, or the shot
+ * reaches back over the text column.
  */
 export function HeroVisual() {
   return (
-    <div className="relative w-full max-w-[932px] overflow-hidden rounded-tl-[20px] rounded-bl-[20px] bg-stone-900 text-stone-50 shadow-2xl xl:aspect-[932/782]">
-      <div className="flex items-center justify-between border-b border-white/10 px-5 py-3 text-xs text-stone-400">
-        <span>staging-conloca / corpos-staging / main</span>
-        <span>Unsaved changes</span>
-      </div>
-      <div className="px-5 py-4">
-        <h3 className="text-lg font-semibold">Dashboard</h3>
-        <p className="text-sm text-stone-400">Overview of your content and recent activity.</p>
-      </div>
-      <div className="grid grid-cols-3 gap-3 px-5">
-        {STATS.map((stat) => (
-          <div key={stat.label} className="rounded-lg bg-white/5 p-3">
-            <p className="text-xs text-stone-400">{stat.label}</p>
-            <p className="text-lg font-semibold">{stat.value}</p>
-          </div>
-        ))}
-      </div>
-      <ul className="mt-4 space-y-2.5 px-5 text-sm">
-        {ACTIVITY.map((item) => (
-          <li key={item} className="flex items-center gap-2 text-stone-200">
-            <span className="size-1.5 rounded-full bg-lime-400" aria-hidden />
-            {item}
-          </li>
-        ))}
-      </ul>
-      {/* Decorative — no video is wired up yet, so this isn't a focusable no-op button. */}
-      <span
+    <div className="relative aspect-[800/838] w-full rounded-[28px]">
+      <img
+        src={backdropUrl}
+        alt=""
         aria-hidden
-        className="absolute top-1/2 left-1/2 flex size-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-black/20 backdrop-blur-sm"
-      >
-        <Play className="size-6 translate-x-0.5 fill-stone-50 text-stone-50" />
-      </span>
-      <div
-        className="mx-5 my-4 h-24 w-32 rounded-lg bg-gradient-to-br from-indigo-400 to-lime-400"
-        data-placeholder="hero-visual-pip-photo"
+        className="absolute inset-0 size-full rounded-[28px] object-cover"
       />
+      <DashboardShot />
     </div>
+  )
+}
+
+/**
+ * `Video frame`, rotated -1.5deg inside the 800x838 container.
+ *
+ * Figma reports 931.53x781.61 at (-131.53, 28.19), but for a rotated node
+ * `absoluteBoundingBox` is the axis-aligned box *around* the rotation, not the
+ * frame's own rect. Solving that back out (W·cos+H·sin, W·sin+H·cos at 1.5deg)
+ * gives a true 912x758 sharing the same centre, i.e. -121.765, 40 — which is
+ * what CSS needs, since `rotate` also turns an unrotated box about its centre.
+ * Using the reported figures directly renders the shot ~12px too tall.
+ *
+ * That geometry only reads correctly at the container's full 800px, where the
+ * square right corner is hidden by the crop. So it keys off a container query,
+ * not a viewport breakpoint: the real invariant is "when I am at my Figma
+ * width, render Figma geometry", and expressing it that way keeps this file
+ * from having to know the parent's columns, gaps and padding. Below 800px the
+ * shot sits fully inside the container with every corner rounded, because
+ * nothing is cropping it there.
+ */
+function DashboardShot() {
+  return (
+    <div className="absolute top-[4.773%] left-[4%] h-[90.453%] w-[92%] -rotate-[1.5deg] rounded-[20px] shadow-[0_4px_6px_rgba(16,24,40,0.03),0_12px_16px_rgba(16,24,40,0.08),0_4px_64px_rgba(0,0,0,0.15)] @min-[800px]:-left-[15.221%] @min-[800px]:w-[114%] @min-[800px]:rounded-r-none">
+      <img
+        src={dashboardUrl}
+        alt="Conloca dashboard showing recent content activity for a staging site"
+        fetchPriority="high"
+        className="size-full rounded-[20px] object-cover object-left @min-[800px]:rounded-r-none"
+      />
+      <PlayBadge />
+    </div>
+  )
+}
+
+/**
+ * `Play button` — 57.45px, centred on the shot, black at 20%. Decorative: no
+ * video is wired up, so this is not a focusable control that does nothing.
+ */
+function PlayBadge() {
+  return (
+    <span
+      aria-hidden
+      className="absolute top-1/2 left-1/2 flex size-[57px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-black/20 backdrop-blur-sm"
+    >
+      <Play className="size-6 translate-x-0.5 fill-white text-white" />
+    </span>
   )
 }
