@@ -1,9 +1,16 @@
 /**
  * Pinned/stacking scroll effect (see the Figma `Scrolling` group note in
  * DESIGN-SPEC.md's S1 section): each item sticks at the top of its own
- * full-height slot while later items scroll up to cover it.
+ * slot while later items scroll up to cover it.
  *
- * Two things this file exists to get right, each a real bug if skipped:
+ * The Figma render of this section is the effect *flattened* — three cards
+ * laid out vertically, because a static frame cannot show one covering
+ * another. Its 2538px height is three 846px slots unrolled, not a target for
+ * the live section's height, and a visual diff against it compares an
+ * animation with a picture of its parts. Chasing that number is what produced
+ * the fixed-slot-height regression reverted in 7f5a052.
+ *
+ * Three things this file exists to get right, each a real bug if skipped:
  *
  * 1. Scroll progress is tracked once on the section as a whole via
  *    `ScrollStackRoot`, not per sticky child. A sticky element's own
@@ -18,6 +25,9 @@
  *    keyboard-focusable while invisible (z-index hides content from sighted
  *    users, not from Tab order). `inert` removes the covered cards from
  *    both once JS is driving the stack.
+ * 3. The scroll range and the arrival thresholds are chosen together so that
+ *    the slot height cancels out of the arithmetic entirely. See
+ *    `slotThresholds`.
  */
 import {
   Children,
@@ -40,39 +50,71 @@ import {
   type MotionValue,
 } from 'motion/react'
 import { useHydrated } from '@/components/motion/Reveal'
+import {
+  SCROLL_OFFSET,
+  activeIndexFor,
+  slotThresholds,
+} from '@/components/motion/scroll-stack-geometry'
+
+/**
+ * The slot height. Every card gets this one, which is what lets the thresholds
+ * ignore it.
+ *
+ * It must stay viewport-relative. A slot taller than the viewport can never be
+ * brought fully into view by `sticky top-0`. A slot shorter than the viewport
+ * leaves the next card permanently peeking out below the pinned one. `h-dvh` is
+ * neither, at every viewport size — which is why the design frame's 846px slot
+ * measurement does not belong here, and a pixel diff that wants it is comparing
+ * against a flattened still (see the file header).
+ */
+const SLOT_CLASS = 'h-dvh'
 
 interface StackState {
   progress: MotionValue<number>
   activeIndex: number
-  count: number
+  /**
+   * Carries the stack size too — `thresholds.length` is the count — so nothing
+   * downstream has to be told the same number twice.
+   */
+  thresholds: number[]
 }
 
 const ScrollStackContext = createContext<StackState | null>(null)
 
 /**
- * `count` is derived from the children rather than accepted as a prop, and
- * read back by `StackCard` through context. Both components need it for the
- * same segment math, and taking it twice let the two disagree: adding a card
- * while updating only one call site silently broke the pinning arithmetic
- * with nothing visibly wrong in the diff.
+ * `count` is derived from the children rather than accepted as a prop, and read
+ * back by `StackCard` through context. Both components need it for the same
+ * arithmetic, and taking it twice let the two disagree: adding a card while
+ * updating only one call site silently broke the pinning maths with nothing
+ * visibly wrong in the diff.
+ *
+ * `Children.toArray` rather than `Children.count` because `count` includes
+ * `null` and `false` entries, so `{flag && <StackCard/>}` keeps the count high
+ * when the card is not rendered. Neither descends into a fragment, so a caller
+ * wrapping the cards in `<>…</>` still counts 1. The caller-supplied `index` is
+ * the remaining seam; both are tracked in issue #51.
+ *
+ * Every child must be a `StackCard`. The thresholds assume the section is
+ * exactly `count` slots tall, so a heading or a spacer rendered as a direct
+ * child here adds height that no card accounts for and shifts every arrival.
+ * Put such an element outside `ScrollStackRoot`.
  */
 export function ScrollStackRoot({ children }: { children: ReactNode }) {
-  const count = Children.count(children)
+  const count = Children.toArray(children).length
   const sectionRef = useRef<HTMLDivElement>(null)
-  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ['start start', 'end end'] })
+  // The offset comes from the same module as the thresholds because it is only
+  // correct alongside them; see `scroll-stack-geometry.ts`.
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    // Spread because `useScroll` takes a mutable array; the constant is
+    // `as const` so the test can assert on its contents.
+    offset: [...SCROLL_OFFSET],
+  })
   const [activeIndex, setActiveIndex] = useState(0)
-  // Each card's slot is one viewport tall, so `count` stacked slots span
-  // `count` viewport-heights of document height but only `count - 1` of real
-  // scroll distance within an ['start start', 'end end'] range (the final
-  // viewport-height never needs to scroll past). Card i becomes fully active
-  // once the user has scrolled i viewport-heights into the section, i.e. at
-  // progress i / (count - 1) — dividing by `count` instead marks each card
-  // (and the one before it) inert a third too early, while its buttons are
-  // still on screen and interactive-looking.
-  const segments = Math.max(1, count - 1)
+  const thresholds = useMemo(() => slotThresholds(count), [count])
 
   const syncActiveIndex = (value: number) => {
-    setActiveIndex(Math.min(count - 1, Math.floor(value * segments)))
+    setActiveIndex(activeIndexFor(value, thresholds))
   }
 
   useMotionValueEvent(scrollYProgress, 'change', syncActiveIndex)
@@ -141,8 +183,8 @@ export function ScrollStackRoot({ children }: { children: ReactNode }) {
   // `inert` — the covered cards' keyboard focusability — and that should track
   // the true scroll position rather than lag a spring's settle behind it.
   const state = useMemo(
-    () => ({ progress, activeIndex, count }),
-    [progress, activeIndex, count],
+    () => ({ progress, activeIndex, thresholds }),
+    [progress, activeIndex, thresholds],
   )
 
   return (
@@ -169,22 +211,27 @@ export function StackCard({ children, index }: StackCardProps) {
   // pass and later renders. The element tree below must stay the same shape
   // either way (same wrapper div, same MotionCard child) — swapping in a plain
   // div pre-hydration unmounts the whole card subtree on the hydrated flip,
-  // including a live LottieBanner mid-load. `h-dvh` (not `min-h-dvh`) is kept
-  // fixed in both states too: `MotionCard` below is `h-full`, so a non-fixed
-  // ancestor height would let it collapse to its natural size pre-hydration
-  // and then visibly grow once `sticky`+`h-dvh` land — same class of jump,
-  // one level down. Only `sticky`/`top-0` (pinning) toggles.
+  // including a live LottieBanner mid-load. The slot height stays a resolved
+  // `h-…` (never a `min-h-…`) in both states too: `MotionCard` below is
+  // `h-full`, so a non-fixed ancestor height would let it collapse to its
+  // natural size pre-hydration and then visibly grow once `sticky` and the slot
+  // height land — same class of jump, one level down. Only `sticky`/`top-0`
+  // (pinning) toggles.
   const pinned = hydrated && !reducedMotion && stack !== null
-  // Only read when `pinned`, which already requires a context — the fallback
-  // just keeps the segment math total for the unpinned/no-context render.
-  const count = stack?.count ?? 1
-  const wrapperClass = pinned ? 'sticky top-0 flex h-dvh items-center p-4' : 'flex h-dvh items-center p-4'
+  const wrapperClass = pinned
+    ? `sticky top-0 flex ${SLOT_CLASS} items-center p-4`
+    : `flex ${SLOT_CLASS} items-center p-4`
   const zIndexStyle = useMemo(() => (pinned ? { zIndex: index + 1 } : undefined), [pinned, index])
   const isInert = pinned && stack !== null && index < stack.activeIndex
 
   return (
     <div className={wrapperClass} style={zIndexStyle} inert={isInert}>
-      <MotionCard progress={stack?.progress ?? null} index={index} count={count} pinned={pinned}>
+      <MotionCard
+        progress={stack?.progress ?? null}
+        thresholds={stack?.thresholds ?? null}
+        index={index}
+        pinned={pinned}
+      >
         {children}
       </MotionCard>
     </div>
@@ -194,43 +241,55 @@ export function StackCard({ children, index }: StackCardProps) {
 function MotionCard({
   children,
   progress,
+  thresholds,
   index,
-  count,
   pinned,
 }: {
   children: ReactNode
   progress: MotionValue<number> | null
+  thresholds: number[] | null
   index: number
-  count: number
   pinned: boolean
 }) {
-  // Same `count - 1` real-scroll-segments basis as ScrollStackRoot above —
-  // for the last card this range would naturally start at 1 and end above 1.
-  // Two problems with that, not one:
-  // 1. An `end` above 1, once bound to a real motion.div's `style`, reaches
-  //    the native Web Animations API, which throws synchronously ("Offsets
-  //    must be null or in the range [0,1]") — during React's commit, with no
-  //    error boundary in this tree, unmounting the whole app to a blank page.
-  // 2. Clamping the *range* into [0,1] alone isn't enough to fix the last
-  //    card specifically: progress reaches 1 (and stays there) the moment
-  //    its slot is fully framed and uncovered — not a rare edge, but every
-  //    scroll-through of the section — so a bound transform would visibly
-  //    shrink/dim it exactly when it should be at its most visible, and hold
-  //    that state while the user keeps scrolling past into the next section.
-  // Nothing ever covers the last card, so it isn't animated at all: `style`
-  // stays `{}` for it regardless of `pinned`, same as the unhydrated path.
-  const isLastCard = index === count - 1
-  const segments = Math.max(1, count - 1)
-  const end = Math.min((index + 1) / segments, 1)
-  const start = Math.min(index / segments, end - 0.0001)
+  // The shrink runs from this card's arrival to its successor's, so it tracks
+  // the transition it depicts rather than a parallel guess at when that
+  // transition happens.
+  //
+  // The last card has no successor, so `end` falls back to 0 and `hasRange`
+  // below is false: it is never animated. That is deliberate and it matters
+  // twice over.
+  // 1. A range ending above 1, once bound to a real motion.div's `style`,
+  //    reaches the native Web Animations API, which throws synchronously
+  //    ("Offsets must be null or in the range [0,1]") — during React's commit,
+  //    with no error boundary in this tree, unmounting the whole app to a blank
+  //    page.
+  // 2. Clamping such a range into [0,1] would not fix the last card anyway:
+  //    progress keeps climbing past its arrival while the card is still the
+  //    visible, pinned one, so a bound transform would shrink and dim it
+  //    exactly when it should be at its most visible, and hold that state while
+  //    the user scrolls on.
+  // Nothing ever covers the last card, so `style` stays `{}` for it regardless
+  // of `pinned`, same as the unhydrated path.
+  const start = thresholds?.[index] ?? 0
+  const end = thresholds?.[index + 1] ?? 0
+  // `slotThresholds` is strictly increasing within [0, 1) by construction, so
+  // every card that has a successor has a real interval. This asserts that
+  // rather than repairing it: a card whose range is not an interval simply does
+  // not animate. It is also the single test for "is this the last card", which
+  // is why no stack size is passed down here — being told the count as well as
+  // the thresholds is the same duplicated-source-of-truth seam `ScrollStackRoot`
+  // above exists to avoid.
+  const hasRange = start >= 0 && end > start && end <= 1
   const fallbackProgress = useMotionValue(0)
   const source = progress ?? fallbackProgress
-  const scale = useTransform(source, [start, end], [1, 0.94])
-  const opacity = useTransform(source, [start + (end - start) * 0.5, end], [1, 0.7])
-  const style = useMemo(
-    () => (pinned && !isLastCard ? { scale, opacity } : {}),
-    [pinned, isLastCard, scale, opacity],
+  const scale = useTransform(source, hasRange ? [start, end] : [0, 1], [1, 0.94])
+  const opacity = useTransform(
+    source,
+    hasRange ? [start + (end - start) * 0.5, end] : [0, 1],
+    [1, 0.7],
   )
+  const animated = pinned && hasRange
+  const style = useMemo(() => (animated ? { scale, opacity } : {}), [animated, scale, opacity])
 
   return (
     // `data-scroll-stack-card` carries the index so tooling can address a

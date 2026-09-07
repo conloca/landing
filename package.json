@@ -1,7 +1,7 @@
 {
   "name": "conloca-landing",
   "private": true,
-  "version": "0.3.9",
+  "version": "0.4.1",
   "type": "module",
   "scripts": {
     "tokens": "bun run scripts/build-tokens.ts",
@@ -10,8 +10,8 @@
     "preview": "vite preview",
     "lint": "oxlint",
     "typecheck": "tsc --noEmit",
+    "test": "bun test",
     "visual-diff": "bun run scripts/visual-diff.ts",
-    "test": "bun test scripts/",
     "figma:export": "bun run scripts/figma-export.ts",
     "figma:node": "bun run scripts/figma-fetch-node.ts"
   },
