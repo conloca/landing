@@ -66,9 +66,7 @@ function parseRow(texts: string[]): ColorToken | undefined {
   // Group headers read "color / bg / surface" and carry no token path.
   if (!token?.startsWith('color.')) return undefined
   const hex = texts.find((t) => /^#[0-9A-Fa-f]{6}$/.test(t))
-  const alias = texts.find(
-    (t) => t !== token && t !== hex && /^[a-z]+(\/\d+)?$/.test(t),
-  )
+  const alias = texts.find((t) => t !== token && t !== hex && /^[a-z]+(\/\d+)?$/.test(t))
   // A row that names a token but whose value or alias won't parse means the
   // frame's structure has changed. Failing loudly beats dropping it silently —
   // a missing row would otherwise look like the designer deleted a token.
@@ -114,9 +112,7 @@ if (process.argv.includes('--check')) {
   const doc = readFileSync(DOC, 'utf8')
   const docRows = new Map<string, string>()
   for (const line of doc.split('\n')) {
-    const m = /^\|\s*`(color\.[^`]+)`\s*\|\s*`([^`]+)`\s*\|\s*`([^`]+)`\s*\|$/.exec(
-      line.trim(),
-    )
+    const m = /^\|\s*`(color\.[^`]+)`\s*\|\s*`([^`]+)`\s*\|\s*`([^`]+)`\s*\|$/.exec(line.trim())
     if (m) docRows.set(m[1] as string, `${m[2]}|${m[3]}`)
   }
 
@@ -126,7 +122,9 @@ if (process.argv.includes('--check')) {
     const got = docRows.get(t.token)
     if (got === undefined) problems.push(`missing row: ${t.token}`)
     else if (got !== want) {
-      problems.push(`drift: ${t.token} — doc has ${got.replace('|', ' / ')}, tree has ${t.alias} / ${t.value}`)
+      problems.push(
+        `drift: ${t.token} — doc has ${got.replaceAll('|', ' / ')}, tree has ${t.alias} / ${t.value}`,
+      )
     }
   }
   for (const name of docRows.keys()) {
