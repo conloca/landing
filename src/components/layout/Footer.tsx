@@ -12,9 +12,12 @@ const FOOTER_LINKS = [...NAV_LINKS, { label: 'Open source', href: '#' }]
 export function Footer() {
   return (
     <footer className="px-2 pb-2">
-      <div className="mx-auto flex max-w-[1440px] flex-col items-center gap-6 rounded-[24px] bg-stone-800 p-6 sm:flex-row sm:justify-between">
+      <div className="mx-auto flex max-w-[1440px] flex-col items-center gap-6 rounded-[24px] bg-stone-800 p-6 lg:flex-row lg:justify-between">
         <Logo light />
-        <nav className="flex flex-wrap items-center justify-center gap-x-[31px] gap-y-4" aria-label="Footer">
+        <nav
+          className="flex flex-wrap items-center justify-center gap-x-[31px] gap-y-4"
+          aria-label="Footer"
+        >
           {FOOTER_LINKS.map((link) => (
             <a
               key={link.label}
