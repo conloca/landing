@@ -217,6 +217,22 @@ explain on their own.
     effect at almost no weight. Would that substitution work, or are the photographs
     non-negotiable for you?
 
+### Scroll-linked animation timing
+
+18. The exported Figma frame data (`docs/figma/anim.json`, node `40002450:2700`)
+    names the "Everything you need" feature block's scrolling wrapper "Scrolling"
+    and groups the three feature cards inside it, but Figma's prototype export only
+    ever records click/hover interactions — it has no field for a scroll-scrubbed
+    animation, so this name is a label, not a timeline. In code, `ScrollStack`
+    pins that block and drives each card's arrival (scale 0.94 → 1, a 24px rise,
+    and a 0.7 → 1 opacity ramp over the first half of its window) off scroll
+    position, but those exact numbers, their easing, and how much of the scroll
+    range each card should occupy are a developer guess, not a spec (see the
+    "Placeholder reveal" comment in `src/components/motion/ScrollStack.tsx`). What
+    we need: the exact per-card scale/position/opacity keyframes and easing curve
+    for this reveal, or confirmation that the current guess is close enough to
+    ship as-is.
+
 ---
 
 ## Open decisions made on the designer's behalf
