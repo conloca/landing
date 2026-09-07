@@ -68,9 +68,9 @@
 }
 
 /*
- * Bento grid (S3): single column on mobile per the Figma responsive intent,
- * a spanning "big" card plus two stacked cards at sm+. Kept as a real CSS
- * rule rather than a Tailwind arbitrary-value class — grid-template-areas
+ * Bento grid (S3): single column below 640 per the Figma 393 stack, 2-col ×
+ * 6-row at 640–1023 (Figma 640 frame), 4-col × 3-row from lg. Kept as a real
+ * CSS rule rather than a Tailwind arbitrary-value class — grid-template-areas
  * needs literal quoted strings that don't survive Tailwind's bracket syntax
  * cleanly.
  */
@@ -82,9 +82,25 @@
 
 @media (min-width: 640px) {
   .bento-grid {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-areas:
+      "big big"
+      "big big"
+      "r1 r1"
+      "r2 r2"
+      "c1 c2"
+      "c3 c4";
+  }
+}
+
+@media (min-width: 1024px) {
+  .bento-grid {
     grid-template-columns: repeat(4, 1fr);
     /* Figma rows: 324 / 324 / 320, so the spanning card reads 660 tall. */
-    grid-template-rows: minmax(20.25rem, auto) minmax(20.25rem, auto) minmax(20rem, auto);
+    grid-template-rows: minmax(20.25rem, auto) minmax(20.25rem, auto) minmax(
+        20rem,
+        auto
+      );
     grid-template-areas:
       "big big r1 r1"
       "big big r2 r2"
