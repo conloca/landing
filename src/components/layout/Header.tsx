@@ -73,7 +73,7 @@ function MobileNav() {
         </SheetHeader>
         <nav className="flex flex-col gap-1 px-4" aria-label="Primary">
           {NAV_LINKS.map((link) => (
-            <SheetClose asChild key={link.label}>
+            <SheetClose asChild nativeButton={false} key={link.label}>
               <a
                 href={link.href}
                 className="rounded-md px-2 py-2.5 text-base text-stone-900 hover:bg-stone-100"

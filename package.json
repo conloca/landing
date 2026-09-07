@@ -16,6 +16,7 @@
     "figma:node": "bun run scripts/figma-fetch-node.ts"
   },
   "dependencies": {
+    "@base-ui/react": "^1.8.0",
     "@fontsource-variable/inter": "^5.3.0",
     "@fontsource/roboto-mono": "^5.3.0",
     "@lottiefiles/dotlottie-react": "^0.19.15",
@@ -23,7 +24,6 @@
     "clsx": "^2.1.1",
     "lucide-react": "^1.34.0",
     "motion": "^13.1.1",
-    "radix-ui": "^1.6.7",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "shadcn": "^4.19.0",
