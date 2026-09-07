@@ -1,4 +1,5 @@
 import { useReducedMotion } from 'motion/react'
+import { useSyncExternalStore } from 'react'
 import {
   FeatureCard,
   type FeatureCardProps,
@@ -12,6 +13,25 @@ import { useAudience } from '@/lib/audience-context'
 import { FEATURE_CARDS_COPY } from '@/lib/content/feature-cards-copy'
 import { CTA_LINKS } from '@/lib/nav'
 import { cn } from '@/lib/utils'
+import featureBgA from '@/assets/figma/feature-section-bg-a.webp'
+import featureBgB from '@/assets/figma/feature-section-bg-b.webp'
+
+/** Tailwind `lg` — pin/full-bleed only from here up, so 393/640 unroll as stacked cards. */
+const LG_MQ = '(min-width: 1024px)'
+
+function subscribeLg(onStoreChange: () => void) {
+  const mql = window.matchMedia(LG_MQ)
+  mql.addEventListener('change', onStoreChange)
+  return () => mql.removeEventListener('change', onStoreChange)
+}
+
+function useLg(): boolean {
+  return useSyncExternalStore(
+    subscribeLg,
+    () => window.matchMedia(LG_MQ).matches,
+    () => false,
+  )
+}
 
 type FeatureCardShell = Omit<
   FeatureCardProps,
@@ -38,21 +58,21 @@ const CARD_SHELLS = [
     secondaryCta: 'Read docs',
     secondaryCtaHref: CTA_LINKS.readDocs,
     layout: 'visual-right' as const,
-    background: 'bg-gradient-to-br from-stone-700 via-stone-800 to-emerald-900',
+    background: featureBgA,
     visual: <JsonEditorMockup />,
   },
   {
     secondaryCta: 'Read docs',
     secondaryCtaHref: CTA_LINKS.readDocs,
     layout: 'visual-left' as const,
-    background: 'bg-gradient-to-br from-sky-800 via-indigo-900 to-stone-800',
+    background: featureBgB,
     visual: <LocalesVisual />,
   },
   {
     secondaryCta: 'Read docs',
     secondaryCtaHref: CTA_LINKS.readDocs,
     layout: 'stacked' as const,
-    background: 'bg-gradient-to-br from-stone-800 via-slate-900 to-stone-900',
+    background: featureBgA,
     visual: <DiffMockup />,
   },
 ] as const satisfies readonly [FeatureCardShell, FeatureCardShell, FeatureCardShell]
@@ -82,14 +102,20 @@ export function ThreeFeatures() {
   // the breakpoint alone: this keeps the reduced-motion/no-JS/prerender
   // fallback on its padded, capped, bordered layout even at `lg` and up, so
   // three stacked full-viewport cards with no gap or radius never render for
-  // that cohort.
+  // that cohort. Pinning itself is also gated on `lg`: below that the Figma
+  // 640/393 frames are stacked cards (heading, body, buttons, visual), not a
+  // sticky `h-dvh` slide.
   const hydrated = useHydrated()
   const reducedMotion = useReducedMotion()
-  const pinned = hydrated && !reducedMotion
+  const isLg = useLg()
+  const pinned = Boolean(hydrated && !reducedMotion && isLg)
 
   return (
     <section
-      className={cn('mx-auto max-w-[1440px] px-2 pt-8 pb-2', pinned && 'lg:max-w-none lg:px-0')}
+      className={cn(
+        'mx-auto max-w-[1440px] px-2 pt-8 pb-2 lg:pt-18',
+        pinned && 'lg:max-w-none lg:px-0',
+      )}
     >
       <ScrollStackRoot pinned={pinned}>
         {CARD_SHELLS.map((shell, index) => (

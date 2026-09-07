@@ -24,12 +24,12 @@ type SegmentedControlProps =
 
 const TRACK: Record<Variant, string> = {
   default: 'bg-stone-100',
-  translucent: 'bg-stone-50/10',
+  translucent: 'bg-stone-100/10',
 }
 
 const SELECTED: Record<Variant, string> = {
   default: 'bg-white text-stone-900 shadow-sm',
-  translucent: 'bg-white text-stone-900',
+  translucent: 'bg-white text-stone-900 shadow-sm',
 }
 
 const IDLE: Record<Variant, string> = {
