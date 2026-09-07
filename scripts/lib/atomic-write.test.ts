@@ -14,7 +14,6 @@ import {
   lstatSync,
   openSync,
   closeSync,
-  chmodSync,
 } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -50,7 +49,6 @@ describe('atomicWriteFileSync', () => {
   test('preserves the mode of an existing regular file it overwrites', () => {
     const destination = join(dir, 'private.png')
     writeFileSync(destination, 'OLD', { mode: 0o600 })
-    chmodSync(destination, 0o600)
 
     atomicWriteFileSync(destination, 'NEW')
 
