@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { Menu } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { CtaButton } from '@/components/CtaButton'
@@ -62,15 +62,33 @@ function MobileNav() {
   // onto whatever it wraps, which mislabels real navigation links to
   // assistive tech. Closing on click here needs no button semantics at all.
   const [open, setOpen] = useState(false)
-
+  // Radix restores focus to the trigger button when the sheet closes, and a
+  // plain `.focus()` call scrolls its target into view if it isn't already
+  // — the default `onCloseAutoFocus` behavior. The trigger sits in the
+  // in-flow (non-sticky) header at the very top of the page, so that restore
+  // silently snaps the page back to scrollY 0 one frame after a same-page
+  // nav link (e.g. "Pricing" -> `#pricing`) has just scrolled it away from
+  // there, discarding the navigation the user just took. `preventScroll`
+  // keeps the a11y focus-restore without the drive-by scroll reset.
+  const triggerRef = useRef<HTMLButtonElement>(null)
+  const handleCloseAutoFocus = useCallback((event: Event) => {
+    event.preventDefault()
+    triggerRef.current?.focus({ preventScroll: true })
+  }, [])
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button variant="outline" size="icon" className="md:hidden" aria-label="Open menu">
+        <Button
+          ref={triggerRef}
+          variant="outline"
+          size="icon"
+          className="md:hidden"
+          aria-label="Open menu"
+        >
           <Menu />
         </Button>
       </SheetTrigger>
-      <SheetContent side="right">
+      <SheetContent side="right" onCloseAutoFocus={handleCloseAutoFocus}>
         <SheetHeader>
           <SheetTitle>
             <Logo />

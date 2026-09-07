@@ -79,10 +79,14 @@ function SheetContent({
   children,
   side = 'right',
   showCloseButton = true,
+  onCloseAutoFocus,
   ...props
 }: React.ComponentProps<typeof SheetPrimitive.Popup> & {
   side?: 'top' | 'right' | 'bottom' | 'left'
   showCloseButton?: boolean
+  // Radix-compat: Header intercepts close-focus so it can restore with
+  // preventScroll (Base UI Popup has finalFocus, not onCloseAutoFocus).
+  onCloseAutoFocus?: (event: Event) => void
 }) {
   return (
     <SheetPortal>
@@ -95,6 +99,15 @@ function SheetContent({
           className,
         )}
         {...props}
+        finalFocus={
+          onCloseAutoFocus
+            ? () => {
+                const event = new Event('closeAutoFocus', { cancelable: true })
+                onCloseAutoFocus(event)
+                return event.defaultPrevented ? false : true
+              }
+            : props.finalFocus
+        }
       >
         {children}
         {showCloseButton && (
