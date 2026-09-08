@@ -110,13 +110,11 @@ function DashboardShot() {
         src={dashboardUrl}
         alt="Conloca dashboard showing recent content activity for a staging site"
         fetchPriority="high"
-        // Figma's fill is `scaleMode: FILL`, whose crop is nominally centred,
-        // but the image is only ~3% wider than the box at either composition,
-        // so the two differ by a handful of pixels. Measured against the
-        // reference render the left anchor is the closer match at both sizes
-        // (mean error 15.45 against 15.87 over the panel), so it stays shared
-        // rather than being overridden per breakpoint.
-        className="size-full rounded-[20px] object-cover object-left"
+        // Figma's fill is `scaleMode: FILL` with no imageTransform, i.e. a
+        // centred cover. At 393 that crop is the one the phone frame draws;
+        // from `sm` the left anchor stays the closer match to the 640/1024
+        // references (mean error 15.45 against 15.87 over the panel).
+        className="size-full rounded-[20px] object-cover object-center sm:object-left"
       />
       <PlayBadge />
     </div>

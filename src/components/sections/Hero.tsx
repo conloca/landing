@@ -132,7 +132,7 @@ export function Hero() {
       <Reveal
         direction="left"
         delay={0.15}
-        className="col-start-1 row-start-3 -mt-[39%] flex justify-center sm:-mt-[56.1%] lg:col-start-2 lg:row-span-3 lg:row-start-1 lg:mt-0 lg:min-w-0 lg:justify-start"
+        className="col-start-1 row-start-3 -mt-[37.3%] flex justify-center sm:-mt-[56.1%] lg:col-start-2 lg:row-span-3 lg:row-start-1 lg:mt-0 lg:min-w-0 lg:justify-start"
       >
         {/* Placement lives here, not in HeroVisual: only this file knows the
             grid. From 1382px the shot takes its exact Figma width and hangs
