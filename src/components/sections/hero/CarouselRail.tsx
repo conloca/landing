@@ -4,7 +4,6 @@ import {
   useState,
   useSyncExternalStore,
   type CSSProperties,
-  type FocusEvent,
 } from 'react'
 import { useHydrated } from '@/components/motion/Reveal'
 import { cn } from '@/lib/utils'
@@ -67,27 +66,24 @@ interface CarouselRailProps {
  * Prerender and reduced-motion render every slide in the document, visible
  * — never `opacity: 0`. The hydrated, motion-ok path shows one slide at a
  * time and fills the active bar from the shared rAF clock.
+ *
+ * Selecting a rail bar restarts that slide's clock without pausing; sticky
+ * pause is the play/pause control. Hover-pause lives on the copy so a
+ * pointer on a bar does not freeze the fill.
  */
 export function CarouselRail({ slides }: CarouselRailProps) {
   const hydrated = useHydrated()
   const reducedMotion = usePrefersReducedMotion()
   const [paused, setPaused] = useState(false)
   const [hovered, setHovered] = useState(false)
-  const [focused, setFocused] = useState(false)
   const [pageVisible, setPageVisible] = useState(false)
 
   const startHover = useCallback(() => setHovered(true), [])
   const endHover = useCallback(() => setHovered(false), [])
-  const startFocus = useCallback(() => setFocused(true), [])
-  const handleBlur = useCallback((event: FocusEvent<HTMLDivElement>) => {
-    const related = event.relatedTarget
-    if (related instanceof Node && event.currentTarget.contains(related)) return
-    setFocused(false)
-  }, [])
   const togglePause = useCallback(() => setPaused((current) => !current), [])
 
   const showAllSlides = !hydrated || reducedMotion
-  const running = hydrated && !paused && !hovered && !focused && !reducedMotion && pageVisible
+  const running = hydrated && !paused && !hovered && !reducedMotion && pageVisible
   const { slide, progress, selectSlide } = useCarouselPlayback(slides.length, running)
   const message = slides[slide] ?? slides[0]
   const activeIndex = showAllSlides ? 0 : slide
@@ -95,7 +91,7 @@ export function CarouselRail({ slides }: CarouselRailProps) {
   const handleSlideSelect = useCallback(
     (index: number) => {
       selectSlide(index)
-      setPaused(true)
+      setPaused(false)
     },
     [selectSlide],
   )
@@ -115,13 +111,7 @@ export function CarouselRail({ slides }: CarouselRailProps) {
       aria-label={CAROUSEL_LABEL}
       data-running={running}
     >
-      <div
-        className="flex flex-col items-center gap-4 lg:flex-row lg:items-start"
-        onMouseEnter={showAllSlides ? undefined : startHover}
-        onMouseLeave={showAllSlides ? undefined : endHover}
-        onFocusCapture={showAllSlides ? undefined : startFocus}
-        onBlurCapture={showAllSlides ? undefined : handleBlur}
-      >
+      <div className="flex flex-col items-center gap-4 lg:flex-row lg:items-start">
         <div
           className="order-2 flex gap-1 lg:order-1 lg:flex-col"
           role="group"
@@ -141,7 +131,7 @@ export function CarouselRail({ slides }: CarouselRailProps) {
                   } as CSSProperties
                 }
                 className={cn(
-                  'relative border-0 bg-transparent p-0',
+                  'relative cursor-pointer border-0 bg-transparent p-0',
                   'h-0.5 lg:h-[var(--rail-track)] lg:w-0.5',
                   'before:absolute before:-inset-2 before:content-[""]',
                   'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2',
@@ -175,6 +165,8 @@ export function CarouselRail({ slides }: CarouselRailProps) {
           <p
             className={cn('order-1 lg:order-2', MESSAGE_CLASS)}
             aria-live={paused ? 'polite' : 'off'}
+            onMouseEnter={startHover}
+            onMouseLeave={endHover}
           >
             {message[0]}
             {message[1]}

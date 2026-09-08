@@ -40,6 +40,12 @@ import { defineConfig } from 'vite'
  */
 const base = `${process.env.BASE_PATH || '/'}`.replace(/\/?$/, '/')
 
+const htmlEntries = {
+  main: fileURLToPath(new URL('./index.html', import.meta.url)),
+  howItWorks: fileURLToPath(new URL('./how-it-works/index.html', import.meta.url)),
+  blog: fileURLToPath(new URL('./blog/index.html', import.meta.url)),
+}
+
 export default defineConfig(({ isSsrBuild }) => ({
   base,
   plugins: [react(), tailwindcss()],
@@ -51,5 +57,9 @@ export default defineConfig(({ isSsrBuild }) => ({
   build: {
     outDir: isSsrBuild ? 'dist-ssr' : 'dist',
     emptyOutDir: true,
+    // HTML inputs are client-only. Passing them on the SSR build makes
+    // rolldown-vite reject the run with "rollupOptions.input should not be
+    // an html file" — the SSR entry is supplied on the CLI instead.
+    rollupOptions: isSsrBuild ? {} : { input: htmlEntries },
   },
 }))

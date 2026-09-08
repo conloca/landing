@@ -35,16 +35,16 @@ export interface FeatureCardProps {
 }
 
 /** Figma S1 card headline per breakpoint frame: 32/38.4 (393), 40/48 (640),
- * 48/48 (1024 and 1440); body 16/27.2 throughout. Shared by `CardCopy` and
+ * 48/48 (1024 and 1440); body Inter Italic 16/27.2 throughout. Shared by `CardCopy` and
  * `StackedCopy` so a future typography tweak only needs one edit. */
 const FEATURE_CARD_TITLE_CLASS =
   'font-display text-[2rem] leading-[1.2] font-bold text-stone-50 sm:text-[2.5rem] sm:leading-[1.2] lg:text-5xl lg:leading-none'
 
 function CardCopy({ title, body, className }: { title: string; body: string; className?: string }) {
   return (
-    <div className={className}>
+    <div className={cn('flex flex-col gap-5 sm:gap-6', className)}>
       <h3 className={FEATURE_CARD_TITLE_CLASS}>{title}</h3>
-      <p className="mt-6 text-base leading-[1.7] text-white">{body}</p>
+      <p className="text-base leading-[1.7] text-white italic">{body}</p>
     </div>
   )
 }
@@ -81,7 +81,7 @@ function StackedCopy({
     <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
       <div className="flex flex-col gap-6 lg:flex-1 lg:flex-row lg:items-end">
         <h3 className={cn('max-w-[520px]', FEATURE_CARD_TITLE_CLASS)}>{title}</h3>
-        <p className="max-w-[520px] text-base leading-[1.7] text-white">{body}</p>
+        <p className="max-w-[520px] text-base leading-[1.7] text-white italic">{body}</p>
       </div>
       <CardActions secondaryCta={secondaryCta} secondaryCtaHref={secondaryCtaHref} />
     </div>
@@ -104,7 +104,7 @@ export function FeatureCard({
   return (
     <div
       className={cn(
-        'relative flex w-full flex-col overflow-hidden rounded-[28px] border border-stone-100 p-6 text-stone-50',
+        'relative flex w-full flex-col overflow-hidden rounded-[20px] border border-stone-100 p-5 text-stone-50 sm:rounded-[24px] sm:p-6 lg:rounded-[28px]',
         fullBleed && 'h-full lg:rounded-none lg:border-0',
       )}
     >
@@ -149,12 +149,12 @@ export function FeatureCard({
       >
         <AudienceSwitch
           variant="translucent"
-          className="relative self-start"
+          className="relative hidden self-start lg:block"
           label={audienceSwitchLabel}
         />
         <div
           className={cn(
-            'relative mt-6 flex flex-1 flex-col gap-6 overflow-y-auto',
+            'relative flex flex-1 flex-col gap-6 overflow-hidden lg:mt-6',
             isStacked ? 'justify-between' : 'lg:flex-row lg:items-end lg:justify-between lg:gap-8',
             layout === 'visual-left' && 'lg:flex-row-reverse',
           )}
@@ -162,8 +162,8 @@ export function FeatureCard({
           {isStacked ? null : (
             <div
               className={cn(
-                'flex flex-col gap-6 lg:shrink-0',
-                layout === 'visual-left' ? 'lg:max-w-[687px]' : 'lg:max-w-[472px]',
+                'flex flex-col gap-5 sm:gap-6 lg:shrink-0',
+                layout === 'visual-left' ? 'lg:max-w-[687px]' : 'max-w-[440px]',
               )}
             >
               <CardCopy title={title} body={body} />
@@ -172,7 +172,11 @@ export function FeatureCard({
           )}
           <div
             className={cn(
-              'relative min-h-56 overflow-hidden rounded-2xl sm:min-h-[28rem] lg:min-h-56',
+              // visual-right is card 1: Figma 393-s1 is 574px; copy through
+              // CTAs ~250 + gap-6 24 + padding 40 leaves 279. Cards 2/3 stay 327.
+              'relative rounded-2xl sm:min-h-[590px] lg:min-h-56',
+              layout === 'visual-right' ? 'min-h-[279px]' : 'min-h-[327px]',
+              layout === 'visual-right' ? 'overflow-visible' : 'overflow-hidden',
               isStacked ? 'order-last flex-1 lg:order-none' : 'flex-1 lg:self-stretch',
             )}
           >

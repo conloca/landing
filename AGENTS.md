@@ -108,6 +108,18 @@ array in `src/components/sections/Pricing.tsx`.
 The reasoning behind each figure, and the questions still open with the designer, are
 recorded in `docs/QUESTIONS-DESIGNER.md`.
 
+The year-is-ten-months rule is still the pricing model (two months free). Do **not**
+render a yearly-total subtitle on the cards — specifically the line that starts
+"Billed annually". That subtitle is forbidden and must never return, on Simple,
+Pro, or Business. The per-month headline already reflects the ten-month year.
+
+## Carousel items vs slides
+
+These are two different sections. Do not mix the words.
+
+- **Carousel items** are the three rotating messages in the hero `CarouselRail` (copy in `src/lib/content/hero-copy.ts`). The first developer item begins "Map your React components to typed schemas and MDX blocks in the IDE." Never call these "slides". A timer or pointer-on-bars bug is a carousel task.
+- **Slides** are the three feature cards in `ThreeFeatures` / `ScrollStack` that come **below** the hero. The first developer slide title is "One source of truth, two ways to work" (`src/lib/content/feature-cards-copy.ts`). A task about slides is never a carousel task.
+
 ## Conventions
 
 - Conventional commits, one logical change each.
@@ -293,29 +305,15 @@ the count only grows: one pass on this project found 41, up from an original
 11, with disk and `git worktree list` noise as the visible cost and an
 accidental bulk-delete of real work as the expensive one.
 
-**Only a human operator runs the removal steps below** — or an agent a
-human has explicitly told to remove one specific, named worktree, never an
-agent self-directing a sweep of the whole fleet. The reason isn't caution
-for its own sake: the one check this whole procedure hinges on — is a given
-worktree's owning agent actually finished — depends on knowing every agent
-any session on the machine has dispatched, and no session can see another
-session's dispatches. A dispatched agent that picks up a "reap worktrees"
-ticket can audit and report but should not delete anything itself unless a
-human names the specific worktree after seeing that report — and the
-report needs enough in it for the human to actually decide, not just a
-verdict: per worktree, its path, branch, `HEAD`, the time you evaluated it,
-and the result of each gate below (pass, fail, or unconfirmed), so the
-human is naming a worktree based on your evidence, not your one-word
-conclusion. That naming authorizes a `(path, HEAD)` pair, not just a path —
-if the worktree's current `HEAD` doesn't match what the report said when
-the human named it, treat the authorization as stale and don't remove it;
-something happened in that worktree between the report and the removal.
-Naming satisfies the liveness gate for that one worktree only — every
-other gate below (self-exclusion, clean status, the `clean -ndX` verdict,
-the `.env` verdict, ancestry or merged-PR confirmation) still has to pass
-before removal; naming isn't a blanket go-ahead, and it never overrides
-self-exclusion even if the named path happens to be the one you're running
-in.
+**Agents must finish leftover PRs into `main`, salvage unique unmerged work onto a PR, then remove stale dispatcher worktrees themselves.** The previous "human names a path" gate is revoked by the operator. Agents do this; they do not wait for a human to name a worktree.
+
+Order:
+
+1. Finish leftover PRs into `main` (squash-merge when CI is green).
+2. Salvage unique unmerged work onto a PR.
+3. Then remove stale dispatcher worktrees — `.claude/worktrees/agent-*` and `/private/tmp/wt-*` / `/private/tmp/ship-*` — whose unique commits are already on `origin/main` or whose PR merged.
+
+**Still never remove:** the primary checkout; a dirty tree with unique uncommitted work until that work is committed or discarded with a written reason; a locked worktree; `main`. Never `git worktree remove --force`. After a squash-merge, delete the branch.
 
 **Invariants — these hold regardless of who runs the sweep:**
 
@@ -324,12 +322,10 @@ in.
   unconditionally — it is guaranteed to look reapable (clean, `HEAD` at
   `origin/main`) at the exact moment it's freshly dispatched and about to
   start real work.
-- The candidate set is dispatcher-created worktrees only —
-  `.claude/worktrees/agent-*` — never the main working tree, and never a
-  worktree a human created by hand for their own use (`git worktree add`
-  off `main` with no agent behind it looks identical to an abandoned one by
-  every check below; this section doesn't apply to it, full stop, not as a
-  reap criterion but as a scope filter). Snapshot in this exact order —
+- The candidate set is dispatcher-created worktrees —
+  `.claude/worktrees/agent-*` and `/private/tmp/wt-*` / `/private/tmp/ship-*` —
+  never the primary checkout, never `main`, and never a locked worktree.
+  Snapshot in this exact order —
   `git worktree list --porcelain` first, _then_ the live-agent list —
   because the reverse order is unsafe: a worktree dispatched between the
   two reads would be in the worktree snapshot but missing from an
@@ -441,34 +437,11 @@ landed anywhere), and `git -C "<main-checkout>" merge-base --is-ancestor
 what actually proves the merge is reachable from `main` right now, rather
 than merely having happened at some point in the past (a force-push to
 `main` after the merge can make the first three true while this one
-correctly fails). If any of these don't hold, leave the worktree and name
-it in your report for a human decision.
+correctly fails). If any of these don't hold, salvage unique unmerged work onto a PR; do not leave unique work sitting only in the worktree.
 
-A branch whose PR shows `state == CLOSED` (not `MERGED`) has no defined
-removal path above, and none is implied: GitHub's "closed" covers both
-"abandoned, definitely dead" and "closed for now, might reopen or get
-cherry-picked later," and the two look identical from the API. Treat a
-closed-but-unmerged PR's worktree the same as a no-PR-ever branch with a
-non-trivial diff — leave it and name it for a human decision, even when it
-looks obviously superseded by an already-merged v2 of the same work.
+A branch whose PR shows `state == CLOSED` (not `MERGED`) still has unique work until it lands or is discarded with a written reason. Salvage that unique unmerged work onto a PR. Do not leave it unnamed for a human. Even when it looks superseded by an already-merged v2 of the same work, salvage first, then reap only once the unique commits are on `origin/main` or the replacement PR merged.
 
-A single blanket instruction from the repository owner to clean up "all the
-worktrees" widens which worktrees an agent may **audit and report on** in
-one pass, and — only when paired with proof (a) from the liveness gate
-below (the operator's own written attestation that every session on the
-machine has been checked, not the instruction by itself; the instruction
-alone is neither proof (a) nor proof (b)) — satisfies that one gate for
-every worktree in the sweep. It does **not** touch who may run the
-**removal** steps: the top of this section's rule still applies
-unchanged — only a human operator removes a worktree, or an agent a human
-has separately named for that one specific worktree, never an agent
-self-directing removal across the whole fleet on the strength of a
-blanket instruction alone. Nor does the blanket instruction supply the
-ancestor-or-merged-PR verdict, the `.env` verdict, or a verdict for a
-closed-but-unmerged branch — those still have to be established per
-worktree as described above. It widens the scope of evaluation, never
-who is allowed to pull the trigger or what counts as evidence of safety
-for any individual worktree.
+Agents **must** finish leftover PRs into `main`, salvage unique unmerged work onto a PR, then remove stale dispatcher worktrees whose unique commits are already on `origin/main` or whose PR merged. A blanket "clean up all the worktrees" instruction does not skip salvage, does not authorize `--force`, and does not allow removing the primary checkout, a locked worktree, `main`, or a dirty tree with unique uncommitted work. The previous "human names a path" gate is revoked by the operator.
 
 Once every gate above has passed — including a fresh `fetch`, not just
 clean status, the `clean -ndX` verdict, the `.env` verdict, and ancestry or
@@ -499,52 +472,31 @@ refuses this on its own) or that anything else still points at. Treat
 this procedure, not as the only one — the same applies to any other
 long-lived branch the repository treats as a merge target.
 
-**The liveness gate has exactly two accepted proofs — nothing else
-satisfies it.** Either (a) you, the operator, personally attest — in
-writing, before evaluating anything — that you've checked every session on
-this machine for agents currently out (this is what "the live-agent list"
-in the snapshot step above means: your own written sweep, not a lock, a
-process list, or a guess), or (b) a human has personally confirmed no
-session has an agent out in that one specific worktree — not merely read
-an audit report and inferred liveness from its git-state columns, since
-those are exactly the signal this section says can't establish it — and
-then named it. That naming counts as proof for that worktree alone and
-nothing else; every other gate (self-exclusion, clean status, `clean
--ndX`, `.env`, ancestry or merged-PR) still has to pass. If
-neither (a) nor (b) holds for a given worktree, don't run the removal steps
-against it — audit and report instead. This gate is only as good as your
-actual visibility into every session dispatching agents, not just your
-own, and there is currently no mechanism in this repo that gives you that
-visibility for certain — which is exactly the gap a real dispatch-side
-lease or lock (see #93) is meant to close.
+**The previous "human names a path" liveness gate is revoked by the operator.** Agents reap themselves after leftover PRs are finished into `main` and unique unmerged work is salvaged onto a PR. Still never remove: the primary checkout; a dirty tree with unique uncommitted work until that work is committed or discarded with a written reason; a locked worktree; `main`. Never `git worktree remove --force`. After a squash-merge, delete the branch. Skip the worktree you are currently running in.
 
-**Run this sweep as a step of ticket-driven cleanup, not on a timer** —
+**Run this sweep as part of finishing leftover work, not on a timer** —
 whoever is dispatching agents notices the count (`git worktree list | wc -l`)
-climbing past a level that stops being "a handful of active dispatches," and
-files or reopens a ticket for it. This is a fixed decision procedure written
-as prose for a human to execute (and for an agent to audit against, per the
-note near the top of this section) each time, which is a bad fit for
-something whose failure mode is bulk data loss. Turning it into a
-report-only script that prints a verdict and reason per worktree, and never
-deletes anything itself — plus giving dispatch a real lease/lock mechanism
-so liveness stops being a matter of attestation — is filed as
-[issue #93](https://github.com/conloca/landing/issues/93) rather than done
-here. Cite that issue (or this section, until it lands) instead of
-re-deriving the procedure from memory; it also tracks the edge cases this
-prose version doesn't fully close (the already-gone and
-detached-with-no-branch worktree states, and a defined verdict vocabulary).
+climbing past a handful of active dispatches and reaps: finish leftover PRs
+into `main`, salvage unique unmerged work onto a PR, then remove stale
+dispatcher worktrees (`.claude/worktrees/agent-*` and `/private/tmp/wt-*` /
+`/private/tmp/ship-*`) whose unique commits are already on `origin/main` or
+whose PR merged. Cite this section instead of re-deriving the procedure.
+The report-only audit script and a dispatch-side lease/lock are still
+tracked as [issue #93](https://github.com/conloca/landing/issues/93).
 
 ### Script: `bun run worktree:audit`
 
 `scripts/worktree-audit.ts` runs the gates above (clean status, the
 `clean -ndX` ignored-content check, the `.env` comparison, sequencer state,
 ancestry or merged-PR confirmation, and a best-effort liveness scan) against
-every `.claude/worktrees/agent-*` worktree, or against specific paths passed
-as arguments, and prints a PASS, FAIL, or UNCONFIRMED verdict per worktree.
-It is report-only: it never deletes a worktree, a branch, or any file, and
-never runs `git worktree remove` or `git branch -d` itself. Treat its output
-the same way as a manual audit under this section — evidence for a human to
-act on, not an automatic go-ahead.
+dispatcher worktrees (`.claude/worktrees/agent-*`, and paths under
+`/private/tmp/wt-*` / `/private/tmp/ship-*` when passed as arguments) and
+prints a PASS, FAIL, or UNCONFIRMED verdict per worktree. It is report-only:
+it never deletes a worktree, a branch, or any file, and never runs
+`git worktree remove` or `git branch -d` itself. Use it as evidence for the
+agent that is about to salvage leftover work and then reap — not as a
+substitute for finishing PRs, and not as a reason to wait for a human to
+name a path.
 
 ## Figma asset export
 

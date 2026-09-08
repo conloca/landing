@@ -3,7 +3,6 @@ import { CtaButton } from '@/components/CtaButton'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import {
-  annualTotal,
   formatUsd,
   headlineAmount,
   HEADLINE_PERIOD_LABEL,
@@ -35,27 +34,17 @@ export interface Plan {
 }
 
 /**
- * Both billing periods quote the same per-month unit, so on its own the annual
- * headline reads as a monthly price nobody is actually charged. "Billed monthly"
- * was dropped as redundant with the visible toggle state — but the annual total
- * isn't shown anywhere else, so dropping it too left the discounted per-month
- * figure with no indication a visitor is really charged the full year up front.
+ * Both billing periods quote the same per-month unit. The annual headline is
+ * the ten-month-year rate; do not add a yearly-total subtitle under it.
  */
 function Price({ plan, billing }: { plan: Plan; billing: BillingPeriod }) {
   return (
-    <>
-      <p className="mt-6 flex items-baseline gap-2 text-[2rem] leading-[3rem] font-black text-stone-900">
-        {formatUsd(headlineAmount(plan.pricing, billing))}
-        <span className="text-base leading-6 font-normal text-stone-700">
-          {HEADLINE_PERIOD_LABEL}
-        </span>
-      </p>
-      {billing === 'annual' && (
-        <p className="mt-1 text-sm text-stone-500">
-          Billed annually — {formatUsd(annualTotal(plan.pricing))} per year
-        </p>
-      )}
-    </>
+    <p className="mt-6 flex items-baseline gap-2 text-[2rem] leading-[3rem] font-black text-stone-900">
+      {formatUsd(headlineAmount(plan.pricing, billing))}
+      <span className="text-base leading-6 font-normal text-stone-700">
+        {HEADLINE_PERIOD_LABEL}
+      </span>
+    </p>
   )
 }
 
@@ -80,15 +69,22 @@ function FeatureRow({ feature }: { feature: PlanFeature }) {
 
 export function PricingCard({ plan, billing }: { plan: Plan; billing: BillingPeriod }) {
   return (
-    <div className="flex flex-1 flex-col gap-3 rounded-t-[20px] rounded-b-none bg-gradient-to-b from-stone-100 from-[74%] to-white p-2">
+    <div
+      className={cn(
+        'flex flex-1 flex-col gap-3 rounded-none bg-gradient-to-b from-stone-100 from-[74%] to-white p-2 sm:rounded-t-[20px] sm:rounded-b-none',
+        plan.highlighted && 'ring-2 ring-lime-400 sm:ring-0',
+      )}
+    >
       <div
         className={cn(
-          'rounded-[18px] bg-white p-5 shadow-[0_9.7px_24px_rgba(0,0,0,0.06)]',
-          plan.highlighted && '-translate-y-2 ring-2 ring-lime-400',
+          'rounded-xl bg-white p-5 shadow-[0_6.5px_9.7px_rgba(16,24,40,0.03)] sm:rounded-[18px] sm:shadow-[0_9.7px_24px_rgba(0,0,0,0.06)]',
+          plan.highlighted && 'sm:-translate-y-2 sm:ring-2 sm:ring-lime-400',
         )}
       >
         <div className="flex items-center justify-between">
-          <h3 className="text-2xl leading-9 font-medium text-stone-900">{plan.name}</h3>
+          <h3 className="text-xl leading-[30px] font-medium text-stone-900 sm:text-2xl sm:leading-9">
+            {plan.name}
+          </h3>
           {plan.highlighted ? (
             <Badge className="bg-lime-400 text-stone-900">Best value</Badge>
           ) : null}
@@ -98,7 +94,7 @@ export function PricingCard({ plan, billing }: { plan: Plan; billing: BillingPer
         <CtaButton
           size="lg"
           variant={plan.highlighted ? 'default' : 'outline'}
-          className="mt-6 h-11 w-full rounded-xl font-bold"
+          className="mt-6 h-11 w-full rounded-xl text-sm leading-[14px] font-bold"
           href={plan.ctaHref}
         >
           {plan.cta}

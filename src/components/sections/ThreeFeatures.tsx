@@ -80,13 +80,11 @@ const CARD_SHELLS = [
 /**
  * Figma S1 (`40002427:16418`) + the `Scrolling` motion note in `Conloca - Animations`.
  *
- * The `max-w-[1440px]`/`px-2` cap is dropped from `lg` up: the designer wants the
- * pinned slide edge to edge across the full viewport width and height while it's
- * stuck in place, not capped at the Figma frame's own 1440px/846px dimensions.
- * `ScrollStack` (its `p-4` wrapper inset and `MotionCard`'s `max-h-[46rem]`) and
- * `FeatureCard` (rounded corners/border) drop their own `lg`-and-up constraints
- * to match — see those files. Below `lg` the section keeps its padded, capped
- * layout, unchanged.
+ * The `max-w-[1440px]` cap is dropped from `lg` up once pinned: the designer
+ * wants the stuck slide edge to edge, not capped at the frame's 1440px.
+ * `ScrollStack` (pinned-slot `p-4` / `max-h-[46rem]`) and `FeatureCard`
+ * (radius/border) drop those constraints to match. Unpinned, Frame 609
+ * padding is 4 (393) / 8 (640) / 72 top and 8 otherwise (1024+).
  */
 export function ThreeFeatures() {
   const { audience } = useAudience()
@@ -113,7 +111,7 @@ export function ThreeFeatures() {
   return (
     <section
       className={cn(
-        'mx-auto max-w-[1440px] px-2 pt-8 pb-2 lg:pt-18',
+        'mx-auto max-w-[1440px] p-1 sm:p-2 lg:px-2 lg:pt-18 lg:pb-2',
         pinned && 'lg:max-w-none lg:px-0',
       )}
     >

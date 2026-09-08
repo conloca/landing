@@ -6,10 +6,15 @@ import { LottieBanner } from '@/components/LottieBanner'
  * every side and is clipped — scaling it to *fit* would shrink the Locales
  * panel to illegibility, so it renders at natural aspect ratio, oversized,
  * anchored slightly upward so the panel lands in the visible window.
+ *
+ * `min-h-*` is load-bearing: the Lottie is absolutely positioned, and
+ * `h-full` does not resolve against the visual slot's `min-height`, so
+ * without a definite height here the overflow-hidden root collapses and
+ * the clip is empty.
  */
 export function LocalesVisual() {
   return (
-    <div className="relative h-full w-full overflow-hidden">
+    <div className="relative h-full min-h-[327px] w-full overflow-hidden sm:min-h-[590px] lg:min-h-full">
       <div className="absolute inset-x-[-18%] top-[-16%] aspect-[849/1334]">
         <LottieBanner
           src="banner-2.lottie"

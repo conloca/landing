@@ -1,11 +1,16 @@
 # Figma extraction
 
-Raw source material extracted from the Figma file behind this landing page.
-`DESIGN-SPEC.md` is the readable write-up; everything else here is the evidence
-behind it.
+Two extraction passes against the same file, file key `OxxksZFS8hzKoFTeSRdFGs`,
+breakpoints/frame section `40002391:9972`
+([open in Figma](https://www.figma.com/design/OxxksZFS8hzKoFTeSRdFGs/Conloca?node-id=40002391-9972)).
+`DESIGN-SPEC.md` is the readable write-up; everything else here is the raw
+evidence behind it — node trees for measurements, plus rendered PNGs and
+per-page dumps for anything a node tree alone can't answer.
 
-Source: file key `OxxksZFS8hzKoFTeSRdFGs`, frame `40002391:9972`, captured
-2026-08-25 (file `lastModified` 2026-08-25T12:11:13Z).
+The first pass (2026-08-25) captured the full desktop node tree and
+whole-file renders. The second (2026-08-27, see `extraction-manifest.json`)
+went back for the narrow-breakpoint node trees and the designer's colour
+token names, using the batching workaround documented below.
 
 ## Read this before planning any Figma work
 
@@ -32,6 +37,30 @@ node fetching was still rate-limited. For anything that is an existing bitmap
 in the design, reach for image fills first; only node renders need the
 expensive endpoint.
 
+### Batching node fetches through `/v1/files/:key`
+
+`/v1/files/:key/nodes` is the endpoint that exhausts fast. `/v1/files/:key`
+itself is metered separately and accepts the same comma-separated `ids`
+parameter, returning every requested node in one call — that is the way
+through once `/nodes` is spent. The narrow-breakpoint and colour-token trees
+in this directory came from one such call, made while `/nodes` was still
+rate-limited:
+
+```
+GET /v1/files/:key?ids=2548:13160,40002164:36164,40002441:868,40002427:20368,40002426:4064
+```
+
+`2548:13160` is the Colors *page*; requesting it returns both token frames
+beneath it, including `40002164:36164` (Semantics). The `Components` page
+came along in the same response because the API returns the enclosing
+document skeleton regardless — that's why `nodes-components.json` exists
+even though it wasn't explicitly requested.
+
+**Published styles and components are empty.** `/v1/files/:key/styles`,
+`/components` and `/component_sets` all return `200` with empty arrays —
+nothing in this file is published to a library, so those endpoints are not an
+alternative route to the tokens.
+
 ### Pacing rules for any future extraction
 
 These are the rules that matter, written here so this document stands on its
@@ -44,47 +73,45 @@ own:
   loss — that exact mistake was made here.
 - Bound concurrency. Never fire node renders in parallel.
 - Pace the render endpoint far more conservatively than metadata endpoints.
+- Batch every node you need into a single `ids` list against `/v1/files/:key`
+  (see above) — a second call may be three days away.
 
-`scripts/figma-client.ts` implements all of the above — added in commit
-`355b2ac`, which at the time of writing had not yet merged to `main`. If that
-file is not present in your checkout, the rules above are what you need to
-reimplement.
+`scripts/figma-client.ts` implements all of the above and is on `main`.
 
 ## What is missing
 
 Do not assume the gap is an oversight — these were never obtained:
 
-- **Node trees for the 640, 1024 and 393 breakpoints.** Only the 1440 desktop
-  frame has one. For the other three the renders in `renders/` are the *only*
-  record, so their measurements can be read visually but not queried. Anyone
-  doing mobile or tablet work will otherwise waste time looking for numbers
-  that do not exist.
-- **The file's "Colors" page** (node `2548:13160`), which holds the designer's
-  own naming for the palette. Six fetch attempts with correct backoff all
-  returned 429 against the monthly wall. Colour *values* in `DESIGN-SPEC.md`
-  were counted from the node tree and are correct; the *names* are ours, not
-  the designer's.
-
-  `DESIGN-SPEC.md` separately names a `Color tokens - Semantics` node
-  `40002164:36164`. That is **not** the same object: `2548:13160` is confirmed
-  as a top-level page in `file-depth2.json`, while `40002164:36164` does not
-  appear there and so is a frame nested somewhere inside. If you get a Dev seat
-  and have calls to spend, fetch the page first — it is the broader target.
+- **The 1440 desktop node tree's raw JSON is not stored alongside the other
+  breakpoints.** `nodes.json` in this directory *is* that tree — extracted in
+  the first pass — but `nodes-breakpoints.json` (the second pass) only holds
+  the three narrow frames; see the breakpoints table below.
 - **Figma Variables.** `/v1/files/:key/variables/local` returns 403 — see
   `vars.json`, which lists the scopes the token actually holds and shows
   `file_variables:read` is not among them. The error reads like a token-scope
   problem, and that reading is wrong: **the scope is not offerable on this
   plan at all**, confirmed against Figma's own token-creation dialog, so
   reissuing the token does not help. `DESIGN-SPEC.md` is correct that this
-  endpoint needs an Enterprise entitlement. Do not spend time regenerating
-  tokens for it.
+  endpoint needs an Enterprise entitlement. Use `COLOR-TOKENS.md` instead,
+  which carries the same information from the designer's generated
+  documentation frame, and do not spend time regenerating tokens for it.
+
+The Colors page (node `2548:13160`) was originally in this list too — six
+fetch attempts with correct backoff all returned 429 against the monthly
+wall. It was later obtained in the second pass via the `ids`-batching
+workaround above and is now `nodes-colors.json` / `COLOR-TOKENS.md`.
 
 ## Files
 
 | File | What it is |
 | --- | --- |
 | `DESIGN-SPEC.md` | The build spec written from this material — start here |
-| `nodes.json` | Full desktop node tree. **The authoritative source** for every spacing, font size, colour and radius measurement in this project |
+| `COLOR-TOKENS.md` | The designer's own colour token names and values, and how our semantic roles map onto them |
+| `nodes.json` | Full desktop (1440) node tree from the first pass. **The authoritative source** for every spacing, font size, colour and radius measurement in this project |
+| `nodes-breakpoints.json` | Raw node trees for the 393, 640 and 1024 frames, keyed by node id |
+| `nodes-colors.json` | Raw node tree of the `Color tokens - Semantics` frame, the source for `COLOR-TOKENS.md` |
+| `nodes-components.json` | Raw node tree of the `Components` page — the design system's own component definitions (button, header, segmented control, avatar, badge, logo, carousel progress) |
+| `extraction-manifest.json` | When the second pass was fetched, and the Figma file's `version` and `lastModified` at that moment. Check it before trusting a measurement from `nodes-breakpoints.json`, `nodes-colors.json` or `nodes-components.json` — if the file has moved on, the snapshot is stale |
 | `outline.txt` | Annotated tree — layout mode, gaps, padding, fills and effects per node. Easier to scan than `nodes.json` |
 | `copy.txt` | Every string in document order with its type style |
 | `anim.json` | The `Conloca - Animations` section, which documents the designer's scroll and stacking intent |
@@ -95,6 +122,44 @@ Do not assume the gap is an oversight — these were never obtained:
 | `renders/frame-*.png` | Full-page renders at all four designed breakpoints |
 | `renders/sec-s*.png` | Per-section desktop renders |
 
+### Why the node trees are committed when reference renders are not
+
+`AGENTS.md`'s general rule is that Figma reference renders stay out of the
+repository and get regenerated from the source file, because the image
+endpoint is cheap and still answers. The JSON node trees and the PNGs in
+`renders/` here are a deliberate, documented exception to that default: the
+endpoints that produced them are exhausted for roughly three days at a time
+and allow only about six calls a month on this plan, so a lost snapshot
+cannot simply be refetched — it blocks whoever needs it until the quota
+returns. That is why they are stored here instead, and why
+`extraction-manifest.json` records the file version the second pass came
+from. See "A note on size" below for the specific cost/tradeoff reasoning
+behind committing the renders.
+
+The node-tree JSON is pretty-printed and float precision is rounded to four
+decimals, so git can diff it line by line. That inflates the working-tree
+size, but it compresses well in the pack — render-bounds duplicates and
+vector path geometry are stripped; everything consulted for measurements
+(layout, typography, fills, hierarchy, bounding boxes) is intact.
+
+## Breakpoints
+
+| Width | Node id | Frame name | Tree stored here |
+| --- | --- | --- | --- |
+| 393 | `40002441:868` | `Homepage - Developers - <640` | yes — 986 nodes, 13 levels (`nodes-breakpoints.json`) |
+| 640 | `40002427:20368` | `Homepage - Developers - 1024 / 640` | yes — 948 nodes, 13 levels (`nodes-breakpoints.json`) |
+| 1024 | `40002426:4064` | `Homepage - Developers - 1280 / 1024` | yes — 976 nodes, 13 levels (`nodes-breakpoints.json`) |
+| 1440 | `40002427:16387` | `Homepage - Developers - >1280` | yes — first pass, stored as `nodes.json` rather than in `nodes-breakpoints.json` |
+
+Before the three narrow trees existed, responsive work was done by eyeballing
+PNG renders (see `renders/frame-*.png`); it no longer needs to be for
+measurements, though the renders remain useful for visual diffing (see
+`scripts/visual-diff.ts` and "Using the renders" below).
+
+**The 393 layout is a different composition, not a narrowed desktop** — see
+`DESIGN-SPEC.md`. Read the tree rather than assuming the desktop structure
+scales.
+
 ### Which node each render came from
 
 The filenames carry no node ids, so the mapping is recorded in
@@ -104,7 +169,9 @@ are writing anything that consumes these programmatically; the table is the
 same data for humans.
 
 Layer names are absent for the tablet, small and mobile breakpoints because
-only the desktop node tree was ever fetched — the same gap described above.
+only the desktop node tree was fetched in the first pass — the same gap
+described above, since closed for measurements (if not layer names) by
+`nodes-breakpoints.json`.
 
 | Render | Node id | Layer name |
 | --- | --- | --- |

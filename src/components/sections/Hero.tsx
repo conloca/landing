@@ -73,7 +73,7 @@ export function Hero() {
     // carousel/CTA rows kept at their natural height below it. A longer
     // headline (switching audience) then eats into that fill slack instead
     // of growing the row and shoving the carousel/CTA down.
-    <section className="mx-auto grid max-w-[1440px] grid-cols-1 items-stretch overflow-x-clip px-1 lg:grid-cols-[3fr_5fr] lg:grid-rows-[1fr_auto_auto] lg:gap-12 lg:px-8 lg:py-0 xl:grid-cols-[506px_1fr] min-[1382px]:h-[clamp(835px,calc(100vh-82px),960px)] h-max">
+    <section className="mx-auto grid h-max max-w-[1440px] grid-cols-1 items-stretch overflow-x-clip px-1 sm:px-2 lg:grid-cols-[3fr_5fr] lg:grid-rows-[1fr_auto_auto] lg:gap-4 lg:px-8 lg:py-0 xl:grid-cols-[506px_1fr] min-[1382px]:h-[clamp(835px,calc(100vh-82px),960px)]">
       <HeroBackdrop />
 
       <Reveal
@@ -132,14 +132,14 @@ export function Hero() {
       <Reveal
         direction="left"
         delay={0.15}
-        className="col-start-1 row-start-3 -mt-[39%] flex justify-center sm:-mt-[56.1%] lg:col-start-2 lg:row-span-3 lg:row-start-1 lg:mt-0 lg:justify-end"
+        className="col-start-1 row-start-3 -mt-[37.3%] flex justify-center sm:-mt-[56.1%] lg:col-start-2 lg:row-span-3 lg:row-start-1 lg:mt-0 lg:min-w-0 lg:justify-start"
       >
         {/* Placement lives here, not in HeroVisual: only this file knows the
             grid. From 1382px the shot takes its exact Figma width and hangs
             120px past the column so the crop bites — the design's look. 1382,
             not `xl`: HeroVisual bleeds 131.5px left of its box once rotated,
             and below 1382 that reaches back over the text column
-            (32·2 padding + 506 column + 48 gap + 680 margin box + 131.5).
+            (32·2 padding + 506 column + 16 gap + 680 margin box + 131.5).
             `@container` lets the child switch on its own width instead of
             re-deriving this arithmetic — but it is established only from 1382
             too. Container width alone is the wrong signal: in the one-column
@@ -161,7 +161,7 @@ export function Hero() {
         {/* 339.8 of a 385 card at 393, 599.9 of 624 at 640 — the shot widens
             against the card as the card widens, so the two frames give 88% and
             96% rather than one constant. */}
-        <div className="w-[88.26%] sm:w-[96%] lg:w-full lg:max-w-[800px] min-[1382px]:ml-auto min-[1382px]:-mr-[120px] min-[1382px]:min-w-[800px] min-[1382px]:@container">
+        <div className="w-[88.26%] sm:w-[96%] lg:shrink-0 lg:max-w-[800px] lg:max-[1381px]:mt-5 lg:max-[1381px]:ml-[170px] lg:max-[1381px]:w-[680px] min-[1382px]:ml-auto min-[1382px]:-mr-[120px] min-[1382px]:min-w-[800px] min-[1382px]:@container">
           <HeroVisual />
         </div>
       </Reveal>
