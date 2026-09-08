@@ -274,7 +274,19 @@ widths — 1440, 1024, 640, and 393 pixels.
     are fine to keep? We may be able to fix the permission on our side by reissuing the
     token, so this one may resolve without you.
 
-    **Answered by us:** Keep our token names until the Colors page is readable.
+    **Answered by us:** The Colors page is now readable -- fetched via a
+    files-endpoint batching workaround once the per-node endpoint's quota
+    reset (see `docs/figma/COLOR-TOKENS.md` for the full designer-token
+    table and `docs/figma/COLORS-RECONCILIATION-46.md` for the line-by-line
+    check against `tokens/tokens.json`). Every one of our token names that
+    has a designer counterpart already matches: our `foreground` is their
+    `color.fg.strong.default`, our `primary` is their `color.bg.accent.initial`,
+    our `muted-foreground` is their `color.fg.softer.default`, our `border`/
+    `input` is their `color.stroke.strong`. One real mismatch turned up in
+    the process and is *not* silently fixed here: our `destructive` token is
+    `#fe3434`, the exact red this document already says not to use as a UI
+    error colour (see Colors-page question 12 above) because it fails the
+    4.5:1 contrast minimum. That still needs a deliberate fix.
 
 ### We built it this way — please confirm
 

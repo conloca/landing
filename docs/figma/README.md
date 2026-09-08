@@ -99,7 +99,15 @@ Do not assume the gap is an oversight — these were never obtained:
 The Colors page (node `2548:13160`) was originally in this list too — six
 fetch attempts with correct backoff all returned 429 against the monthly
 wall. It was later obtained in the second pass via the `ids`-batching
-workaround above and is now `nodes-colors.json` / `COLOR-TOKENS.md`.
+workaround above and is now `nodes-colors.json` / `COLOR-TOKENS.md`. The
+page's own node record (assembled from that same fetch plus the page-level
+shell already captured in `file-depth2.json`) is `node-2548-13160.json`; the
+line-by-line reconciliation against `tokens/tokens.json` is
+`COLORS-RECONCILIATION-46.md`. A live re-attempt on 2026-09-08 against all
+three configured Figma access paths (the REST client, `figma-framelink` MCP,
+and the `figma-desktop` Dev Mode MCP) reconfirmed the same seat-tier and
+seat-entitlement blocks documented throughout this file — see
+`COLORS-RECONCILIATION-46.md` for the exact live error text from each.
 
 ## Files
 
@@ -121,6 +129,9 @@ workaround above and is now `nodes-colors.json` / `COLOR-TOKENS.md`.
 | `img-*.json` | Node id to rendered-image URL maps from the render endpoint. The URLs themselves have expired; the node ids are the durable part |
 | `renders/frame-*.png` | Full-page renders at all four designed breakpoints |
 | `renders/sec-s*.png` | Per-section desktop renders |
+| `node-2548-13160.json` | The Colors page's own node record, assembled from `file-depth2.json` (page shell) and `nodes-colors.json` (the Semantics frame's full content) |
+| `COLORS-RECONCILIATION-46.md` | Issue #46's reconciliation: designer colour names vs. `tokens/tokens.json`, plus the 2026-09-08 live re-verification log across every REST/MCP path |
+| `animations/` | A real, frame-accurate render of `public/banner-2.lottie` (the one animated UI element in this design), sampled at 100ms intervals — see `animations/README.md` for how and why, since Figma exposes no click-through prototype for it |
 
 ### Why the node trees are committed when reference renders are not
 
