@@ -113,6 +113,13 @@ export function PricingPage() {
             </p>
           </div>
 
+          <div className="mb-3 flex items-center justify-end gap-1.5 lg:hidden">
+            <p className="font-mono text-xs uppercase tracking-wide text-stone-500">
+              Scroll to compare plans
+            </p>
+            <ArrowRight className="size-3.5 text-stone-500" aria-hidden="true" />
+          </div>
+
           <div className="overflow-x-auto">
             <table className="w-full min-w-[640px] border-separate border-spacing-0 text-left">
               <caption className="sr-only">
