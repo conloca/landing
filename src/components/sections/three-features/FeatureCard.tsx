@@ -149,23 +149,24 @@ export function FeatureCard({
       >
         <AudienceSwitch
           variant="translucent"
-          className="relative hidden self-start lg:block"
+          className="relative self-start"
           label={audienceSwitchLabel}
         />
         <div
           className={cn(
-            'relative flex flex-1 flex-col gap-6 overflow-hidden lg:mt-6',
+            'relative flex flex-1 flex-col gap-6 lg:mt-6',
+            // Mirrors the visual slot's own overflow below: this row wraps
+            // the copy column *and* that slot, so leaving it at a blanket
+            // `overflow-hidden` re-clipped Niko/Mariam's (card 1) and
+            // Danny's (card 3) badges one level up, right back to nothing,
+            // after the slot itself already stopped clipping them.
+            layout !== 'visual-left' ? 'overflow-visible' : 'overflow-hidden',
             isStacked ? 'justify-between' : 'lg:flex-row lg:items-end lg:justify-between lg:gap-8',
             layout === 'visual-left' && 'lg:flex-row-reverse',
           )}
         >
           {isStacked ? null : (
-            <div
-              className={cn(
-                'flex flex-col gap-5 sm:gap-6 lg:shrink-0',
-                layout === 'visual-left' ? 'lg:max-w-[687px]' : 'max-w-[440px]',
-              )}
-            >
+            <div className="flex max-w-[440px] flex-col gap-5 sm:gap-6 lg:shrink-0">
               <CardCopy title={title} body={body} />
               <CardActions secondaryCta={secondaryCta} secondaryCtaHref={secondaryCtaHref} />
             </div>
@@ -176,7 +177,16 @@ export function FeatureCard({
               // CTAs ~250 + gap-6 24 + padding 40 leaves 279. Cards 2/3 stay 327.
               'relative rounded-2xl sm:min-h-[590px] lg:min-h-56',
               layout === 'visual-right' ? 'min-h-[279px]' : 'min-h-[327px]',
-              layout === 'visual-right' ? 'overflow-visible' : 'overflow-hidden',
+              // Card 2's visual is the one with an explicit design width (the
+              // 687x721 `banner-2.lottie` container, see LocalesVisual's own
+              // doc comment) — cards 1/3 size their visual by flex-1 alone.
+              layout === 'visual-left' && 'lg:max-w-[687px]',
+              // Niko/Mariam (card 1) and Danny (card 3) are collaborator
+              // badges that deliberately bleed past this slot onto the card's
+              // photo background; only card 2's Locales panel (baked into the
+              // Lottie itself, no separate escaping badge) still needs its
+              // oversized/cropped canvas clipped here.
+              layout !== 'visual-left' ? 'overflow-visible' : 'overflow-hidden',
               isStacked ? 'order-last flex-1 lg:order-none' : 'flex-1 lg:self-stretch',
             )}
           >

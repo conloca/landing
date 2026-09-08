@@ -80,6 +80,14 @@ export function Hero() {
         direction="up"
         className="col-start-1 row-start-1 flex flex-col items-center gap-8 px-6 pt-[18.7%] text-center sm:pt-[22.6%] lg:items-start lg:px-0 lg:pt-[60px] lg:text-left"
       >
+        {/* Two instances, not one conditionally-styled control: the photo
+            backdrop below `lg` needs the on-dark `translucent` variant (see
+            `FeatureCard`'s identical treatment) while the plain page
+            background from `lg` needs the light `default` one — a single
+            instance can't switch variant per breakpoint with CSS alone.
+            Docs Q14: keep the toggle at every width; the Figma frames below
+            1024 omit it, and that omission was reviewed and rejected. */}
+        <AudienceSwitch variant="translucent" className="order-1 flex lg:hidden" label="Audience" />
         <AudienceSwitch className="order-1 hidden lg:flex" />
 
         {/* 32/32 at 393 and 52/52 at 640 are both drawn, so the step is the
