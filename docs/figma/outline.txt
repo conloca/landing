@@ -1,0 +1,980 @@
+FRAME        Homepage - Developers - >1280                  1440x6460 [VERTICAL gap=None pad=None,None,None,None align=None/CENTER] fill=#FFFFFF r=36.0
+  FRAME        Frame 610                                      1440x960 [VERTICAL gap=None pad=None,None,None,None align=None/None] fill=#FFFFFF
+    INSTANCE     conloca-header                                 1440x82 [HORIZONTAL gap=None pad=24.0,32.0,24.0,32.0 align=CENTER/CENTER]
+      FRAME        Main container                                 1376x34 [HORIZONTAL gap=729.0 pad=None,None,None,None align=SPACE_BETWEEN/CENTER]
+        INSTANCE     conloca-logo                                   117x28 [VERTICAL gap=10.0 pad=None,None,None,None align=None/None]
+          VECTOR       Union                                          117x28 fill=#1C1917
+        FRAME        Frame 568                                      538x34 [HORIZONTAL gap=31.0 pad=None,None,None,None align=None/CENTER]
+          TEXT         Token set title                                98x19 fill=#1C1917  <<'How it works'>> font=Inter 400 16.0px/lh19.363636016845703 ls=0.0 case=None align=LEFT
+          TEXT         Token set title                                39x19 fill=#1C1917  <<'Docs'>> font=Inter 400 16.0px/lh19.363636016845703 ls=0.0 case=None align=LEFT
+          TEXT         Token set title                                52x19 fill=#1C1917  <<'Pricing'>> font=Inter 400 16.0px/lh19.363636016845703 ls=0.0 case=None align=LEFT
+          TEXT         Token set title                                34x19 fill=#1C1917  <<'Blog'>> font=Inter 400 16.0px/lh19.363636016845703 ls=0.0 case=None align=LEFT
+          FRAME        Frame 572                                      191x34 [HORIZONTAL gap=8.0 pad=None,None,None,None align=None/None]
+            INSTANCE     conloca-button                                 85x34 [HORIZONTAL gap=6.0 pad=10.0,10.0,10.0,10.0 align=CENTER/CENTER] fill=#FFFFFF stroke=#E7E5E4/1.0 r=8.0
+              INSTANCE     Leading icon                                   14x14
+                VECTOR       Icon                                           8x5 fill=#1C1917
+              TEXT         Button text                                    65x14 fill=#1C1917  <<'Try Demo'>> font=Inter 500 14.0px/lh14.0 ls=0.0 case=None align=LEFT
+              INSTANCE     Leading icon                                   14x14
+                VECTOR       Icon                                           8x8 fill=#1C1917
+            INSTANCE     conloca-button                                 98x34 [HORIZONTAL gap=6.0 pad=10.0,10.0,10.0,10.0 align=CENTER/CENTER] fill=#292524 stroke=#292524/1.0 r=8.0
+              INSTANCE     Leading icon                                   14x14
+                VECTOR       Icon                                           8x5 fill=#FAFAF9
+              TEXT         Button text                                    78x14 fill=#FAFAF9  <<'Get Started'>> font=Inter 500 14.0px/lh14.0 ls=0.0 case=None align=LEFT
+              INSTANCE     Leading icon                                   14x14
+                VECTOR       Icon                                           5x8 fill=#FAFAF9
+    FRAME        Hero section                                   1440x878 [VERTICAL gap=10.0 pad=None,32.0,None,32.0 align=CENTER/CENTER]
+      FRAME        Main container                                 1376x878 [GRID gap=None pad=None,None,None,None align=None/None]
+        FRAME        Text content                                   506x878 [VERTICAL gap=32.0 pad=60.0,None,60.0,None align=None/None]
+          FRAME        Display text and segmented control             506x587 [VERTICAL gap=24.0 pad=None,None,None,None align=None/None]
+            INSTANCE     conloca-segmented-control                      275x43 [HORIZONTAL gap=2.0 pad=2.0,2.0,2.0,2.0 align=CENTER/None] fill=#F5F5F4 r=14.0
+              FRAME        Table view button                              119x39 [HORIZONTAL gap=4.0 pad=6.0,16.0,6.0,16.0 align=CENTER/CENTER] fill=#FFFFFF r=12.0 fx=DROP_SHADOW:4.0
+                TEXT         Tab 01                                         87x27 fill=#1C1917  <<'Developers'>> font=Inter Variable 500 16.0px/lh27.200000762939453 ls=0.0 case=None align=LEFT
+              FRAME        Json view button                               150x39 [HORIZONTAL gap=4.0 pad=6.0,16.0,6.0,16.0 align=CENTER/CENTER] r=12.0
+                TEXT         Tab 02                                         118x27 fill=#78716C  <<'Content editors'>> font=Inter Variable 500 16.0px/lh27.200000762939453 ls=0.0 case=None align=LEFT
+            TEXT         Hero display text                              432x192 fill=#1C1917  <<'Keep content in your repo. Give editors a visual editing interface'>> font=Inter Display 700 48.0px/lh48.0 ls=0.0 case=None align=LEFT
+            FRAME        Frame 1618873187                               162x33 [VERTICAL gap=10.0 pad=8.0,8.0,8.0,8.0 align=CENTER/CENTER] fill=#F7FEE7 r=12.0
+              FRAME        Frame 1618873172                               146x17 [HORIZONTAL gap=6.0 pad=None,None,None,None align=None/CENTER]
+                FRAME        Frame 1618873190                               146x17 [HORIZONTAL gap=8.0 pad=None,None,None,None align=None/CENTER]
+                  ELLIPSE      Ellipse 3                                      20x20 fill=#5EA500 fx=LAYER_BLUR:34.0
+                  VECTOR       Vector                                         14x17 fill=#5EA500
+                  TEXT         Built for astro                                124x17 fill=#5EA500  <<'Built for astro'>> font=Inter 700 14.0px/lh16.94318199157715 ls=0.0 case=UPPER align=LEFT
+          FRAME        Text carousel and CTA group                    506x139 [VERTICAL gap=24.0 pad=None,None,None,None align=None/None]
+            FRAME        Text carousel                                  506x81 [HORIZONTAL gap=16.0 pad=None,None,None,None align=None/None]
+              FRAME        Frame 599                                      2x81 [VERTICAL gap=4.0 pad=None,None,None,None align=None/None]
+                INSTANCE     conloca-carousel-progress                      2x27 [HORIZONTAL gap=None pad=None,None,12.0,None align=None/CENTER] fill=#E7E5E4 r=1000.0
+                  RECTANGLE    Rectangle 4                                    2x15 fill=#A8A29E r=1000.0
+                INSTANCE     conloca-carousel-progress                      2x23 [HORIZONTAL gap=None pad=None,None,8.0,None align=None/CENTER] fill=#E7E5E4 r=1000.0
+                INSTANCE     conloca-carousel-progress                      2x23 [HORIZONTAL gap=None pad=None,None,8.0,None align=None/CENTER] fill=#E7E5E4 r=1000.0
+              TEXT         Text                                           432x81 fill=#44403C  <<'Map your React components to typed schemas and MDS blocks in the IDE. Visual edits respect the structure you define and stay in Git.'>> font=Inter 700 16.0px/lh27.200000762939453 ls=0.0 case=None align=LEFT
+            FRAME        CTA Buttons                                    194x34 [HORIZONTAL gap=12.0 pad=None,None,None,None align=None/None]
+              INSTANCE     conloca-button                                 97x34 [HORIZONTAL gap=6.0 pad=10.0,10.0,10.0,10.0 align=CENTER/CENTER] fill=#292524 stroke=#292524/1.0 r=8.0
+                INSTANCE     Leading icon                                   14x14
+                  VECTOR       Icon                                           8x8 fill=#FAFAF9
+                TEXT         Button text                                    77x14 fill=#FAFAF9  <<'Get started'>> font=Inter 500 14.0px/lh14.0 ls=0.0 case=None align=LEFT
+                INSTANCE     Leading icon                                   14x14
+                  VECTOR       Icon                                           5x8 fill=#FAFAF9
+              INSTANCE     conloca-button                                 85x34 [HORIZONTAL gap=6.0 pad=10.0,10.0,10.0,10.0 align=CENTER/CENTER] fill=#FFFFFF stroke=#E7E5E4/1.0 r=8.0
+                INSTANCE     Leading icon                                   14x14
+                  VECTOR       Icon                                           10x12 fill=#1C1917
+                TEXT         Button text                                    65x14 fill=#1C1917  <<'Try Demo'>> font=Inter 500 14.0px/lh14.0 ls=0.0 case=None align=LEFT
+                INSTANCE     Leading icon                                   14x14
+                  VECTOR       Icon                                           8x8 fill=#1C1917
+        FRAME        Visual content                                 854x878
+          FRAME        Video container                                800x838 [VERTICAL gap=10.0 pad=40.0,None,40.0,None align=CENTER/MAX] fill=IMAGE,IMAGE,IMAGE r=28.0
+            FRAME        Video frame                                    932x782 [HORIZONTAL gap=10.0 pad=None,None,None,None align=CENTER/CENTER] fill=IMAGE r=[20.0, 0.0, 0.0, 20.0] fx=DROP_SHADOW:6.0 fx=DROP_SHADOW:16.0 fx=DROP_SHADOW:64.0
+              FRAME        Play button                                    57x57 [HORIZONTAL gap=10.0 pad=16.0,16.0,16.0,16.0 align=None/CENTER] fill=#000000@0.20 r=1000.0
+                FRAME        Play icon                                      25x25
+                  VECTOR       Icon                                           17x20 fill=#FAFAF9
+  FRAME        Frame 609                                      1440x2538 [VERTICAL gap=8.0 pad=72.0,8.0,8.0,8.0 align=CENTER/CENTER] fill=#FFFFFF
+    FRAME        Section                                        1424x814 [VERTICAL gap=None pad=24.0,24.0,24.0,24.0 align=CENTER/CENTER] fill=IMAGE,#000000@0.20 stroke=#F5F5F4/1.0 r=28.0
+      FRAME        Switcher container                             1374x43 [HORIZONTAL gap=10.0 pad=None,None,None,None align=None/None]
+        INSTANCE     conloca-segmented-control                      275x43 [HORIZONTAL gap=2.0 pad=2.0,2.0,2.0,2.0 align=CENTER/None] fill=#F5F5F4@0.10 r=14.0
+          FRAME        Table view button                              119x39 [HORIZONTAL gap=4.0 pad=6.0,16.0,6.0,16.0 align=CENTER/CENTER] fill=#FFFFFF r=12.0 fx=DROP_SHADOW:4.0
+            TEXT         Tab 01                                         87x27 fill=#1C1917  <<'Developers'>> font=Inter Variable 500 16.0px/lh27.200000762939453 ls=0.0 case=None align=LEFT
+          FRAME        Json view button                               150x39 [HORIZONTAL gap=4.0 pad=6.0,16.0,6.0,16.0 align=CENTER/CENTER] r=12.0
+            TEXT         Tab 02                                         118x27 fill=#FAFAF9  <<'Content editors'>> font=Inter Variable 500 16.0px/lh27.200000762939453 ls=0.0 case=None align=LEFT
+      FRAME        Content                                        1374x721 [HORIZONTAL gap=None pad=None,None,None,None align=SPACE_BETWEEN/CENTER]
+        FRAME        Text container                                 440x721 [VERTICAL gap=24.0 pad=None,None,None,None align=MAX/None]
+          TEXT         Chat title                                     440x96 fill=#FAFAF9  <<'One source of truth, two ways to work'>> font=Inter Display 700 48.0px/lh48.0 ls=0.0 case=None align=LEFT
+          TEXT         Text                                           440x54 fill=#FFFFFF  <<'Developers work in the IDE. Editors work visually. Every change goes back to the same MDX files in Git.'>> font=Inter 400 16.0px/lh27.200000762939453 ls=0.0 case=None align=LEFT
+          FRAME        CTA Buttons                                    200x34 [HORIZONTAL gap=12.0 pad=None,None,None,None align=None/None]
+            INSTANCE     conloca-button                                 97x34 [HORIZONTAL gap=6.0 pad=10.0,10.0,10.0,10.0 align=CENTER/CENTER] fill=#292524 stroke=#292524/1.0 r=8.0
+              INSTANCE     Leading icon                                   14x14
+                VECTOR       Icon                                           8x8 fill=#FAFAF9
+              TEXT         Button text                                    77x14 fill=#FAFAF9  <<'Get started'>> font=Inter 500 14.0px/lh14.0 ls=0.0 case=None align=LEFT
+              INSTANCE     Leading icon                                   14x14
+                VECTOR       Icon                                           5x8 fill=#FAFAF9
+            INSTANCE     conloca-button                                 91x34 [HORIZONTAL gap=6.0 pad=10.0,10.0,10.0,10.0 align=CENTER/CENTER] fill=#FFFFFF stroke=#E7E5E4/1.0 r=8.0
+              INSTANCE     Leading icon                                   14x14
+                VECTOR       Icon                                           10x12 fill=#1C1917
+              TEXT         Button text                                    71x14 fill=#1C1917  <<'Read docs'>> font=Inter 500 14.0px/lh14.0 ls=0.0 case=None align=LEFT
+              INSTANCE     Leading icon                                   14x14
+                VECTOR       Icon                                           8x8 fill=#1C1917
+        FRAME        Visual container                               860x721
+          FRAME        Lootie animation                               1095x831
+            FRAME        Frame 1618873120                               418x542 [VERTICAL gap=1.0 pad=8.0,8.0,8.0,8.0 align=CENTER/None] fill=#E7E5E4 r=24.0
+              FRAME        Frame 1618873126                               402x40 [HORIZONTAL gap=151.0 pad=None,None,None,None align=SPACE_BETWEEN/CENTER]
+                FRAME        Frame 1618873122                               262x40 [HORIZONTAL gap=12.0 pad=12.0,8.0,12.0,12.0 align=None/CENTER] fill=#FFFFFF r=[16.0, 16.0, 0.0, 0.0]
+                  FRAME        Frame 1618873123                               214x16 [HORIZONTAL gap=8.0 pad=None,None,None,None align=None/CENTER]
+                    VECTOR       { }                                            13x12 fill=#7CCF00
+                    TEXT         hero-section.vx.json                           193x16 fill=#1C1917  <<'hero-section.vx.json'>> font=Roboto Mono 400 16.0px/lh16.0 ls=0.0 case=None align=LEFT
+                  INSTANCE     Leading icon                                   16x16
+                    VECTOR       Icon                                           8x8 fill=#A8A29E
+                FRAME        conloca-button                                 36x36 [HORIZONTAL gap=6.0 pad=10.0,10.0,10.0,10.0 align=None/CENTER] r=8.0
+                  INSTANCE     Leading icon                                   16x16
+                    VECTOR       Icon                                           12x3 fill=#A8A29E
+              FRAME        Frame 1618873124                               402x485 [VERTICAL gap=10.0 pad=20.0,24.0,20.0,24.0 align=None/None] fill=#FFFFFF r=[0.0, 16.0, 16.0, 16.0]
+                FRAME        Frame 1618873129                               354x577 [HORIZONTAL gap=12.0 pad=None,None,None,None align=None/CENTER]
+                  TEXT         line-numbers                                   20x577 fill=#A8A29E  <<'1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n14\n15\n16\n17\n18\n19\n20\n21'>> font=Roboto Mono 400 16.0px/lh21.1015625 ls=0.0 case=None align=LEFT
+                  TEXT         code-snippet                                   747x577 fill=#1C1917  <<'{\n   "name": "hero",\n   "label": "Hero",\n   "fields": [\n      {\n         "name": "eyebrow",\n         "type": "string",\n         "label": "Ope "\n      },\n      {\n         "name": "title",\n         "type": "string",\n         "label": "Turn text into video in minutes"\n      },\n      {\n         "name": "description",\n         "type": "text",\n         "label": "Create studio-quality videos with AI avatars and"\n      },\n      {\n         "name": "cta",\n            "type": "object",\n            "label": "CTA",\n            "fields": [\n                {\n                    "name": "label",\n                    "type": "string"\n                },\n                {\n                    "name": "url",\n                    "type": "string"\n                }\n            ]\n        }\n    ]\n}'>> font=Inter 500 16.0px/lh19.363636016845703 ls=0.0 case=None align=LEFT
+                  FRAME        Frame 1618873131                               50x43 [HORIZONTAL gap=None pad=None,None,None,None align=None/None]
+                    FRAME        Frame 1618873132                               2x43 fill=#F24835
+                    FRAME        Content                                        48x25 [HORIZONTAL gap=8.0 pad=4.0,8.0,4.0,8.0 align=None/None] fill=#F24835 r=[0.0, 18.0, 18.0, 0.0] fx=DROP_SHADOW:4.0
+                      TEXT         Text                                           32x17 fill=#FFFFFF  <<'Niko'>> font=Inter 700 14.0px/lh17.0 ls=0.14 case=None align=LEFT
+            FRAME        Frame 1618873123                               743x697 [VERTICAL gap=None pad=None,None,None,None align=None/None] fill=#FFFFFF r=24.0 fx=DROP_SHADOW:6.0 fx=DROP_SHADOW:16.0 fx=DROP_SHADOW:64.0
+              FRAME        Frame 1618873122                               743x58 [HORIZONTAL gap=24.0 pad=12.0,12.0,12.0,12.0 align=SPACE_BETWEEN/CENTER] fill=#FFFFFF r=[16.0, 16.0, 8.0, 8.0]
+                RECTANGLE    Rectangle 9                                    112x15 fill=#F5F6EF r=12.0 fx=NOISE:None
+                FRAME        conloca-segmented-control                      131x29 [HORIZONTAL gap=1.600000023841858 pad=1.600000023841858,1.600000023841858,1.600000023841858,1.600000023841858 align=CENTER/None] fill=#F5F5F4 r=11.199999809265137
+                  FRAME        Table view button                              42x26 [HORIZONTAL gap=3.200000047683716 pad=4.800000190734863,12.800000190734863,4.800000190734863,12.800000190734863 align=CENTER/CENTER] fill=#FFFFFF r=9.600000381469727 fx=DROP_SHADOW:3.200000047683716
+                    INSTANCE     monitor-02                                     16x16
+                      VECTOR       Icon                                           15x13 fill=#1C1917
+                  FRAME        Json view button                               42x26 [HORIZONTAL gap=3.200000047683716 pad=4.800000190734863,12.800000190734863,4.800000190734863,12.800000190734863 align=CENTER/CENTER] r=9.600000381469727
+                    FRAME        phone-02                                       16x16
+                      VECTOR       Icon                                           14x13 fill=#A8A29E
+                  FRAME        Json view button                               42x26 [HORIZONTAL gap=3.200000047683716 pad=4.800000190734863,12.800000190734863,4.800000190734863,12.800000190734863 align=CENTER/CENTER] r=9.600000381469727
+                    INSTANCE     phone-02                                       16x16
+                      VECTOR       Icon                                           9x13 fill=#A8A29E
+                FRAME        Frame 1618873135                               145x34 [HORIZONTAL gap=24.0 pad=None,None,None,None align=None/CENTER]
+                  FRAME        Frame 1618873134                               52x26 [HORIZONTAL gap=10.0 pad=10.0,10.0,10.0,10.0 align=None/None]
+                    FRAME        Json view button                               26x26 [HORIZONTAL gap=3.200000047683716 pad=4.800000190734863,4.800000190734863,4.800000190734863,4.800000190734863 align=CENTER/CENTER] r=9.600000381469727
+                      INSTANCE     undo-01                                        16x16
+                        VECTOR       Icon                                           11x12 fill=#A8A29E
+                    FRAME        Json view button                               26x26 [HORIZONTAL gap=3.200000047683716 pad=4.800000190734863,4.800000190734863,4.800000190734863,4.800000190734863 align=CENTER/CENTER] r=9.600000381469727
+                      INSTANCE     redo-01                                        16x16
+                        VECTOR       Icon                                           11x12 fill=#A8A29E
+                  INSTANCE     conloca-button                                 69x34 [HORIZONTAL gap=6.0 pad=10.0,10.0,10.0,10.0 align=CENTER/CENTER] fill=#292524 stroke=#292524/1.0 r=8.0
+                    INSTANCE     Leading icon                                   14x14
+                      VECTOR       Icon                                           8x8 fill=#FAFAF9
+                    TEXT         Button text                                    49x14 fill=#FAFAF9  <<'Publish'>> font=Inter 500 14.0px/lh14.0 ls=0.0 case=None align=LEFT
+                    INSTANCE     Leading icon                                   14x14
+                      VECTOR       Icon                                           5x8 fill=#FAFAF9
+              FRAME        Frame 1618873141                               743x639 [VERTICAL gap=8.0 pad=8.0,8.0,8.0,8.0 align=None/None]
+                FRAME        Frame 1618873124                               727x326 [HORIZONTAL gap=51.0 pad=24.0,24.0,24.0,24.0 align=None/CENTER] stroke=#9AE600/2.0 r=8.0
+                  FRAME        Frame 1618873138                               314x216 [VERTICAL gap=16.0 pad=None,None,None,None align=CENTER/None]
+                    TEXT         Open source                                    314x20 fill=#4F5833  <<'Open source'>> font=Inter 700 12.0px/lh20.400001525878906 ls=0.0 case=UPPER align=LEFT
+                    TEXT         Turn text to video in minutes                  314x76 fill=#1C1917  <<'Turn text to video in minutes'>> font=Inter Display 900 38.0px/lh38.0 ls=0.0 case=None align=LEFT
+                    TEXT         Create studio-quality videos with AI avatars   314x40 fill=#44403C  <<'Create studio-quality videos with AI avatars and voiceovers in 130+ languages'>> font=Inter 400 12.0px/lh20.400001525878906 ls=0.0 case=None align=LEFT
+                    FRAME        Frame 1618871233                               142x32 [HORIZONTAL gap=5.73913049697876 pad=7.17391300201416,11.47826099395752,7.17391300201416,11.47826099395752 align=CENTER/CENTER] fill=#9AE600 r=5.73913049697876
+                      TEXT         Create a free AI video                         119x18 fill=#1C1917  <<'Create a free AI video'>> font=Inter 500 11.47826099395752px/lh17.217391967773438 ls=0.0 case=None align=CENTER
+                  FRAME        Frame 1618873139                               314x278 fill=#F5F6EF r=12.0 fx=NOISE:None
+                    VECTOR       Vector 7                                       435x217 fill=#EAECDB r=32.0
+                    VECTOR       Vector 6                                       435x217 fill=#EAECDB r=32.0
+                  FRAME        conloca-segmented-control                      32x96 [VERTICAL gap=2.0 pad=1.0,1.0,1.0,1.0 align=None/CENTER] fill=#FFFFFF r=8.0 fx=DROP_SHADOW:6.0 fx=DROP_SHADOW:16.0
+                    FRAME        Table view button                              30x30 [HORIZONTAL gap=None pad=6.0,6.0,6.0,6.0 align=CENTER/CENTER] r=9.600000381469727 fx=DROP_SHADOW:3.200000047683716
+                      INSTANCE     chevron-selector-vertical                      18x18
+                        VECTOR       Icon                                           9x14 fill=#292524
+                    FRAME        Json view button                               30x30 [HORIZONTAL gap=None pad=6.0,6.0,6.0,6.0 align=CENTER/CENTER] r=9.600000381469727
+                      INSTANCE     trash-05                                       18x18
+                        VECTOR       Icon                                           15x16 fill=#1C1917
+                    FRAME        Json view button                               30x30 [HORIZONTAL gap=None pad=6.0,6.0,6.0,6.0 align=CENTER/CENTER] r=9.600000381469727
+                      INSTANCE     dots-vertical                                  18x18
+                        VECTOR       Icon                                           3x14 fill=#1C1917
+                FRAME        Frame 1618873126                               727x289 [VERTICAL gap=10.0 pad=None,32.0,None,32.0 align=CENTER/CENTER] stroke=#F5F5F4/2.0 r=8.0
+                  FRAME        Frame 1618873158                               245x52 [VERTICAL gap=10.0 pad=None,None,None,None align=None/CENTER]
+                    RECTANGLE    Rectangle 9                                    245x21 fill=#F5F6EF r=12.0 fx=NOISE:None
+                    RECTANGLE    Rectangle 10                                   113x21 fill=#F5F6EF r=12.0 fx=NOISE:None
+                  FRAME        Frame 1618873143                               659x171 [HORIZONTAL gap=10.0 pad=None,None,None,None align=None/None]
+                    RECTANGLE    Rectangle 11                                   213x171 fill=#F5F6EF r=12.0 fx=NOISE:None
+                    RECTANGLE    Rectangle 12                                   213x171 fill=#F5F6EF r=12.0 fx=NOISE:None
+                    RECTANGLE    Rectangle 13                                   213x171 fill=#F5F6EF r=12.0 fx=NOISE:None
+                INSTANCE     Cursor                                         85x41 [VERTICAL gap=None pad=None,None,None,None align=None/None]
+                  FRAME        Pointer                                        16x16
+                    VECTOR       pointer                                        14x16 fill=#A259FE stroke=#FFFFFF/1.0 r=1.0 fx=DROP_SHADOW:3.8181817531585693
+                  FRAME        Container                                      85x25 [VERTICAL gap=10.0 pad=None,None,None,16.0 align=None/None]
+                    FRAME        Content                                        69x25 [HORIZONTAL gap=8.0 pad=4.0,8.0,4.0,8.0 align=None/None] fill=#A259FE r=18.0 fx=DROP_SHADOW:4.0
+                      TEXT         Text                                           53x17 fill=#FFFFFF  <<'Mariam'>> font=Inter 700 14.0px/lh17.0 ls=0.14 case=None align=LEFT
+    FRAME        Section                                        1424x814 [VERTICAL gap=None pad=24.0,24.0,24.0,24.0 align=CENTER/CENTER] fill=IMAGE,#000000@0.20 stroke=#F5F5F4/1.0 r=28.0
+      FRAME        Switcher container                             1374x43 [HORIZONTAL gap=10.0 pad=None,None,None,None align=None/None]
+        INSTANCE     conloca-segmented-control                      275x43 [HORIZONTAL gap=2.0 pad=2.0,2.0,2.0,2.0 align=CENTER/None] fill=#F5F5F4@0.10 r=14.0
+          FRAME        Table view button                              119x39 [HORIZONTAL gap=4.0 pad=6.0,16.0,6.0,16.0 align=CENTER/CENTER] fill=#FFFFFF r=12.0 fx=DROP_SHADOW:4.0
+            TEXT         Tab 01                                         87x27 fill=#1C1917  <<'Developers'>> font=Inter Variable 500 16.0px/lh27.200000762939453 ls=0.0 case=None align=LEFT
+          FRAME        Json view button                               150x39 [HORIZONTAL gap=4.0 pad=6.0,16.0,6.0,16.0 align=CENTER/CENTER] r=12.0
+            TEXT         Tab 02                                         118x27 fill=#FAFAF9  <<'Content editors'>> font=Inter Variable 500 16.0px/lh27.200000762939453 ls=0.0 case=None align=LEFT
+      FRAME        Content                                        1374x721 [HORIZONTAL gap=None pad=None,None,None,None align=SPACE_BETWEEN/CENTER]
+        FRAME        Visual container                               687x721
+          GROUP        Group 38                                       801x1334 r=[0.0, 0.0, 0.0, 0.0]
+            GROUP        Group 36                                       514x1334 r=17.522727966308594
+              FRAME        DE                                             514x214 [HORIZONTAL gap=23.363636016845703 pad=23.363636016845703,23.363636016845703,23.363636016845703,23.363636016845703 align=CENTER/CENTER] fill=GRADIENT_RADIAL(#FFFFFF,#FFFFFF) r=17.522727966308594 fx=NOISE:None
+                FRAME        Image                                          192x167 [HORIZONTAL gap=23.363636016845703 pad=23.363636016845703,23.363636016845703,23.363636016845703,23.363636016845703 align=CENTER/CENTER] fill=GRADIENT_RADIAL(#FFFFFF,#FFFFFF) r=8.761363983154297
+                FRAME        Text                                           252x102 [VERTICAL gap=23.363636016845703 pad=None,None,None,None align=CENTER/None]
+                  FRAME        Title                                          252x37 [VERTICAL gap=7.301136016845703 pad=None,None,None,None align=None/None]
+                    FRAME        Frame 1618873248                               191x15 fill=#FFFFFF@0.60 r=8.761363983154297
+                      ELLIPSE      Highlight 2                                    286x105 fill=#FBBF24 fx=LAYER_BLUR:114.0
+                    FRAME        Frame 1618873249                               117x15 fill=#FFFFFF@0.60 r=8.761363983154297
+                      ELLIPSE      Highlight 1                                    286x105 fill=#FBBF24 fx=LAYER_BLUR:114.0
+                  FRAME        Body                                           153x41 [VERTICAL gap=7.301136016845703 pad=None,None,None,None align=None/None]
+                    RECTANGLE    Body skeleton                                  153x9 fill=#FFFFFF@0.50 r=8.761363983154297
+                    RECTANGLE    Body skeleton                                  133x9 fill=#FFFFFF@0.50 r=8.761363983154297
+                    RECTANGLE    Body skeleton                                  146x9 fill=#FFFFFF@0.50 r=8.761363983154297
+              FRAME        FR                                             514x214 [HORIZONTAL gap=23.363636016845703 pad=23.363636016845703,23.363636016845703,23.363636016845703,23.363636016845703 align=CENTER/CENTER] fill=GRADIENT_RADIAL(#FFFFFF,#FFFFFF) r=17.522727966308594 fx=NOISE:None
+                FRAME        Image                                          192x167 [HORIZONTAL gap=23.363636016845703 pad=23.363636016845703,23.363636016845703,23.363636016845703,23.363636016845703 align=CENTER/CENTER] fill=GRADIENT_RADIAL(#FFFFFF,#FFFFFF) r=8.761363983154297
+                FRAME        Text                                           252x102 [VERTICAL gap=23.363636016845703 pad=None,None,None,None align=CENTER/None]
+                  FRAME        Title                                          252x37 [VERTICAL gap=7.301136016845703 pad=None,None,None,None align=None/None]
+                    FRAME        Frame 1618873248                               191x15 fill=#FFFFFF@0.60 r=8.761363983154297
+                      ELLIPSE      Highlight 2                                    286x105 fill=#FBBF24 fx=LAYER_BLUR:114.0
+                    FRAME        Frame 1618873249                               117x15 fill=#FFFFFF@0.60 r=8.761363983154297
+                      ELLIPSE      Highlight 1                                    286x105 fill=#FBBF24 fx=LAYER_BLUR:114.0
+                  FRAME        Body                                           153x41 [VERTICAL gap=7.301136016845703 pad=None,None,None,None align=None/None]
+                    RECTANGLE    Body skeleton                                  153x9 fill=#FFFFFF@0.50 r=8.761363983154297
+                    RECTANGLE    Body skeleton                                  133x9 fill=#FFFFFF@0.50 r=8.761363983154297
+                    RECTANGLE    Body skeleton                                  146x9 fill=#FFFFFF@0.50 r=8.761363983154297
+              FRAME        Filler                                         514x214 [HORIZONTAL gap=23.363636016845703 pad=23.363636016845703,23.363636016845703,23.363636016845703,23.363636016845703 align=CENTER/CENTER] fill=GRADIENT_RADIAL(#FFFFFF,#FFFFFF) r=17.522727966308594
+                FRAME        Frame 1618873245                               192x167 [HORIZONTAL gap=23.363636016845703 pad=23.363636016845703,23.363636016845703,23.363636016845703,23.363636016845703 align=CENTER/CENTER] fill=#FFFFFF@0.20 r=8.761363983154297
+                FRAME        Frame 1618873244                               252x102 [VERTICAL gap=23.363636016845703 pad=None,None,None,None align=CENTER/None]
+                  FRAME        Frame 1618873158                               179x38 [VERTICAL gap=7.301136016845703 pad=None,None,None,None align=None/None]
+                    RECTANGLE    Rectangle 9                                    179x15 fill=#FFFFFF@0.20 r=8.761363983154297
+                    RECTANGLE    Rectangle 10                                   83x15 fill=#FFFFFF@0.20 r=8.761363983154297
+                  FRAME        Frame 1618873159                               153x41 [VERTICAL gap=7.301136016845703 pad=None,None,None,None align=None/None]
+                    RECTANGLE    Rectangle 9                                    153x9 fill=#FFFFFF@0.20 r=8.761363983154297
+                    RECTANGLE    Rectangle 11                                   133x9 fill=#FFFFFF@0.20 r=8.761363983154297
+                    RECTANGLE    Rectangle 12                                   146x9 fill=#FFFFFF@0.20 r=8.761363983154297
+              FRAME        Filler                                         514x214 [HORIZONTAL gap=23.363636016845703 pad=23.363636016845703,23.363636016845703,23.363636016845703,23.363636016845703 align=CENTER/CENTER] fill=GRADIENT_RADIAL(#FFFFFF,#FFFFFF) r=17.522727966308594
+                FRAME        Frame 1618873245                               192x167 [HORIZONTAL gap=23.363636016845703 pad=23.363636016845703,23.363636016845703,23.363636016845703,23.363636016845703 align=CENTER/CENTER] fill=#FFFFFF@0.20 r=8.761363983154297
+                FRAME        Frame 1618873244                               252x102 [VERTICAL gap=23.363636016845703 pad=None,None,None,None align=CENTER/None]
+                  FRAME        Frame 1618873158                               179x38 [VERTICAL gap=7.301136016845703 pad=None,None,None,None align=None/None]
+                    RECTANGLE    Rectangle 9                                    179x15 fill=#FFFFFF@0.20 r=8.761363983154297
+                    RECTANGLE    Rectangle 10                                   83x15 fill=#FFFFFF@0.20 r=8.761363983154297
+                  FRAME        Frame 1618873159                               153x41 [VERTICAL gap=7.301136016845703 pad=None,None,None,None align=None/None]
+                    RECTANGLE    Rectangle 9                                    153x9 fill=#FFFFFF@0.20 r=8.761363983154297
+                    RECTANGLE    Rectangle 11                                   133x9 fill=#FFFFFF@0.20 r=8.761363983154297
+                    RECTANGLE    Rectangle 12                                   146x9 fill=#FFFFFF@0.20 r=8.761363983154297
+              FRAME        Filler                                         514x214 [HORIZONTAL gap=23.363636016845703 pad=23.363636016845703,23.363636016845703,23.363636016845703,23.363636016845703 align=CENTER/CENTER] fill=GRADIENT_RADIAL(#FFFFFF,#FFFFFF) r=17.522727966308594
+                FRAME        Frame 1618873245                               192x167 [HORIZONTAL gap=23.363636016845703 pad=23.363636016845703,23.363636016845703,23.363636016845703,23.363636016845703 align=CENTER/CENTER] fill=#FFFFFF@0.20 r=8.761363983154297
+                FRAME        Frame 1618873244                               252x102 [VERTICAL gap=23.363636016845703 pad=None,None,None,None align=CENTER/None]
+                  FRAME        Frame 1618873158                               179x38 [VERTICAL gap=7.301136016845703 pad=None,None,None,None align=None/None]
+                    RECTANGLE    Rectangle 9                                    179x15 fill=#FFFFFF@0.20 r=8.761363983154297
+                    RECTANGLE    Rectangle 10                                   83x15 fill=#FFFFFF@0.20 r=8.761363983154297
+                  FRAME        Frame 1618873159                               153x41 [VERTICAL gap=7.301136016845703 pad=None,None,None,None align=None/None]
+                    RECTANGLE    Rectangle 9                                    153x9 fill=#FFFFFF@0.20 r=8.761363983154297
+                    RECTANGLE    Rectangle 11                                   133x9 fill=#FFFFFF@0.20 r=8.761363983154297
+                    RECTANGLE    Rectangle 12                                   146x9 fill=#FFFFFF@0.20 r=8.761363983154297
+              FRAME        Filler                                         514x214 [HORIZONTAL gap=23.363636016845703 pad=23.363636016845703,23.363636016845703,23.363636016845703,23.363636016845703 align=CENTER/CENTER] fill=GRADIENT_RADIAL(#FFFFFF,#FFFFFF) r=17.522727966308594
+                FRAME        Frame 1618873245                               192x167 [HORIZONTAL gap=23.363636016845703 pad=23.363636016845703,23.363636016845703,23.363636016845703,23.363636016845703 align=CENTER/CENTER] fill=#FFFFFF@0.20 r=8.761363983154297
+                FRAME        Frame 1618873244                               252x102 [VERTICAL gap=23.363636016845703 pad=None,None,None,None align=CENTER/None]
+                  FRAME        Frame 1618873158                               179x38 [VERTICAL gap=7.301136016845703 pad=None,None,None,None align=None/None]
+                    RECTANGLE    Rectangle 9                                    179x15 fill=#FFFFFF@0.20 r=8.761363983154297
+                    RECTANGLE    Rectangle 10                                   83x15 fill=#FFFFFF@0.20 r=8.761363983154297
+                  FRAME        Frame 1618873159                               153x41 [VERTICAL gap=7.301136016845703 pad=None,None,None,None align=None/None]
+                    RECTANGLE    Rectangle 9                                    153x9 fill=#FFFFFF@0.20 r=8.761363983154297
+                    RECTANGLE    Rectangle 11                                   133x9 fill=#FFFFFF@0.20 r=8.761363983154297
+                    RECTANGLE    Rectangle 12                                   146x9 fill=#FFFFFF@0.20 r=8.761363983154297
+              FRAME        Filler                                         514x214 [HORIZONTAL gap=23.363636016845703 pad=23.363636016845703,23.363636016845703,23.363636016845703,23.363636016845703 align=CENTER/CENTER] fill=GRADIENT_RADIAL(#FFFFFF,#FFFFFF) r=17.522727966308594
+                FRAME        Frame 1618873245                               192x167 [HORIZONTAL gap=23.363636016845703 pad=23.363636016845703,23.363636016845703,23.363636016845703,23.363636016845703 align=CENTER/CENTER] fill=#FFFFFF@0.20 r=8.761363983154297
+                FRAME        Frame 1618873244                               252x102 [VERTICAL gap=23.363636016845703 pad=None,None,None,None align=CENTER/None]
+                  FRAME        Frame 1618873158                               179x38 [VERTICAL gap=7.301136016845703 pad=None,None,None,None align=None/None]
+                    RECTANGLE    Rectangle 9                                    179x15 fill=#FFFFFF@0.20 r=8.761363983154297
+                    RECTANGLE    Rectangle 10                                   83x15 fill=#FFFFFF@0.20 r=8.761363983154297
+                  FRAME        Frame 1618873159                               153x41 [VERTICAL gap=7.301136016845703 pad=None,None,None,None align=None/None]
+                    RECTANGLE    Rectangle 9                                    153x9 fill=#FFFFFF@0.20 r=8.761363983154297
+                    RECTANGLE    Rectangle 11                                   133x9 fill=#FFFFFF@0.20 r=8.761363983154297
+                    RECTANGLE    Rectangle 12                                   146x9 fill=#FFFFFF@0.20 r=8.761363983154297
+            FRAME        Frame 1618873136                               344x361 [VERTICAL gap=0.8493826985359192 pad=6.7950615882873535,6.7950615882873535,6.7950615882873535,6.7950615882873535 align=CENTER/None] fill=#E7E5E4 r=20.38518524169922 fx=DROP_SHADOW:5.096296310424805 fx=DROP_SHADOW:13.590123176574707 fx=DROP_SHADOW:54.36049270629883
+              FRAME        Frame 1618873122                               330x48 [HORIZONTAL gap=10.19259262084961 pad=13.590123176574707,13.590123176574707,13.590123176574707,13.590123176574707 align=SPACE_BETWEEN/CENTER] fill=#FFFFFF r=[13.590123176574707, 13.590123176574707, 0.0, 0.0]
+                TEXT         Locales                                        52x14 fill=#1C1917  <<'Locales'>> font=Inter 700 13.590123176574707px/lh13.590123176574707 ls=0.0 case=None align=LEFT
+                INSTANCE     conloca-badge                                  87x21 [VERTICAL gap=8.493826866149902 pad=3.3975307941436768,6.7950615882873535,3.3975307941436768,3.3975307941436768 align=CENTER/None] fill=#F5F5F4 r=849.3826904296875
+                  FRAME        Frame 511                                      77x14 [HORIZONTAL gap=3.3975307941436768 pad=None,None,None,None align=None/CENTER]
+                    INSTANCE     plus-01                                        12x12
+                      VECTOR       Icon                                           8x8 fill=#78716C
+                    TEXT         Badge                                          62x14 fill=#78716C  <<'New locale'>> font=Inter 400 11.891357421875px/lh14.391244888305664 ls=0.0 case=None align=RIGHT
+              FRAME        Frame 1618873124                               330x245 [VERTICAL gap=None pad=3.3975307941436768,3.3975307941436768,3.3975307941436768,3.3975307941436768 align=None/None] fill=#FFFFFF
+                FRAME        Frame 1618873236                               324x48 [HORIZONTAL gap=8.493826866149902 pad=10.19259262084961,10.19259262084961,10.19259262084961,10.19259262084961 align=SPACE_BETWEEN/CENTER] r=6.7950615882873535
+                  FRAME        Frame 1618873234                               114x27 [HORIZONTAL gap=10.19259262084961 pad=None,None,None,None align=None/CENTER]
+                    FRAME        Frame 531                                      27x27 [VERTICAL gap=8.493826866149902 pad=6.7950615882873535,6.7950615882873535,6.7950615882873535,6.7950615882873535 align=CENTER/CENTER] fill=IMAGE stroke=#F5F5F4/0.8493826985359192 r=849.3826904296875
+                    TEXT         English (en)                                   77x14 fill=#1C1917  <<'English (en)'>> font=Inter 500 13.590123176574707px/lh13.590123176574707 ls=0.0 case=None align=LEFT
+                  FRAME        Frame 1618873235                               57x14 [HORIZONTAL gap=6.7950615882873535 pad=None,None,None,None align=None/CENTER]
+                    ELLIPSE      Ellipse 2                                      10x10 fill=#FFFFFF stroke=#A8A29E/0.8493826985359192
+                    TEXT         Source                                         40x14 fill=#78716C  <<'Source'>> font=Inter 400 11.891357421875px/lh14.391244888305664 ls=0.0 case=None align=RIGHT
+                FRAME        Frame 1618873237                               324x48 [HORIZONTAL gap=8.493826866149902 pad=10.19259262084961,10.19259262084961,10.19259262084961,10.19259262084961 align=SPACE_BETWEEN/CENTER] fill=#F5F5F4 r=6.7950615882873535
+                  FRAME        Frame 1618873234                               122x27 [HORIZONTAL gap=10.19259262084961 pad=None,None,None,None align=None/CENTER]
+                    FRAME        Frame 531                                      27x27 [VERTICAL gap=8.493826866149902 pad=6.7950615882873535,6.7950615882873535,6.7950615882873535,6.7950615882873535 align=CENTER/CENTER] fill=IMAGE stroke=#F5F5F4/0.8493826985359192 r=849.3826904296875
+                    TEXT         Deutsch (de)                                   85x14 fill=#1C1917  <<'Deutsch (de)'>> font=Inter 500 13.590123176574707px/lh13.590123176574707 ls=0.0 case=None align=LEFT
+                  FRAME        Frame 1618873235                               70x14 [HORIZONTAL gap=6.7950615882873535 pad=None,None,None,None align=None/CENTER]
+                    ELLIPSE      Ellipse 3                                      10x10 fill=#FBBF24
+                    TEXT         1 Change                                       53x14 fill=#78716C  <<'1 Change'>> font=Inter 400 11.891357421875px/lh14.391244888305664 ls=0.0 case=None align=RIGHT
+                FRAME        Frame 1618873238                               324x48 [HORIZONTAL gap=8.493826866149902 pad=10.19259262084961,10.19259262084961,10.19259262084961,10.19259262084961 align=SPACE_BETWEEN/CENTER] fill=#F5F5F4@0.00 r=6.7950615882873535
+                  FRAME        Frame 1618873234                               117x27 [HORIZONTAL gap=10.19259262084961 pad=None,None,None,None align=None/CENTER]
+                    FRAME        Frame 531                                      27x27 [VERTICAL gap=8.493826866149902 pad=6.7950615882873535,6.7950615882873535,6.7950615882873535,6.7950615882873535 align=CENTER/CENTER] fill=IMAGE,IMAGE stroke=#F5F5F4/0.8493826985359192 r=849.3826904296875
+                    TEXT         Français (fr)                                  80x14 fill=#1C1917  <<'Français (fr)'>> font=Inter 500 13.590123176574707px/lh13.590123176574707 ls=0.0 case=None align=LEFT
+                  FRAME        Frame 1618873236                               78x14 [HORIZONTAL gap=6.7950615882873535 pad=None,None,None,None align=None/CENTER]
+                    ELLIPSE      Ellipse 3                                      10x10 fill=#FBBF24
+                    TEXT         2 Changes                                      61x14 fill=#78716C  <<'2 Changes'>> font=Inter 400 11.891357421875px/lh14.391244888305664 ls=0.0 case=None align=RIGHT
+                FRAME        Frame 1618873239                               324x48 [HORIZONTAL gap=8.493826866149902 pad=10.19259262084961,10.19259262084961,10.19259262084961,10.19259262084961 align=SPACE_BETWEEN/CENTER] r=6.7950615882873535
+                  FRAME        Frame 1618873234                               119x27 [HORIZONTAL gap=10.19259262084961 pad=None,None,None,None align=None/CENTER]
+                    FRAME        Frame 531                                      27x27 [VERTICAL gap=8.493826866149902 pad=6.7950615882873535,6.7950615882873535,6.7950615882873535,6.7950615882873535 align=CENTER/CENTER] fill=IMAGE stroke=#F5F5F4/0.8493826985359192 r=849.3826904296875
+                    TEXT         Español (en)                                   82x14 fill=#1C1917  <<'Español (en)'>> font=Inter 500 13.590123176574707px/lh13.590123176574707 ls=0.0 case=None align=LEFT
+                  FRAME        Frame 1618873235                               77x14 [HORIZONTAL gap=6.7950615882873535 pad=None,None,None,None align=None/CENTER]
+                    ELLIPSE      Ellipse 2                                      10x10 fill=#C3F13C
+                    TEXT         Up to date                                     60x14 fill=#78716C  <<'Up to date'>> font=Inter 400 11.891357421875px/lh14.391244888305664 ls=0.0 case=None align=RIGHT
+                FRAME        Frame 1618873240                               324x48 [HORIZONTAL gap=8.493826866149902 pad=10.19259262084961,10.19259262084961,10.19259262084961,10.19259262084961 align=SPACE_BETWEEN/CENTER] r=6.7950615882873535
+                  FRAME        Frame 1618873234                               104x27 [HORIZONTAL gap=10.19259262084961 pad=None,None,None,None align=None/CENTER]
+                    FRAME        Frame 531                                      27x27 [VERTICAL gap=8.493826866149902 pad=6.7950615882873535,6.7950615882873535,6.7950615882873535,6.7950615882873535 align=CENTER/CENTER] fill=IMAGE stroke=#F5F5F4/0.8493826985359192 r=849.3826904296875
+                    TEXT         日本語 (ja)                                       67x14 fill=#1C1917  <<'日本語 (ja)'>> font=Inter 500 13.590123176574707px/lh13.590123176574707 ls=0.0 case=None align=LEFT
+                  FRAME        Frame 1618873235                               77x14 [HORIZONTAL gap=6.7950615882873535 pad=None,None,None,None align=None/CENTER]
+                    ELLIPSE      Ellipse 2                                      10x10 fill=#C3F13C
+                    TEXT         Up to date                                     60x14 fill=#78716C  <<'Up to date'>> font=Inter 400 11.891357421875px/lh14.391244888305664 ls=0.0 case=None align=RIGHT
+                INSTANCE     Cursor                                         63x41 [VERTICAL gap=None pad=None,None,None,None align=None/None]
+                  FRAME        Pointer                                        16x16
+                    VECTOR       pointer                                        14x16 fill=#00BFFF stroke=#FFFFFF/1.0 r=1.0 fx=DROP_SHADOW:3.8181817531585693
+                  FRAME        Container                                      63x25 [VERTICAL gap=10.0 pad=None,None,None,16.0 align=None/None]
+                    FRAME        Content                                        47x25 [HORIZONTAL gap=8.0 pad=4.0,8.0,4.0,8.0 align=None/None] fill=#00BFFF r=18.0 fx=DROP_SHADOW:4.0
+                      TEXT         Text                                           31x17 fill=#FFFFFF  <<'Kyle'>> font=Inter 700 14.0px/lh17.0 ls=0.14 case=None align=LEFT
+              FRAME        Frame 1618873125                               330x53 [HORIZONTAL gap=10.19259262084961 pad=13.590123176574707,13.590123176574707,13.590123176574707,13.590123176574707 align=SPACE_BETWEEN/CENTER] fill=#FFFFFF r=[0.0, 0.0, 13.590123176574707, 13.590123176574707]
+                FRAME        Frame 1618873241                               183x25 [HORIZONTAL gap=6.7950615882873535 pad=None,None,None,None align=None/CENTER]
+                  FRAME        conloca-badge                                  25x25 [VERTICAL gap=8.493826866149902 pad=6.7950615882873535,6.7950615882873535,6.7950615882873535,6.7950615882873535 align=CENTER/None] fill=#FFFBEB r=849.3826904296875
+                    INSTANCE     clock-01                                       12x12
+                      VECTOR       Icon                                           11x11 fill=#F59E0B
+                  TEXT         2 locales need updates                         151x14 fill=#1C1917  <<'2 locales need updates'>> font=Inter 500 13.590123176574707px/lh13.590123176574707 ls=0.0 case=None align=LEFT
+                INSTANCE     conloca-button                                 63x24 [HORIZONTAL gap=3.3975307941436768 pad=6.7950615882873535,6.7950615882873535,6.7950615882873535,6.7950615882873535 align=CENTER/CENTER] fill=#FFFFFF stroke=#E7E5E4/0.8493826985359192 r=6.7950615882873535
+                  INSTANCE     Leading icon                                   10x10
+                    VECTOR       Icon                                           9x8 fill=#1C1917
+                  TEXT         Button text                                    36x10 fill=#1C1917  <<'Review'>> font=Inter 500 10.19259262084961px/lh10.19259262084961 ls=0.0 case=None align=LEFT
+                  INSTANCE     Leading icon                                   10x10
+                    VECTOR       Icon                                           3x6 fill=#1C1917
+        FRAME        Text container                                 687x721 [VERTICAL gap=24.0 pad=None,None,None,None align=MAX/None]
+          TEXT         Chat title                                     472x96 fill=#FAFAF9  <<'Localization without manual syncing'>> font=Inter Display 700 48.0px/lh48.0 ls=0.0 case=None align=LEFT
+          TEXT         Text                                           472x81 fill=#FFFFFF  <<'Update the source structure once. Each locale follows the same versioned structure. When content changes, Conloca flags the locales that need updating.'>> font=Inter 400 16.0px/lh27.200000762939453 ls=0.0 case=None align=LEFT
+          FRAME        CTA Buttons                                    200x34 [HORIZONTAL gap=12.0 pad=None,None,None,None align=None/None]
+            INSTANCE     conloca-button                                 97x34 [HORIZONTAL gap=6.0 pad=10.0,10.0,10.0,10.0 align=CENTER/CENTER] fill=#292524 stroke=#292524/1.0 r=8.0
+              INSTANCE     Leading icon                                   14x14
+                VECTOR       Icon                                           8x8 fill=#FAFAF9
+              TEXT         Button text                                    77x14 fill=#FAFAF9  <<'Get started'>> font=Inter 500 14.0px/lh14.0 ls=0.0 case=None align=LEFT
+              INSTANCE     Leading icon                                   14x14
+                VECTOR       Icon                                           5x8 fill=#FAFAF9
+            INSTANCE     conloca-button                                 91x34 [HORIZONTAL gap=6.0 pad=10.0,10.0,10.0,10.0 align=CENTER/CENTER] fill=#FFFFFF stroke=#E7E5E4/1.0 r=8.0
+              INSTANCE     Leading icon                                   14x14
+                VECTOR       Icon                                           10x12 fill=#1C1917
+              TEXT         Button text                                    71x14 fill=#1C1917  <<'Read docs'>> font=Inter 500 14.0px/lh14.0 ls=0.0 case=None align=LEFT
+              INSTANCE     Leading icon                                   14x14
+                VECTOR       Icon                                           8x8 fill=#1C1917
+    FRAME        Section                                        1424x814 [VERTICAL gap=None pad=24.0,24.0,24.0,24.0 align=CENTER/CENTER] fill=IMAGE,#000000@0.20 stroke=#F5F5F4/1.0 r=28.0
+      FRAME        Switcher container                             1374x43 [HORIZONTAL gap=10.0 pad=None,None,None,None align=None/None]
+        INSTANCE     conloca-segmented-control                      275x43 [HORIZONTAL gap=2.0 pad=2.0,2.0,2.0,2.0 align=CENTER/None] fill=#F5F5F4@0.10 r=14.0
+          FRAME        Table view button                              119x39 [HORIZONTAL gap=4.0 pad=6.0,16.0,6.0,16.0 align=CENTER/CENTER] fill=#FFFFFF r=12.0 fx=DROP_SHADOW:4.0
+            TEXT         Tab 01                                         87x27 fill=#1C1917  <<'Developers'>> font=Inter Variable 500 16.0px/lh27.200000762939453 ls=0.0 case=None align=LEFT
+          FRAME        Json view button                               150x39 [HORIZONTAL gap=4.0 pad=6.0,16.0,6.0,16.0 align=CENTER/CENTER] r=12.0
+            TEXT         Tab 02                                         118x27 fill=#FAFAF9  <<'Content editors'>> font=Inter Variable 500 16.0px/lh27.200000762939453 ls=0.0 case=None align=LEFT
+      FRAME        Content                                        1374x721 [VERTICAL gap=None pad=None,None,None,None align=SPACE_BETWEEN/None]
+        FRAME        Visual container                               1374x625
+          GROUP        Lottie animatin                                1083x983 r=24.0
+            FRAME        Frame 1618873118                               857x983 fill=GRADIENT_RADIAL(#FFFFFF,#FFFFFF) r=24.0
+            FRAME        Frame 1618873120                               523x386 [VERTICAL gap=1.0 pad=8.0,8.0,8.0,8.0 align=None/None] fill=#E7E5E4 r=24.0 fx=DROP_SHADOW:6.0 fx=DROP_SHADOW:16.0 fx=DROP_SHADOW:64.0
+              FRAME        Frame 1618873175                               507x293 [VERTICAL gap=None pad=None,None,None,None align=None/None]
+                FRAME        Frame 1618873122                               507x62 [HORIZONTAL gap=12.0 pad=20.0,20.0,16.0,16.0 align=SPACE_BETWEEN/CENTER] fill=#FFFFFF r=[16.0, 16.0, 0.0, 0.0]
+                  FRAME        Frame 1618873123                               194x24 [HORIZONTAL gap=16.0 pad=None,None,None,None align=None/CENTER]
+                    INSTANCE     Leading icon                                   24x24
+                      VECTOR       Icon                                           18x22 fill=#A8A29E
+                    TEXT         homepage.vx.json                               154x16 fill=#1C1917  <<'homepage.vx.json'>> font=Roboto Mono 400 16.0px/lh16.0 ls=0.0 case=None align=LEFT
+                  FRAME        Frame 1618873162                               66x26 [HORIZONTAL gap=4.0 pad=None,None,None,None align=None/CENTER]
+                    FRAME        Frame 531                                      32x26 [VERTICAL gap=10.0 pad=8.0,8.0,8.0,8.0 align=CENTER/CENTER] fill=#EBF8D9 r=6.0
+                      TEXT         Button text                                    16x10 fill=#7CCF00  <<'+1'>> font=Inter 500 14.0px/lh16.94318199157715 ls=0.0 case=None align=LEFT
+                    FRAME        Frame 1618873124                               30x26 [VERTICAL gap=10.0 pad=8.0,8.0,8.0,8.0 align=CENTER/CENTER] fill=#FFDBDB r=6.0
+                      TEXT         Button text                                    14x10 fill=#FE3434  <<'-1'>> font=Inter 500 14.0px/lh16.94318199157715 ls=0.0 case=None align=LEFT
+                FRAME        Frame 1618873167                               507x231 [VERTICAL gap=None pad=None,None,None,None align=None/None] fill=#FFFFFF
+                  FRAME        Frame 1618873170                               507x33 [HORIZONTAL gap=None pad=None,None,None,None align=None/CENTER] fill=#F5F5F4
+                    FRAME        Frame 531                                      54x33 [VERTICAL gap=None pad=6.0,16.0,6.0,16.0 align=CENTER/CENTER]
+                    FRAME        Frame 532                                      54x33 [VERTICAL gap=None pad=6.0,16.0,6.0,16.0 align=CENTER/CENTER]
+                    FRAME        Frame 533                                      399x33 [VERTICAL gap=None pad=6.0,16.0,6.0,16.0 align=CENTER/CENTER]
+                      TEXT         Button text                                    367x21 fill=#A8A29E  <<'@@ -39,10 +39 @@'>> font=Roboto Mono 400 16.0px/lh21.1015625 ls=0.0 case=None align=LEFT
+                  FRAME        Frame 1618873172                               507x33 [HORIZONTAL gap=None pad=None,None,None,None align=None/CENTER]
+                    FRAME        Frame 531                                      54x33 [VERTICAL gap=None pad=6.0,16.0,6.0,16.0 align=CENTER/CENTER]
+                      TEXT         Button text                                    22x21 fill=#A8A29E  <<'31'>> font=Roboto Mono 400 16.0px/lh21.1015625 ls=0.0 case=None align=LEFT
+                    FRAME        Frame 532                                      54x33 [VERTICAL gap=None pad=6.0,16.0,6.0,16.0 align=CENTER/CENTER]
+                      TEXT         Button text                                    22x21 fill=#A8A29E  <<'31'>> font=Roboto Mono 400 16.0px/lh21.1015625 ls=0.0 case=None align=LEFT
+                    FRAME        Frame 533                                      399x33 [VERTICAL gap=None pad=6.0,16.0,6.0,16.0 align=CENTER/CENTER]
+                  FRAME        Frame 1618873165                               507x33 [HORIZONTAL gap=None pad=None,None,None,None align=None/CENTER]
+                    FRAME        Frame 531                                      54x33 [VERTICAL gap=None pad=6.0,16.0,6.0,16.0 align=CENTER/CENTER]
+                      TEXT         Button text                                    22x21 fill=#A8A29E  <<'32'>> font=Roboto Mono 400 16.0px/lh21.1015625 ls=0.0 case=None align=LEFT
+                    FRAME        Frame 532                                      54x33 [VERTICAL gap=None pad=6.0,16.0,6.0,16.0 align=CENTER/CENTER]
+                      TEXT         Button text                                    22x21 fill=#A8A29E  <<'32'>> font=Roboto Mono 400 16.0px/lh21.1015625 ls=0.0 case=None align=LEFT
+                    FRAME        Frame 533                                      399x33 [VERTICAL gap=None pad=6.0,16.0,6.0,16.0 align=CENTER/CENTER]
+                      TEXT         Button text                                    367x21 fill=#1C1917  <<'“button”: {'>> font=Roboto Mono 400 16.0px/lh21.1015625 ls=0.0 case=None align=LEFT
+                  FRAME        Frame 1618873166                               507x33 [HORIZONTAL gap=None pad=None,None,None,None align=None/CENTER] fill=#FFDBDB
+                    FRAME        Frame 531                                      54x33 [VERTICAL gap=None pad=6.0,16.0,6.0,16.0 align=CENTER/CENTER]
+                      TEXT         Button text                                    22x21 fill=#FE3434  <<'33'>> font=Roboto Mono 400 16.0px/lh21.1015625 ls=0.0 case=None align=LEFT
+                    FRAME        Frame 535                                      54x33 [VERTICAL gap=None pad=6.0,16.0,6.0,16.0 align=CENTER/CENTER]
+                      TEXT         Button text                                    10x21 fill=#FE3434  <<'-'>> font=Roboto Mono 400 16.0px/lh21.1015625 ls=0.0 case=None align=LEFT
+                    FRAME        Frame 533                                      399x33 [VERTICAL gap=None pad=6.0,16.0,6.0,16.0 align=CENTER/CENTER]
+                      TEXT         Button text                                    367x21 fill=#FE3434  <<'    “label”: “Get started”'>> font=Roboto Mono 400 16.0px/lh21.1015625 ls=0.0 case=None align=LEFT
+                  FRAME        Frame 1618873167                               507x33 [HORIZONTAL gap=None pad=None,None,None,None align=None/CENTER] fill=#EBF8D9
+                    FRAME        Frame 532                                      54x33 [VERTICAL gap=None pad=6.0,16.0,6.0,16.0 align=CENTER/CENTER]
+                      TEXT         Button text                                    22x21 fill=#7CCF00  <<'34'>> font=Roboto Mono 400 16.0px/lh21.1015625 ls=0.0 case=None align=LEFT
+                    FRAME        Frame 536                                      54x33 [VERTICAL gap=None pad=6.0,16.0,6.0,16.0 align=CENTER/CENTER]
+                      TEXT         Button text                                    10x21 fill=#7CCF00  <<'+'>> font=Roboto Mono 400 16.0px/lh21.1015625 ls=0.0 case=None align=LEFT
+                    FRAME        Frame 533                                      399x33 [VERTICAL gap=None pad=6.0,16.0,6.0,16.0 align=CENTER/CENTER]
+                      TEXT         Button text                                    367x21 fill=#7CCF00  <<'    “label”: “Create account”'>> font=Roboto Mono 400 16.0px/lh21.1015625 ls=0.0 case=None align=LEFT
+                  FRAME        Frame 1618873168                               507x33 [HORIZONTAL gap=None pad=None,None,None,None align=None/CENTER]
+                    FRAME        Frame 531                                      54x33 [VERTICAL gap=None pad=6.0,16.0,6.0,16.0 align=CENTER/CENTER]
+                      TEXT         Button text                                    22x21 fill=#A8A29E  <<'35'>> font=Roboto Mono 400 16.0px/lh21.1015625 ls=0.0 case=None align=LEFT
+                    FRAME        Frame 532                                      54x33 [VERTICAL gap=None pad=6.0,16.0,6.0,16.0 align=CENTER/CENTER]
+                      TEXT         Button text                                    22x21 fill=#A8A29E  <<'35'>> font=Roboto Mono 400 16.0px/lh21.1015625 ls=0.0 case=None align=LEFT
+                    FRAME        Frame 533                                      399x33 [VERTICAL gap=None pad=6.0,16.0,6.0,16.0 align=CENTER/CENTER]
+                      TEXT         Button text                                    367x21 fill=#1C1917  <<'}'>> font=Roboto Mono 400 16.0px/lh21.1015625 ls=0.0 case=None align=LEFT
+                  FRAME        Frame 1618873171                               507x33 [HORIZONTAL gap=None pad=None,None,None,None align=None/CENTER]
+                    FRAME        Frame 531                                      54x33 [VERTICAL gap=None pad=6.0,16.0,6.0,16.0 align=CENTER/CENTER]
+                      TEXT         Button text                                    22x21 fill=#A8A29E  <<'36'>> font=Roboto Mono 400 16.0px/lh21.1015625 ls=0.0 case=None align=LEFT
+                    FRAME        Frame 532                                      54x33 [VERTICAL gap=None pad=6.0,16.0,6.0,16.0 align=CENTER/CENTER]
+                      TEXT         Button text                                    22x21 fill=#A8A29E  <<'36'>> font=Roboto Mono 400 16.0px/lh21.1015625 ls=0.0 case=None align=LEFT
+                    FRAME        Frame 533                                      399x33 [VERTICAL gap=None pad=6.0,16.0,6.0,16.0 align=CENTER/CENTER]
+              FRAME        Frame 1618873168                               507x76 [HORIZONTAL gap=12.0 pad=20.0,20.0,16.0,16.0 align=SPACE_BETWEEN/CENTER] fill=#FFFFFF r=[0.0, 0.0, 16.0, 16.0]
+                FRAME        Frame 1618873174                               221x40 [HORIZONTAL gap=12.0 pad=None,None,None,None align=None/CENTER]
+                  INSTANCE     conloca-avatar                                 40x40 [VERTICAL gap=12.5 pad=None,None,None,None align=CENTER/CENTER]
+                    RECTANGLE    Avatar image                                   40x40 fill=IMAGE r=1250.0
+                  FRAME        Frame 1618873173                               169x34 [VERTICAL gap=6.0 pad=None,None,None,None align=None/None]
+                    FRAME        Frame 1618873172                               169x16 [HORIZONTAL gap=6.0 pad=None,None,None,None align=None/CENTER]
+                      TEXT         Chris                                          41x16 fill=#1C1917  <<'Chris'>> font=Inter 500 16.0px/lh16.0 ls=0.0 case=None align=LEFT
+                      TEXT         ·                                              5x16 fill=#78716C  <<'·'>> font=Inter 400 16.0px/lh16.0 ls=0.0 case=None align=LEFT
+                      TEXT         4h ago                                         53x16 fill=#78716C  <<'4h ago'>> font=Inter 400 16.0px/lh16.0 ls=0.0 case=None align=LEFT
+                    TEXT         Translated CTA text                            169x12 fill=#78716C  <<'Translated CTA text'>> font=Inter 400 12.0px/lh12.0 ls=0.0 case=None align=LEFT
+                INSTANCE     conloca-button                                 166x34 [HORIZONTAL gap=6.0 pad=10.0,10.0,10.0,10.0 align=CENTER/CENTER] fill=#292524 stroke=#292524/1.0 r=8.0
+                  INSTANCE     Leading icon                                   14x14
+                    VECTOR       Icon                                           12x13 fill=#FAFAF9
+                  TEXT         Button text                                    126x14 fill=#FAFAF9  <<'Merge pull request'>> font=Inter 500 14.0px/lh14.0 ls=0.0 case=None align=LEFT
+                  INSTANCE     Leading icon                                   14x14
+                    VECTOR       Icon                                           5x8 fill=#FAFAF9
+              INSTANCE     Cursor                                         77x41 [VERTICAL gap=None pad=None,None,None,None align=None/None]
+                FRAME        Pointer                                        16x16
+                  VECTOR       pointer                                        14x16 fill=#FBBF24 stroke=#FFFFFF/1.0 r=1.0 fx=DROP_SHADOW:3.8181817531585693
+                FRAME        Container                                      77x25 [VERTICAL gap=10.0 pad=None,None,None,16.0 align=None/None]
+                  FRAME        Content                                        61x25 [HORIZONTAL gap=8.0 pad=4.0,8.0,4.0,8.0 align=None/None] fill=#FBBF24 r=18.0 fx=DROP_SHADOW:4.0
+                    TEXT         Text                                           45x17 fill=#FFFFFF  <<'Danny'>> font=Inter 700 14.0px/lh17.0 ls=0.14 case=None align=LEFT
+        FRAME        Text container                                 1374x96 [HORIZONTAL gap=24.0 pad=None,None,None,None align=None/MAX]
+          FRAME        Frame 1618873256                               1150x96 [HORIZONTAL gap=48.0 pad=None,None,None,None align=None/MAX]
+            TEXT         Chat title                                     520x96 fill=#FAFAF9  <<'Review, merge, and revert content in Git'>> font=Inter Display 700 48.0px/lh48.0 ls=0.0 case=None align=LEFT
+            TEXT         Text                                           520x81 fill=#FFFFFF  <<'Every edit is written to a file with a readable diff and full history, ready for your existing pull-request workflow. Review changes, merge or roll back anything, any time.'>> font=Inter 400 16.0px/lh27.200000762939453 ls=0.0 case=None align=LEFT
+          FRAME        CTA Buttons                                    200x34 [HORIZONTAL gap=12.0 pad=None,None,None,None align=None/None]
+            INSTANCE     conloca-button                                 97x34 [HORIZONTAL gap=6.0 pad=10.0,10.0,10.0,10.0 align=CENTER/CENTER] fill=#292524 stroke=#292524/1.0 r=8.0
+              INSTANCE     Leading icon                                   14x14
+                VECTOR       Icon                                           8x8 fill=#FAFAF9
+              TEXT         Button text                                    77x14 fill=#FAFAF9  <<'Get started'>> font=Inter 500 14.0px/lh14.0 ls=0.0 case=None align=LEFT
+              INSTANCE     Leading icon                                   14x14
+                VECTOR       Icon                                           5x8 fill=#FAFAF9
+            INSTANCE     conloca-button                                 91x34 [HORIZONTAL gap=6.0 pad=10.0,10.0,10.0,10.0 align=CENTER/CENTER] fill=#FFFFFF stroke=#E7E5E4/1.0 r=8.0
+              INSTANCE     Leading icon                                   14x14
+                VECTOR       Icon                                           10x12 fill=#1C1917
+              TEXT         Button text                                    71x14 fill=#1C1917  <<'Read docs'>> font=Inter 500 14.0px/lh14.0 ls=0.0 case=None align=LEFT
+              INSTANCE     Leading icon                                   14x14
+                VECTOR       Icon                                           8x8 fill=#1C1917
+  FRAME        Frame 1618873213                               1440x667 [HORIZONTAL gap=10.0 pad=196.0,32.0,196.0,32.0 align=CENTER/CENTER] fill=#FFFFFF
+    GROUP        Group 35                                       803x275 r=[0.0, 0.0, 0.0, 0.0]
+      FRAME        Git logo                                       95x95 [HORIZONTAL gap=10.0 pad=16.0,16.0,16.0,16.0 align=None/CENTER] fill=#F03C2E,GRADIENT_RADIAL(#000000,#FFFFFF) r=16.0 fx=DROP_SHADOW:6.0 fx=DROP_SHADOW:16.0 fx=NOISE:None
+        FRAME        Frame                                          58x58
+          VECTOR       Vector                                         58x58 fill=#FAFAF9
+      TEXT         Chat title                                     718x144 fill=#1C1917 fx=NOISE:None  <<"Everything you need\nnothing you don't">> font=Inter Display 900 72.0px/lh72.0 ls=0.0 case=None align=CENTER
+      FRAME        Changes published                              168x59 [VERTICAL gap=10.0 pad=10.0,10.0,10.0,10.0 align=CENTER/CENTER] fill=#FFFFFF stroke=#E7E5E4/1.0 r=12.0 fx=DROP_SHADOW:6.0 fx=DROP_SHADOW:16.0 fx=DROP_SHADOW:64.0
+        FRAME        Frame 1618873172                               146x37 [HORIZONTAL gap=6.0 pad=None,None,None,None align=None/CENTER]
+          FRAME        Frame 1618873190                               146x37 [HORIZONTAL gap=8.0 pad=None,None,None,None align=None/CENTER]
+            RECTANGLE    Rectangle 35                                   11x11 fill=#9AE600 r=1000.0 fx=NOISE:None
+            TEXT         changes published                              128x34 fill=#1C1917  <<'changes published'>> font=Inter 500 14.0px/lh16.94318199157715 ls=0.0 case=None align=LEFT
+      FRAME        Homepage-eng.vx.json                           198x50 [VERTICAL gap=10.0 pad=10.0,10.0,10.0,10.0 align=CENTER/CENTER] fill=#FFFFFF stroke=#E7E5E4/1.0 r=12.0 fx=DROP_SHADOW:6.0 fx=DROP_SHADOW:16.0 fx=DROP_SHADOW:64.0
+        FRAME        Frame 1618873172                               177x29 [HORIZONTAL gap=6.0 pad=None,None,None,None align=None/CENTER]
+          INSTANCE     Leading icon                                   17x17
+            VECTOR       Icon                                           13x15 fill=#A8A29E
+          TEXT         homepage-eng.vx.json                           155x27 fill=#1C1917  <<'homepage-eng.vx.json'>> font=Inter 500 14.0px/lh16.94318199157715 ls=0.0 case=None align=LEFT
+      FRAME        Astro logo                                     92x92 [HORIZONTAL gap=10.0 pad=16.0,16.0,16.0,16.0 align=None/CENTER] fill=#BC52EE,GRADIENT_RADIAL(#000000,#FFFFFF) r=16.0 fx=DROP_SHADOW:6.0 fx=DROP_SHADOW:16.0 fx=NOISE:None
+        FRAME        Frame                                          56x56
+          VECTOR       Vector                                         46x55 fill=#FAFAF9
+  FRAME        Frame 1618873184                               1440x1004 [GRID gap=None pad=None,32.0,None,32.0 align=None/None] fill=#FFFFFF r=32.0
+    FRAME        Bento card                                     682x327 [VERTICAL gap=10.0 pad=24.0,24.0,24.0,24.0 align=MAX/None] fill=#FAFAF9 r=24.0
+      GROUP        Group 19                                       855x210 r=[0.0, 0.0, 0.0, 0.0]
+        VECTOR       Vector 9                                       243x88 stroke=#D5DABC/1.0 r=[0.0, 0.0, 0.0, 0.0]
+        VECTOR       Vector 13                                      243x91 stroke=#D5DABC/1.0 r=[0.0, 0.0, 0.0, 0.0]
+        VECTOR       Vector 14                                      343x0 stroke=GRADIENT_LINEAR(#D5DABC,#FFFFFF)/1.0
+        VECTOR       Vector 12                                      384x0 stroke=#D5DABC/1.0
+        VECTOR       Vector 10                                      164x0 stroke=GRADIENT_LINEAR(#D5DABC,#FFFFFF)/1.0
+        VECTOR       Vector 11                                      164x0 stroke=GRADIENT_LINEAR(#FFFFFF,#D5DABC)/1.0
+        VECTOR       Vector 8                                       467x0 fill=#9AE600 stroke=#D8F999/1.0
+        GROUP        Group 22                                       34x34 r=[0.0, 0.0, 0.0, 0.0]
+          RECTANGLE    Rectangle 25                                   34x34 fill=#ECFCCA r=4.0 fx=NOISE:None
+          RECTANGLE    Rectangle 34                                   14x14 fill=#9AE600 r=1000.0 fx=NOISE:None
+        GROUP        Group 21                                       34x34 r=[0.0, 0.0, 0.0, 0.0]
+          RECTANGLE    Rectangle 26                                   34x34 fill=#ECFCCA r=4.0 fx=NOISE:None
+          RECTANGLE    Rectangle 35                                   14x14 fill=#9AE600 r=1000.0 fx=NOISE:None
+        GROUP        Group 20                                       34x34 r=[0.0, 0.0, 0.0, 0.0]
+          RECTANGLE    Rectangle 27                                   34x34 fill=#ECFCCA r=4.0 fx=NOISE:None
+          RECTANGLE    Rectangle 36                                   14x14 fill=#9AE600 r=1000.0 fx=NOISE:None
+        RECTANGLE    Rectangle 28                                   34x34 fill=#EAECDB r=1000.0 fx=NOISE:None
+        RECTANGLE    Rectangle 29                                   34x34 fill=#EAECDB r=1000.0 fx=NOISE:None
+        RECTANGLE    Rectangle 30                                   24x24 fill=#EAECDB r=4.0 fx=NOISE:None
+        RECTANGLE    Rectangle 31                                   24x24 fill=#EAECDB r=4.0 fx=NOISE:None
+        RECTANGLE    Rectangle 32                                   24x24 fill=#EAECDB r=4.0 fx=NOISE:None
+        GROUP        Group 23                                       34x34 r=[0.0, 0.0, 0.0, 0.0]
+          RECTANGLE    Rectangle 21                                   34x34 fill=#ECFCCA r=4.0 fx=NOISE:None
+          RECTANGLE    Rectangle 33                                   14x14 fill=#9AE600 r=1000.0 fx=NOISE:None
+      RECTANGLE    Rectangle 20                                   682x135 fill=GRADIENT_LINEAR(#FAFAF9,#FAFAF9) fx=BACKGROUND_BLUR:8.0
+      FRAME        Frame 1618873185                               634x98 [VERTICAL gap=8.0 pad=None,None,None,None align=None/None]
+        TEXT         Text                                           634x30 fill=#1C1917  <<'Git-native workflow'>> font=Inter 700 20.0px/lh30.0 ls=0.0 case=None align=LEFT
+        TEXT         Text                                           320x60 fill=#44403C  <<'Every change is a commit. Branch, preview, and merge'>> font=Inter 400 20.0px/lh30.0 ls=0.0 case=None align=LEFT
+    FRAME        Bento card                                     335x327 [VERTICAL gap=10.0 pad=24.0,24.0,24.0,24.0 align=MAX/None] fill=#FAFAF9 r=24.0
+      FRAME        Frame 1618873205                               432x313 [VERTICAL gap=0.7559564709663391 pad=7.081168174743652,7.081168174743652,7.081168174743652,7.081168174743652 align=None/None] fill=#F5F6EF r=18.142955780029297 fx=DROP_SHADOW:4.535738945007324
+        FRAME        Frame 1618873175                               415x297 [VERTICAL gap=1.1801947355270386 pad=None,None,None,None align=None/None]
+          FRAME        Frame 1618873122                               382x103 [HORIZONTAL gap=9.071477890014648 pad=15.119129180908203,15.119129180908203,12.095303535461426,12.095303535461426 align=SPACE_BETWEEN/CENTER] fill=#FFFFFF r=[12.095303535461426, 12.095303535461426, 0.0, 0.0]
+            TEXT         Data table                                     74x24 fill=#1C1917  <<'Data table'>> font=Roboto Mono 400 12.095303535461426px/lh12.095303535461426 ls=0.0 case=None align=LEFT
+          FRAME        Frame 1618873167                               401x211 [VERTICAL gap=None pad=None,None,None,None align=None/None] fill=#FFFFFF
+            FRAME        Frame 1618873178                               380x88 [HORIZONTAL gap=None pad=None,None,None,None align=None/CENTER]
+              FRAME        Frame 531                                      80x37 [VERTICAL gap=None pad=4.535738945007324,20.35835838317871,4.535738945007324,20.35835838317871 align=CENTER/CENTER]
+                RECTANGLE    Rectangle 9                                    37x14 fill=#F5F6EF r=880.8587036132812 fx=NOISE:None
+              FRAME        Frame 534                                      107x42 [VERTICAL gap=None pad=4.535738945007324,20.35835838317871,4.535738945007324,20.35835838317871 align=CENTER/CENTER]
+                RECTANGLE    Rectangle 9                                    64x19 fill=#D5DABC r=880.8587036132812 fx=NOISE:None
+              FRAME        Frame 535                                      62x34 [VERTICAL gap=None pad=4.535738945007324,20.35835838317871,4.535738945007324,20.35835838317871 align=CENTER/CENTER]
+                RECTANGLE    Rectangle 9                                    19x11 fill=#F5F6EF r=880.8587036132812 fx=NOISE:None
+              FRAME        Frame 536                                      107x42 [VERTICAL gap=None pad=4.535738945007324,20.35835838317871,4.535738945007324,20.35835838317871 align=CENTER/CENTER]
+                RECTANGLE    Rectangle 9                                    64x19 fill=#F5F6EF r=880.8587036132812 fx=NOISE:None
+              FRAME        Frame 533                                      60x34 [VERTICAL gap=None pad=4.535738945007324,20.35835838317871,4.535738945007324,20.35835838317871 align=CENTER/CENTER]
+              FRAME        Frame 537                                      70x36 [VERTICAL gap=None pad=4.535738945007324,20.35835838317871,4.535738945007324,20.35835838317871 align=CENTER/CENTER]
+                RECTANGLE    Rectangle 9                                    27x12 fill=#F5F6EF r=880.8587036132812 fx=NOISE:None
+            FRAME        Frame 1618873177                               380x88 [HORIZONTAL gap=None pad=None,None,None,None align=None/CENTER]
+              FRAME        Frame 531                                      80x37 [VERTICAL gap=None pad=4.535738945007324,20.35835838317871,4.535738945007324,20.35835838317871 align=CENTER/CENTER]
+                RECTANGLE    Rectangle 9                                    37x14 fill=#F5F6EF r=880.8587036132812 fx=NOISE:None
+              FRAME        Frame 534                                      107x42 [VERTICAL gap=None pad=4.535738945007324,20.35835838317871,4.535738945007324,20.35835838317871 align=CENTER/CENTER]
+                RECTANGLE    Rectangle 9                                    64x19 fill=#D5DABC r=880.8587036132812 fx=NOISE:None
+              FRAME        Frame 535                                      62x34 [VERTICAL gap=None pad=4.535738945007324,20.35835838317871,4.535738945007324,20.35835838317871 align=CENTER/CENTER]
+                RECTANGLE    Rectangle 9                                    19x11 fill=#F5F6EF r=880.8587036132812 fx=NOISE:None
+              FRAME        Frame 536                                      107x42 [VERTICAL gap=None pad=4.535738945007324,20.35835838317871,4.535738945007324,20.35835838317871 align=CENTER/CENTER]
+                RECTANGLE    Rectangle 9                                    64x19 fill=#F5F6EF r=880.8587036132812 fx=NOISE:None
+              FRAME        Frame 533                                      60x34 [VERTICAL gap=None pad=4.535738945007324,20.35835838317871,4.535738945007324,20.35835838317871 align=CENTER/CENTER]
+              FRAME        Frame 537                                      70x36 [VERTICAL gap=None pad=4.535738945007324,20.35835838317871,4.535738945007324,20.35835838317871 align=CENTER/CENTER]
+                RECTANGLE    Rectangle 9                                    27x12 fill=#F5F6EF r=880.8587036132812 fx=NOISE:None
+            FRAME        Frame 1618873174                               380x88 [HORIZONTAL gap=None pad=None,None,None,None align=None/CENTER]
+              FRAME        Frame 531                                      80x37 [VERTICAL gap=None pad=4.535738945007324,20.35835838317871,4.535738945007324,20.35835838317871 align=CENTER/CENTER]
+                RECTANGLE    Rectangle 9                                    37x14 fill=#F5F6EF r=880.8587036132812 fx=NOISE:None
+              FRAME        Frame 534                                      107x42 [VERTICAL gap=None pad=4.535738945007324,20.35835838317871,4.535738945007324,20.35835838317871 align=CENTER/CENTER]
+                RECTANGLE    Rectangle 9                                    64x19 fill=#D5DABC r=880.8587036132812 fx=NOISE:None
+              FRAME        Frame 535                                      62x34 [VERTICAL gap=None pad=4.535738945007324,20.35835838317871,4.535738945007324,20.35835838317871 align=CENTER/CENTER]
+                RECTANGLE    Rectangle 9                                    19x11 fill=#F5F6EF r=880.8587036132812 fx=NOISE:None
+              FRAME        Frame 536                                      107x42 [VERTICAL gap=None pad=4.535738945007324,20.35835838317871,4.535738945007324,20.35835838317871 align=CENTER/CENTER]
+                RECTANGLE    Rectangle 9                                    64x19 fill=#F5F6EF r=880.8587036132812 fx=NOISE:None
+              FRAME        Frame 533                                      60x34 [VERTICAL gap=None pad=4.535738945007324,20.35835838317871,4.535738945007324,20.35835838317871 align=CENTER/CENTER]
+              FRAME        Frame 537                                      70x36 [VERTICAL gap=None pad=4.535738945007324,20.35835838317871,4.535738945007324,20.35835838317871 align=CENTER/CENTER]
+                RECTANGLE    Rectangle 9                                    27x12 fill=#F5F6EF r=880.8587036132812 fx=NOISE:None
+            FRAME        Frame 1618873173                               380x88 [HORIZONTAL gap=None pad=None,None,None,None align=None/CENTER]
+              FRAME        Frame 531                                      80x37 [VERTICAL gap=None pad=4.535738945007324,20.35835838317871,4.535738945007324,20.35835838317871 align=CENTER/CENTER]
+                RECTANGLE    Rectangle 9                                    37x14 fill=#F5F6EF r=880.8587036132812 fx=NOISE:None
+              FRAME        Frame 534                                      107x42 [VERTICAL gap=None pad=4.535738945007324,20.35835838317871,4.535738945007324,20.35835838317871 align=CENTER/CENTER]
+                RECTANGLE    Rectangle 9                                    64x19 fill=#D5DABC r=880.8587036132812 fx=NOISE:None
+              FRAME        Frame 535                                      62x34 [VERTICAL gap=None pad=4.535738945007324,20.35835838317871,4.535738945007324,20.35835838317871 align=CENTER/CENTER]
+                RECTANGLE    Rectangle 9                                    19x11 fill=#F5F6EF r=880.8587036132812 fx=NOISE:None
+              FRAME        Frame 536                                      107x42 [VERTICAL gap=None pad=4.535738945007324,20.35835838317871,4.535738945007324,20.35835838317871 align=CENTER/CENTER]
+                RECTANGLE    Rectangle 9                                    64x19 fill=#F5F6EF r=880.8587036132812 fx=NOISE:None
+              FRAME        Frame 533                                      60x34 [VERTICAL gap=None pad=4.535738945007324,20.35835838317871,4.535738945007324,20.35835838317871 align=CENTER/CENTER]
+              FRAME        Frame 537                                      70x36 [VERTICAL gap=None pad=4.535738945007324,20.35835838317871,4.535738945007324,20.35835838317871 align=CENTER/CENTER]
+                RECTANGLE    Rectangle 9                                    27x12 fill=#F5F6EF r=880.8587036132812 fx=NOISE:None
+            FRAME        Frame 1618873176                               380x88 [HORIZONTAL gap=None pad=None,None,None,None align=None/CENTER]
+              FRAME        Frame 531                                      80x37 [VERTICAL gap=None pad=4.535738945007324,20.35835838317871,4.535738945007324,20.35835838317871 align=CENTER/CENTER]
+                RECTANGLE    Rectangle 9                                    37x14 fill=#F5F6EF r=880.8587036132812 fx=NOISE:None
+              FRAME        Frame 534                                      107x42 [VERTICAL gap=None pad=4.535738945007324,20.35835838317871,4.535738945007324,20.35835838317871 align=CENTER/CENTER]
+                RECTANGLE    Rectangle 9                                    64x19 fill=#D5DABC r=880.8587036132812 fx=NOISE:None
+              FRAME        Frame 535                                      62x34 [VERTICAL gap=None pad=4.535738945007324,20.35835838317871,4.535738945007324,20.35835838317871 align=CENTER/CENTER]
+                RECTANGLE    Rectangle 9                                    19x11 fill=#F5F6EF r=880.8587036132812 fx=NOISE:None
+              FRAME        Frame 536                                      107x42 [VERTICAL gap=None pad=4.535738945007324,20.35835838317871,4.535738945007324,20.35835838317871 align=CENTER/CENTER]
+                RECTANGLE    Rectangle 9                                    64x19 fill=#F5F6EF r=880.8587036132812 fx=NOISE:None
+              FRAME        Frame 533                                      60x34 [VERTICAL gap=None pad=4.535738945007324,20.35835838317871,4.535738945007324,20.35835838317871 align=CENTER/CENTER]
+              FRAME        Frame 537                                      70x36 [VERTICAL gap=None pad=4.535738945007324,20.35835838317871,4.535738945007324,20.35835838317871 align=CENTER/CENTER]
+                RECTANGLE    Rectangle 9                                    27x12 fill=#F5F6EF r=880.8587036132812 fx=NOISE:None
+            FRAME        Frame 1618873175                               380x88 [HORIZONTAL gap=None pad=None,None,None,None align=None/CENTER]
+              FRAME        Frame 531                                      80x37 [VERTICAL gap=None pad=4.535738945007324,20.35835838317871,4.535738945007324,20.35835838317871 align=CENTER/CENTER]
+                RECTANGLE    Rectangle 9                                    37x14 fill=#F5F6EF r=880.8587036132812 fx=NOISE:None
+              FRAME        Frame 534                                      107x42 [VERTICAL gap=None pad=4.535738945007324,20.35835838317871,4.535738945007324,20.35835838317871 align=CENTER/CENTER]
+                RECTANGLE    Rectangle 9                                    64x19 fill=#D5DABC r=880.8587036132812 fx=NOISE:None
+              FRAME        Frame 535                                      62x34 [VERTICAL gap=None pad=4.535738945007324,20.35835838317871,4.535738945007324,20.35835838317871 align=CENTER/CENTER]
+                RECTANGLE    Rectangle 9                                    19x11 fill=#F5F6EF r=880.8587036132812 fx=NOISE:None
+              FRAME        Frame 536                                      107x42 [VERTICAL gap=None pad=4.535738945007324,20.35835838317871,4.535738945007324,20.35835838317871 align=CENTER/CENTER]
+                RECTANGLE    Rectangle 9                                    64x19 fill=#F5F6EF r=880.8587036132812 fx=NOISE:None
+              FRAME        Frame 533                                      60x34 [VERTICAL gap=None pad=4.535738945007324,20.35835838317871,4.535738945007324,20.35835838317871 align=CENTER/CENTER]
+              FRAME        Frame 537                                      70x36 [VERTICAL gap=None pad=4.535738945007324,20.35835838317871,4.535738945007324,20.35835838317871 align=CENTER/CENTER]
+                RECTANGLE    Rectangle 9                                    27x12 fill=#F5F6EF r=880.8587036132812 fx=NOISE:None
+          FRAME        Frame 1618873168                               383x108 [HORIZONTAL gap=9.071477890014648 pad=15.119129180908203,15.119129180908203,12.095303535461426,12.095303535461426 align=SPACE_BETWEEN/CENTER] fill=#FFFFFF r=[0.0, 0.0, 12.096996307373047, 12.096996307373047]
+            FRAME        Frame 1618873205                               188x49 [HORIZONTAL gap=9.441557884216309 pad=None,None,None,None align=None/CENTER]
+              RECTANGLE    Rectangle 11                                   22x21 fill=#F5F6EF r=4.720778942108154 fx=NOISE:None
+              RECTANGLE    Rectangle 9                                    22x21 fill=#D5DABC r=4.720778942108154 fx=NOISE:None
+              RECTANGLE    Rectangle 12                                   22x21 fill=#F5F6EF r=4.720778942108154 fx=NOISE:None
+              RECTANGLE    Rectangle 13                                   22x21 fill=#F5F6EF r=4.720778942108154 fx=NOISE:None
+            RECTANGLE    Rectangle 10                                   22x21 fill=#F8F8F5 r=4.720778942108154 fx=NOISE:None
+      RECTANGLE    Rectangle 20                                   334x135 fill=GRADIENT_LINEAR(#FAFAF9,#FAFAF9) fx=BACKGROUND_BLUR:8.0
+      FRAME        Frame 1618873185                               287x98 [VERTICAL gap=8.0 pad=None,None,None,None align=None/None]
+        TEXT         Text                                           287x30 fill=#1C1917  <<'Data collections'>> font=Inter 700 20.0px/lh30.0 ls=0.0 case=None align=LEFT
+        TEXT         Text                                           287x60 fill=#44403C  <<'Model and reuse structured data collections'>> font=Inter 400 20.0px/lh30.0 ls=0.0 case=None align=LEFT
+    FRAME        Bento card                                     335x327 [VERTICAL gap=10.0 pad=24.0,24.0,24.0,24.0 align=MAX/None] fill=#FAFAF9 r=24.0
+      GROUP        Group 45                                       376x271 r=[0.0, 0.0, 0.0, 0.0]
+        FRAME        Frame 1618873176                               322x271 [VERTICAL gap=16.591293334960938 pad=16.591293334960938,16.591293334960938,16.591293334960938,16.591293334960938 align=None/None] fill=#FFFFFF r=11.060861587524414
+          FRAME        Frame 1618873158                               154x71 [VERTICAL gap=8.41258716583252 pad=None,None,None,None align=None/None]
+            RECTANGLE    Rectangle 9                                    149x45 fill=GRADIENT_RADIAL(#D5DABC,#F5F6EF) r=10.095105171203613 fx=NOISE:None fx=NOISE:None
+            RECTANGLE    Rectangle 10                                   97x35 fill=GRADIENT_RADIAL(#D5DABC,#F5F6EF) r=10.095105171203613 fx=NOISE:None fx=NOISE:None
+          RECTANGLE    Rectangle 43                                   272x173 fill=#F7FEE7@0.50 stroke=#BBF451/2.0 r=9.0
+        GROUP        Group 44                                       75x75 r=[0.0, 0.0, 0.0, 0.0]
+          FRAME        Frame 1618873255                               75x75 fill=GRADIENT_RADIAL(#D5DABC,#F5F6EF) r=16.0 fx=NOISE:None fx=DROP_SHADOW:9.730820655822754 fx=DROP_SHADOW:103.79541778564453
+            VECTOR       T                                              30x30 fill=#9FAB70 r=2.0
+          INSTANCE     Cursor/Grabbed                                 36x36
+            GROUP        close                                          19x17 fx=DROP_SHADOW:1.2000000476837158
+              VECTOR       Shape                                          19x17 fill=#FFFFFF
+              VECTOR       Shape                                          19x17 stroke=#000000/1.125
+              VECTOR       Shape                                          1x6 fill=#000000
+              VECTOR       Shape                                          1x6 fill=#000000
+              VECTOR       Shape                                          1x6 fill=#000000
+      RECTANGLE    Rectangle 20                                   334x135 fill=GRADIENT_LINEAR(#FAFAF9,#FAFAF9) fx=BACKGROUND_BLUR:8.0
+      FRAME        Frame 1618873185                               287x98 [VERTICAL gap=8.0 pad=None,None,None,None align=None/None]
+        TEXT         Text                                           287x30 fill=#1C1917  <<'Reusable fragments'>> font=Inter 700 20.0px/lh30.0 ls=0.0 case=None align=LEFT
+        TEXT         Text                                           287x60 fill=#44403C  <<'Define and reuse larger content as fragments'>> font=Inter 400 20.0px/lh30.0 ls=0.0 case=None align=LEFT
+    FRAME        Bento card                                     682x327 [VERTICAL gap=10.0 pad=24.0,24.0,24.0,24.0 align=MAX/None] fill=#FAFAF9 r=24.0
+      GROUP        Group 40                                       448x343 r=11.060861587524414
+        FRAME        Frame 1618873167                               271x302 [VERTICAL gap=0.6913038492202759 pad=5.530430793762207,5.530430793762207,5.530430793762207,5.530430793762207 align=None/None] fill=#F5F5F4,GRADIENT_RADIAL(#D5DABC,#F5F6EF) r=11.060861587524414 fx=NOISE:None
+          FRAME        Frame 1618873172                               227x53 [HORIZONTAL gap=None pad=None,11.060861587524414,None,None align=None/CENTER]
+            FRAME        Frame 531                                      37x28 [VERTICAL gap=None pad=4.147823333740234,8.295646667480469,4.147823333740234,11.060861587524414 align=CENTER/CENTER]
+              TEXT         Button text                                    17x17 fill=#A8A29E  <<'1'>> font=Roboto Mono 400 11.060861587524414px/lh14.587591171264648 ls=0.0 case=None align=LEFT
+            FRAME        Frame 532                                      112x37 [VERTICAL gap=None pad=4.147823333740234,None,4.147823333740234,None align=CENTER/None]
+              TEXT         Button text                                    111x29 fill=#497D00  <<'# Getting started'>> font=Roboto Mono 500 11.060861587524414px/lh14.587591171264648 ls=-0.2212172317504883 case=None align=LEFT
+          FRAME        Frame 1618873165                               227x53 [HORIZONTAL gap=None pad=None,11.060861587524414,None,None align=None/CENTER]
+            FRAME        Frame 531                                      37x28 [VERTICAL gap=None pad=4.147823333740234,8.295646667480469,4.147823333740234,11.060861587524414 align=CENTER/CENTER]
+              TEXT         Button text                                    17x17 fill=#A8A29E  <<'2'>> font=Roboto Mono 400 11.060861587524414px/lh14.587591171264648 ls=0.0 case=None align=LEFT
+            FRAME        Frame 532                                      112x37 [VERTICAL gap=None pad=4.147823333740234,None,4.147823333740234,None align=CENTER/None]
+          FRAME        Frame 1618873168                               227x53 [HORIZONTAL gap=None pad=None,11.060861587524414,None,None align=None/CENTER]
+            FRAME        Frame 531                                      37x28 [VERTICAL gap=None pad=4.147823333740234,8.295646667480469,4.147823333740234,11.060861587524414 align=CENTER/CENTER]
+              TEXT         Button text                                    17x17 fill=#A8A29E  <<'3'>> font=Roboto Mono 400 11.060861587524414px/lh14.587591171264648 ls=0.0 case=None align=LEFT
+            FRAME        Frame 532                                      3x23 [VERTICAL gap=None pad=4.147823333740234,None,4.147823333740234,None align=CENTER/None]
+            FRAME        Frame 533                                      192x48 [VERTICAL gap=None pad=4.147823333740234,None,4.147823333740234,None align=CENTER/None]
+              TEXT         Button text                                    191x40 fill=#1C1917  <<'Welcome to **Conloca Cloud**👋'>> font=Roboto Mono 400 11.060861587524414px/lh14.587591171264648 ls=-0.2212172317504883 case=None align=LEFT
+          FRAME        Frame 1618873179                               227x53 [HORIZONTAL gap=None pad=None,11.060861587524414,None,None align=None/CENTER]
+            FRAME        Frame 531                                      37x28 [VERTICAL gap=None pad=4.147823333740234,8.295646667480469,4.147823333740234,11.060861587524414 align=CENTER/CENTER]
+              TEXT         Button text                                    17x17 fill=#A8A29E  <<'2'>> font=Roboto Mono 400 11.060861587524414px/lh14.587591171264648 ls=0.0 case=None align=LEFT
+            FRAME        Frame 532                                      112x37 [VERTICAL gap=None pad=4.147823333740234,None,4.147823333740234,None align=CENTER/None]
+          FRAME        Frame 1618873180                               227x53 [HORIZONTAL gap=None pad=None,11.060861587524414,None,None align=None/CENTER]
+            FRAME        Frame 531                                      37x28 [VERTICAL gap=None pad=4.147823333740234,8.295646667480469,4.147823333740234,11.060861587524414 align=CENTER/CENTER]
+              TEXT         Button text                                    17x17 fill=#A8A29E  <<'3'>> font=Roboto Mono 400 11.060861587524414px/lh14.587591171264648 ls=0.0 case=None align=LEFT
+            FRAME        Frame 532                                      3x23 [VERTICAL gap=None pad=4.147823333740234,None,4.147823333740234,None align=CENTER/None]
+            FRAME        Frame 533                                      170x45 [VERTICAL gap=None pad=4.147823333740234,None,4.147823333740234,None align=CENTER/None]
+              TEXT         Button text                                    169x37 fill=#1C1917  <<'Git-native CMS with visual'>> font=Roboto Mono 400 11.060861587524414px/lh14.587591171264648 ls=-0.2212172317504883 case=None align=LEFT
+          FRAME        Frame 1618873174                               227x53 [HORIZONTAL gap=None pad=None,11.060861587524414,None,None align=None/CENTER]
+            FRAME        Frame 531                                      37x28 [VERTICAL gap=None pad=4.147823333740234,8.295646667480469,4.147823333740234,11.060861587524414 align=CENTER/CENTER]
+              TEXT         Button text                                    17x17 fill=#A8A29E  <<'6'>> font=Roboto Mono 400 11.060861587524414px/lh14.587591171264648 ls=0.0 case=None align=LEFT
+            FRAME        Frame 532                                      131x40 [VERTICAL gap=None pad=4.147823333740234,None,4.147823333740234,None align=CENTER/None]
+              TEXT         Button text                                    130x32 fill=#1C1917  <<'drag and drop editor'>> font=Roboto Mono 400 11.060861587524414px/lh14.587591171264648 ls=-0.2212172317504883 case=None align=LEFT
+          FRAME        Frame 1618873175                               227x53 [HORIZONTAL gap=None pad=None,11.060861587524414,None,None align=None/CENTER]
+            FRAME        Frame 531                                      37x28 [VERTICAL gap=None pad=4.147823333740234,8.295646667480469,4.147823333740234,11.060861587524414 align=CENTER/CENTER]
+              TEXT         Button text                                    17x17 fill=#A8A29E  <<'7'>> font=Roboto Mono 400 11.060861587524414px/lh14.587591171264648 ls=0.0 case=None align=LEFT
+            FRAME        Frame 532                                      16x24 [VERTICAL gap=None pad=4.147823333740234,None,4.147823333740234,None align=CENTER/None]
+          FRAME        Frame 1618873176                               227x53 [HORIZONTAL gap=None pad=None,11.060861587524414,None,None align=None/CENTER]
+            FRAME        Frame 531                                      37x28 [VERTICAL gap=None pad=4.147823333740234,8.295646667480469,4.147823333740234,11.060861587524414 align=CENTER/CENTER]
+              TEXT         Button text                                    17x17 fill=#A8A29E  <<'8'>> font=Roboto Mono 400 11.060861587524414px/lh14.587591171264648 ls=0.0 case=None align=LEFT
+            FRAME        Frame 532                                      138x41 [VERTICAL gap=None pad=4.147823333740234,None,4.147823333740234,None align=CENTER/None]
+              TEXT         Button text                                    137x33 fill=#497D00  <<'## 1. Install the CLI'>> font=Roboto Mono 500 11.060861587524414px/lh14.587591171264648 ls=-0.2212172317504883 case=None align=LEFT
+          FRAME        Frame 1618873177                               227x53 [HORIZONTAL gap=None pad=None,11.060861587524414,None,None align=None/CENTER]
+            FRAME        Frame 531                                      37x28 [VERTICAL gap=None pad=4.147823333740234,8.295646667480469,4.147823333740234,11.060861587524414 align=CENTER/CENTER]
+              TEXT         Button text                                    17x17 fill=#A8A29E  <<'9'>> font=Roboto Mono 400 11.060861587524414px/lh14.587591171264648 ls=0.0 case=None align=LEFT
+            FRAME        Frame 532                                      16x24 [VERTICAL gap=None pad=4.147823333740234,None,4.147823333740234,None align=CENTER/None]
+          FRAME        Frame 1618873178                               227x53 [HORIZONTAL gap=None pad=None,11.060861587524414,None,None align=None/CENTER]
+            FRAME        Frame 531                                      37x28 [VERTICAL gap=None pad=4.147823333740234,8.295646667480469,4.147823333740234,11.060861587524414 align=CENTER/CENTER]
+              TEXT         Button text                                    17x17 fill=#A8A29E  <<'10'>> font=Roboto Mono 400 11.060861587524414px/lh14.587591171264648 ls=0.0 case=None align=LEFT
+            FRAME        Frame 532                                      49x29 [VERTICAL gap=None pad=4.147823333740234,None,4.147823333740234,None align=CENTER/None]
+              TEXT         Button text                                    48x21 fill=#1C1917  <<'```bash'>> font=Roboto Mono 400 11.060861587524414px/lh14.587591171264648 ls=-0.2212172317504883 case=None align=LEFT
+          FRAME        Frame 1618873181                               227x53 [HORIZONTAL gap=None pad=None,11.060861587524414,None,None align=None/CENTER]
+            FRAME        Frame 531                                      37x28 [VERTICAL gap=None pad=4.147823333740234,8.295646667480469,4.147823333740234,11.060861587524414 align=CENTER/CENTER]
+              TEXT         Button text                                    17x17 fill=#A8A29E  <<'11'>> font=Roboto Mono 400 11.060861587524414px/lh14.587591171264648 ls=0.0 case=None align=LEFT
+            FRAME        Frame 532                                      176x46 [VERTICAL gap=None pad=4.147823333740234,None,4.147823333740234,None align=CENTER/None]
+              TEXT         Button text                                    174x38 fill=#1C1917  <<'$bun add @conloca/astro-cms'>> font=Roboto Mono 400 11.060861587524414px/lh14.587591171264648 ls=-0.2212172317504883 case=None align=LEFT
+          FRAME        Frame 1618873182                               227x53 [HORIZONTAL gap=None pad=None,11.060861587524414,None,None align=None/CENTER]
+            FRAME        Frame 531                                      37x28 [VERTICAL gap=None pad=4.147823333740234,8.295646667480469,4.147823333740234,11.060861587524414 align=CENTER/CENTER]
+              TEXT         Button text                                    17x17 fill=#A8A29E  <<'12'>> font=Roboto Mono 400 11.060861587524414px/lh14.587591171264648 ls=0.0 case=None align=LEFT
+            FRAME        Frame 532                                      23x26 [VERTICAL gap=None pad=4.147823333740234,None,4.147823333740234,None align=CENTER/None]
+              TEXT         Button text                                    22x17 fill=#1C1917  <<'```'>> font=Roboto Mono 400 11.060861587524414px/lh14.587591171264648 ls=-0.2212172317504883 case=None align=LEFT
+          FRAME        Frame 1618873183                               227x53 [HORIZONTAL gap=None pad=None,11.060861587524414,None,None align=None/CENTER]
+            FRAME        Frame 531                                      37x28 [VERTICAL gap=None pad=4.147823333740234,8.295646667480469,4.147823333740234,11.060861587524414 align=CENTER/CENTER]
+              TEXT         Button text                                    17x17 fill=#A8A29E  <<'13'>> font=Roboto Mono 400 11.060861587524414px/lh14.587591171264648 ls=0.0 case=None align=LEFT
+            FRAME        Frame 532                                      16x24 [VERTICAL gap=None pad=4.147823333740234,None,4.147823333740234,None align=CENTER/None]
+        FRAME        Frame 1618873176                               310x300 [VERTICAL gap=16.591293334960938 pad=16.591293334960938,16.591293334960938,16.591293334960938,16.591293334960938 align=None/None] fill=#FFFFFF r=11.060861587524414
+          TEXT         Text                                           254x49 fill=#1C1917  <<'Getting started'>> font=Inter 900 16.591293334960938px/lh24.886940002441406 ls=0.0 case=None align=LEFT
+          TEXT         Text                                           253x41 fill=#44403C  <<'Welcome to Conloca cloud 👋'>> font=Inter 400 11.060861587524414px/lh16.591293334960938 ls=0.0 case=None align=LEFT
+          TEXT         Text                                           253x41 fill=#44403C  <<'Git-native CMS with visual drag and drop editor'>> font=Inter 400 11.060861587524414px/lh16.591293334960938 ls=0.0 case=None align=LEFT
+          VECTOR       Vector 15                                      251x24 stroke=#E7E5E4/0.6913038492202759
+          TEXT         Text                                           253x45 fill=#1C1917  <<'Install the CLI'>> font=Inter 700 13.826077461242676px/lh20.739116668701172 ls=0.0 case=None align=LEFT
+          FRAME        Frame 1618873252                               255x68 [VERTICAL gap=None pad=2.7652153968811035,2.7652153968811035,2.7652153968811035,2.7652153968811035 align=None/None] fill=#EAECDB r=5.530430793762207 fx=NOISE:None
+            FRAME        Frame 1618873253                               247x40 [HORIZONTAL gap=5.530430793762207 pad=2.7652153968811035,5.530430793762207,2.7652153968811035,5.530430793762207 align=CENTER/CENTER] r=4.147823333740234
+              TEXT         Button text                                    222x32 fill=#1C1917  <<'Bash'>> font=Roboto Mono 400 8.295646667480469px/lh10.940693855285645 ls=-0.16591293334960938 case=None align=LEFT
+              INSTANCE     copy-04                                        9x9
+                VECTOR       Icon                                           8x8 fill=#78716C
+            FRAME        Frame 1618873254                               248x45 [HORIZONTAL gap=5.530430793762207 pad=5.530430793762207,5.530430793762207,5.530430793762207,5.530430793762207 align=CENTER/CENTER] fill=#F5F6EF r=4.147823333740234
+              TEXT         Button text                                    236x33 fill=#1C1917  <<'$bun add @conloca/astro-cms'>> font=Roboto Mono 400 8.295646667480469px/lh10.940693855285645 ls=-0.16591293334960938 case=None align=LEFT
+          TEXT         Text                                           253x45 fill=#1C1917  <<'Initialize your project'>> font=Inter 700 13.826077461242676px/lh20.739116668701172 ls=0.0 case=None align=LEFT
+      RECTANGLE    Rectangle 20                                   682x135 fill=GRADIENT_LINEAR(#FAFAF9,#FAFAF9) fx=BACKGROUND_BLUR:8.0
+      FRAME        Frame 1618873185                               634x98 [VERTICAL gap=8.0 pad=None,None,None,None align=None/None]
+        TEXT         Text                                           634x30 fill=#1C1917  <<'Type content in Markdown'>> font=Inter 700 20.0px/lh30.0 ls=0.0 case=None align=LEFT
+        TEXT         Text                                           320x60 fill=#44403C  <<'Just type the page contents in Makrdown. Conloca will render it'>> font=Inter 400 20.0px/lh30.0 ls=0.0 case=None align=LEFT
+    FRAME        Bento card                                     335x327 [VERTICAL gap=10.0 pad=24.0,24.0,24.0,24.0 align=MAX/None] fill=#FAFAF9 r=24.0
+      RECTANGLE    Rectangle 20                                   334x135 fill=GRADIENT_LINEAR(#FAFAF9,#FAFAF9) fx=BACKGROUND_BLUR:8.0
+      FRAME        Frame 1618873185                               287x98 [VERTICAL gap=8.0 pad=None,None,None,None align=None/None]
+        TEXT         Text                                           287x30 fill=#1C1917  <<'Media library'>> font=Inter 700 20.0px/lh30.0 ls=0.0 case=None align=LEFT
+        TEXT         Text                                           287x60 fill=#44403C  <<'Upload assets once and reference them anywhere'>> font=Inter 400 20.0px/lh30.0 ls=0.0 case=None align=LEFT
+      GROUP        Group 34                                       238x105 r=16.0 fx=DROP_SHADOW:9.730820655822754
+        GROUP        Group 28                                       76x91 r=16.0 fx=NOISE:None
+          VECTOR       Rectangle 41                                   76x91 fill=GRADIENT_RADIAL(#D5DABC,#F5F6EF) r=16.0 fx=NOISE:None
+          TEXT         .PNG                                           37x16 fill=#9FAB70 fx=INNER_SHADOW:1.7979774475097656  <<'.PNG'>> font=Inter 900 14.383819580078125px/lh14.383819580078125 ls=0.0 case=None align=LEFT
+        GROUP        Group 29                                       75x91 r=16.0 fx=NOISE:None
+          VECTOR       Rectangle 41                                   75x91 fill=GRADIENT_RADIAL(#D5DABC,#F5F6EF) r=16.0 fx=NOISE:None
+          TEXT         .JPEG                                          43x16 fill=#9FAB70 fx=INNER_SHADOW:1.7979774475097656  <<'.JPEG'>> font=Inter 900 14.383819580078125px/lh14.383819580078125 ls=0.0 case=None align=LEFT
+        GROUP        Group 30                                       75x91 r=16.0 fx=NOISE:None
+          VECTOR       Rectangle 41                                   75x91 fill=GRADIENT_RADIAL(#D5DABC,#F5F6EF) r=16.0 fx=NOISE:None
+          TEXT         .GIF                                           30x15 fill=#9FAB70 fx=INNER_SHADOW:1.7979774475097656  <<'.GIF'>> font=Inter 900 14.383819580078125px/lh14.383819580078125 ls=0.0 case=None align=LEFT
+        GROUP        Group 31                                       78x93 r=16.0 fx=NOISE:None
+          VECTOR       Rectangle 41                                   78x93 fill=GRADIENT_RADIAL(#D5DABC,#F5F6EF) r=16.0 fx=NOISE:None
+          TEXT         .MP4                                           39x17 fill=#9FAB70 fx=INNER_SHADOW:1.7979774475097656  <<'.MP4'>> font=Inter 900 14.383819580078125px/lh14.383819580078125 ls=0.0 case=None align=LEFT
+    FRAME        Bento card                                     335x327 [VERTICAL gap=10.0 pad=24.0,24.0,24.0,24.0 align=MAX/None] fill=#FAFAF9 r=24.0
+      GROUP        Group 25                                       255x289 r=[0.0, 0.0, 0.0, 0.0]
+        VECTOR       Vector 14                                      0x269 stroke=GRADIENT_LINEAR(#D5DABC,#D6DBBD,#FFFFFF)/1.0
+        FRAME        Frame 1618873186                               255x37 [VERTICAL gap=10.0 pad=10.0,10.0,10.0,10.0 align=CENTER/CENTER] fill=#FFFFFF stroke=#E7E5E4/1.0 r=12.0 fx=DROP_SHADOW:9.730820655822754 fx=DROP_SHADOW:103.79541778564453
+          FRAME        Frame 1618873172                               235x17 [HORIZONTAL gap=6.0 pad=None,None,None,None align=None/CENTER]
+            FRAME        Frame 1618873190                               169x17 [HORIZONTAL gap=8.0 pad=None,None,None,None align=None/CENTER]
+              RECTANGLE    Rectangle 35                                   10x10 fill=#9AE600 r=1000.0 fx=NOISE:None
+              TEXT         Edited homepage.mdx                            151x17 fill=#1C1917  <<'Edited homepage.mdx'>> font=Inter 500 14.0px/lh16.94318199157715 ls=0.0 case=None align=LEFT
+            TEXT         ·                                              4x17 fill=#78716C  <<'·'>> font=Inter 400 14.0px/lh16.94318199157715 ls=0.0 case=None align=LEFT
+            TEXT         2m ago                                         50x17 fill=#78716C  <<'2m ago'>> font=Inter 400 14.0px/lh16.94318199157715 ls=0.0 case=None align=LEFT
+        FRAME        Frame 1618873187                               170x31 [VERTICAL gap=10.0 pad=8.0,8.0,8.0,8.0 align=CENTER/CENTER] fill=#F9F9F8 stroke=#F5F5F4/1.0 r=12.0
+          FRAME        Frame 1618873172                               154x15 [HORIZONTAL gap=6.0 pad=None,None,None,None align=None/CENTER]
+            RECTANGLE    Rectangle 9                                    112x15 fill=#F6F7F1 r=746.3672485351562 fx=NOISE:None
+            RECTANGLE    Rectangle 10                                   36x15 fill=#F6F7F1 r=746.3672485351562 fx=NOISE:None
+        FRAME        Frame 1618873189                               146x27 [VERTICAL gap=8.588235855102539 pad=6.870588302612305,6.870588302612305,6.870588302612305,6.870588302612305 align=CENTER/CENTER] fill=#F9F9F8 stroke=#F5F5F4/0.8588235378265381 r=10.305882453918457
+          FRAME        Frame 1618873172                               132x13 [HORIZONTAL gap=5.1529412269592285 pad=None,None,None,None align=None/CENTER]
+            RECTANGLE    Rectangle 9                                    96x13 fill=#F6F7F1 r=640.9977416992188 fx=NOISE:None
+            RECTANGLE    Rectangle 10                                   31x13 fill=#F6F7F1 r=640.9977416992188 fx=NOISE:None
+      RECTANGLE    Rectangle 20                                   334x135 fill=GRADIENT_LINEAR(#FAFAF9,#FAFAF9) fx=BACKGROUND_BLUR:8.0
+      FRAME        Frame 1618873185                               287x98 [VERTICAL gap=8.0 pad=None,None,None,None align=None/None]
+        TEXT         Text                                           287x30 fill=#1C1917  <<'Full version history'>> font=Inter 700 20.0px/lh30.0 ls=0.0 case=None align=LEFT
+        TEXT         Text                                           287x60 fill=#44403C  <<'Build a block once, reuse it across every page '>> font=Inter 400 20.0px/lh30.0 ls=0.0 case=None align=LEFT
+    FRAME        Bento card                                     682x665 [VERTICAL gap=10.0 pad=24.0,24.0,24.0,24.0 align=MAX/None] fill=IMAGE,IMAGE r=24.0
+      GROUP        Group 46                                       1273x1185 r=[0.0, 0.0, 0.0, 0.0]
+        FRAME        Frame 1618873184                               1268x1185 [VERTICAL gap=None pad=None,None,None,None align=None/None] fill=#FFFFFF r=38.923282623291016 fx=DROP_SHADOW:9.730820655822754 fx=DROP_SHADOW:25.948854446411133 fx=DROP_SHADOW:103.79541778564453
+          FRAME        Frame 1618873122                               1220x150 [HORIZONTAL gap=38.923282623291016 pad=19.461641311645508,19.461641311645508,19.461641311645508,19.461641311645508 align=SPACE_BETWEEN/CENTER] fill=#FFFFFF r=[25.948854446411133, 25.948854446411133, 12.974427223205566, 12.974427223205566]
+            RECTANGLE    Rectangle 9                                    183x33 fill=#F5F5F4 r=1621.8033447265625
+            FRAME        conloca-segmented-control                      215x56 [HORIZONTAL gap=2.5948853492736816 pad=2.5948853492736816,2.5948853492736816,2.5948853492736816,2.5948853492736816 align=CENTER/None] fill=#F5F5F4 r=18.16419792175293
+              FRAME        Table view button                              69x45 [HORIZONTAL gap=5.189770698547363 pad=7.784657001495361,20.759082794189453,7.784657001495361,20.759082794189453 align=CENTER/CENTER] fill=#FFFFFF r=15.569314002990723 fx=DROP_SHADOW:5.189770698547363
+                INSTANCE     monitor-02                                     27x27
+                  VECTOR       Icon                                           25x23 fill=#1C1917
+              FRAME        Json view button                               69x45 [HORIZONTAL gap=5.189770698547363 pad=7.784657001495361,20.759082794189453,7.784657001495361,20.759082794189453 align=CENTER/CENTER] r=15.569314002990723
+                FRAME        phone-02                                       27x27
+                  VECTOR       Icon                                           24x23 fill=#A8A29E
+              FRAME        Json view button                               69x45 [HORIZONTAL gap=5.189770698547363 pad=7.784657001495361,20.759082794189453,7.784657001495361,20.759082794189453 align=CENTER/CENTER] r=15.569314002990723
+                INSTANCE     phone-02                                       27x27
+                  VECTOR       Icon                                           16x22 fill=#A8A29E
+            FRAME        Frame 1618873135                               308x69 [HORIZONTAL gap=38.923282623291016 pad=None,None,None,None align=None/CENTER]
+              FRAME        Frame 1618873134                               85x45 [HORIZONTAL gap=16.218034744262695 pad=16.218034744262695,16.218034744262695,16.218034744262695,16.218034744262695 align=None/None]
+                FRAME        Json view button                               43x43 [HORIZONTAL gap=5.189770698547363 pad=7.784657001495361,7.784657001495361,7.784657001495361,7.784657001495361 align=CENTER/CENTER] r=15.569314002990723
+                  INSTANCE     undo-01                                        27x27
+                    VECTOR       Icon                                           19x21 fill=#A8A29E
+                FRAME        Json view button                               43x43 [HORIZONTAL gap=5.189770698547363 pad=7.784657001495361,7.784657001495361,7.784657001495361,7.784657001495361 align=CENTER/CENTER] r=15.569314002990723
+                  INSTANCE     redo-01                                        27x27
+                    VECTOR       Icon                                           19x21 fill=#A8A29E
+              FRAME        Frame 1618873229                               186x64 [HORIZONTAL gap=16.0 pad=None,None,None,None align=None/CENTER]
+                INSTANCE     conloca-button                                 115x61 [HORIZONTAL gap=9.730820655822754 pad=16.218034744262695,16.218034744262695,16.218034744262695,16.218034744262695 align=CENTER/CENTER] fill=#292524 stroke=#292524/1.6218034029006958 r=12.974427223205566
+                  INSTANCE     Leading icon                                   24x24
+                    VECTOR       Icon                                           14x14 fill=#FAFAF9
+                  TEXT         Button text                                    81x27 fill=#FAFAF9  <<'Publish'>> font=Inter 500 22.70524787902832px/lh22.70524787902832 ls=0.0 case=None align=LEFT
+                  INSTANCE     Leading icon                                   24x24
+                    VECTOR       Icon                                           8x14 fill=#FAFAF9
+                INSTANCE     conloca-button                                 58x58 [HORIZONTAL gap=9.730820655822754 pad=16.218034744262695,16.218034744262695,16.218034744262695,16.218034744262695 align=CENTER/CENTER] fill=#FFFFFF stroke=#E7E5E4/1.6218034029006958 r=12.974427223205566
+                  INSTANCE     Leading icon                                   24x24
+                    VECTOR       Icon                                           20x22 fill=#1C1917
+                  TEXT         Button text                                    103x28 fill=#1C1917  <<'Schedule'>> font=Inter 500 22.70524787902832px/lh22.70524787902832 ls=0.0 case=None align=LEFT
+                  INSTANCE     Leading icon                                   24x24
+                    VECTOR       Icon                                           8x14 fill=#1C1917
+          FRAME        Frame 1618873141                               1263x1091 [VERTICAL gap=12.974427223205566 pad=12.974427223205566,12.974427223205566,12.974427223205566,12.974427223205566 align=None/None]
+            FRAME        Frame 1618873126                               1211x523 [VERTICAL gap=16.218034744262695 pad=None,51.897708892822266,None,51.897708892822266 align=CENTER/CENTER] stroke=#F5F5F4/3.2436068058013916 r=12.974427223205566
+              FRAME        Frame 1618873158                               401x102 [VERTICAL gap=16.218034744262695 pad=None,None,None,None align=None/CENTER]
+                RECTANGLE    Rectangle 9                                    398x52 fill=GRADIENT_RADIAL(#D5DABC,#F5F6EF) r=19.461641311645508 fx=NOISE:None fx=NOISE:None
+                RECTANGLE    Rectangle 10                                   185x42 fill=GRADIENT_RADIAL(#D5DABC,#F5F6EF) r=19.461641311645508 fx=NOISE:None fx=NOISE:None
+              FRAME        Frame 1618873143                               1093x327 [HORIZONTAL gap=16.218034744262695 pad=None,None,None,None align=None/None]
+                RECTANGLE    Rectangle 11                                   362x293 fill=GRADIENT_RADIAL(#D5DABC,#F5F6EF) r=19.461641311645508 fx=NOISE:None fx=NOISE:None
+                RECTANGLE    Rectangle 12                                   362x293 fill=GRADIENT_RADIAL(#D5DABC,#F5F6EF) r=19.461641311645508 fx=NOISE:None fx=NOISE:None
+                RECTANGLE    Rectangle 13                                   362x293 fill=GRADIENT_RADIAL(#D5DABC,#F5F6EF) r=19.461641311645508 fx=NOISE:None fx=NOISE:None
+            FRAME        Frame 1618873124                               1214x583 [HORIZONTAL gap=82.71197509765625 pad=38.923282623291016,38.923282623291016,38.923282623291016,38.923282623291016 align=None/CENTER] r=12.974427223205566
+              FRAME        Frame 1618873138                               531x375 [VERTICAL gap=25.948854446411133 pad=None,None,None,None align=CENTER/None]
+                TEXT         Open source                                    516x57 fill=#4F5833  <<'Open source'>> font=Inter 700 19.461641311645508px/lh33.08478927612305 ls=0.0 case=UPPER align=LEFT
+                TEXT         Turn text to video in minutes                  520x147 fill=#1C1917  <<'Turn text to video in minutes'>> font=Inter Display 700 61.6285285949707px/lh61.6285285949707 ls=0.0 case=None align=LEFT
+                TEXT         Create studio-quality videos with AI avatars   518x90 fill=#44403C  <<'Create studio-quality videos with AI avatars and voiceovers in 130+ languages'>> font=Inter 400 19.461641311645508px/lh33.08478927612305 ls=0.0 case=None align=LEFT
+                FRAME        Frame 1618871233                               270x63 [HORIZONTAL gap=9.30774211883545 pad=11.634676933288574,18.6154842376709,11.634676933288574,18.6154842376709 align=CENTER/CENTER] fill=#40472D r=9.30774211883545
+                  TEXT         Create a free AI video                         194x37 fill=#FAFAF9  <<'Create a free AI video'>> font=Inter 500 18.6154842376709px/lh27.92322540283203 ls=0.0 case=None align=CENTER
+                  FRAME        arrow-right-02                                 29x29
+                    VECTOR       Vector                                         19x12 stroke=#FAFAF9/1.745201587677002
+              FRAME        Frame 1618873139                               535x474 fill=#D4D3D3 r=19.461641311645508 fx=NOISE:None
+              FRAME        conloca-segmented-control                      59x158 [VERTICAL gap=3.2436068058013916 pad=1.6218034029006958,1.6218034029006958,1.6218034029006958,1.6218034029006958 align=None/CENTER] fill=#FFFFFF r=12.974427223205566 fx=DROP_SHADOW:9.730820655822754 fx=DROP_SHADOW:25.948854446411133
+                FRAME        Table view button                              51x51 [HORIZONTAL gap=None pad=9.730820655822754,9.730820655822754,9.730820655822754,9.730820655822754 align=CENTER/CENTER] r=15.569314002990723 fx=DROP_SHADOW:5.189770698547363
+                  INSTANCE     chevron-selector-vertical                      30x30
+                    VECTOR       Icon                                           16x23 fill=#292524
+                FRAME        Json view button                               51x51 [HORIZONTAL gap=None pad=9.730820655822754,9.730820655822754,9.730820655822754,9.730820655822754 align=CENTER/CENTER] r=15.569314002990723
+                  INSTANCE     trash-05                                       30x30
+                    VECTOR       Icon                                           26x28 fill=#1C1917
+                FRAME        Json view button                               51x51 [HORIZONTAL gap=None pad=9.730820655822754,9.730820655822754,9.730820655822754,9.730820655822754 align=CENTER/CENTER] r=15.569314002990723
+                  INSTANCE     dots-vertical                                  30x30
+                    VECTOR       Icon                                           6x22 fill=#1C1917
+            INSTANCE     Cursor                                         140x73 [VERTICAL gap=None pad=None,None,None,None align=None/None]
+              FRAME        Pointer                                        27x27
+                VECTOR       pointer                                        24x27 fill=#A259FE stroke=#FFFFFF/1.6218034029006958 r=1.6218034029006958 fx=DROP_SHADOW:6.19234037399292
+              FRAME        Container                                      139x47 [VERTICAL gap=16.218034744262695 pad=None,None,None,25.948854446411133 align=None/None]
+                FRAME        Content                                        113x46 [HORIZONTAL gap=12.974427223205566 pad=6.487213611602783,12.974427223205566,6.487213611602783,12.974427223205566 align=None/None] fill=#A259FE r=29.192461013793945 fx=DROP_SHADOW:6.487213611602783
+                  TEXT         Text                                           86x32 fill=#FFFFFF  <<'Mariam'>> font=Inter 700 22.70524787902832px/lh27.57065773010254 ls=0.2270524787902832 case=None align=LEFT
+        INSTANCE     Cursor                                         92x92 [VERTICAL gap=None pad=None,None,None,None align=None/None]
+          FRAME        Pointer                                        22x22
+            VECTOR       pointer                                        19x22 fill=#9AE600 stroke=#FFFFFF/1.355294108390808 r=1.355294108390808 fx=DROP_SHADOW:5.174759387969971
+          FRAME        Container                                      92x70 [VERTICAL gap=13.55294132232666 pad=None,None,None,21.68470573425293 align=None/None]
+            GROUP        Group 1                                        70x70 r=[0.0, 0.0, 0.0, 0.0]
+              ELLIPSE      Ellipse 1                                      70x70 fill=#FFFFFF stroke=#9AE600/2.710588216781616
+              INSTANCE     Comment / Profile                              60x60 fill=#FFFFFF r=32.527061462402344
+                RECTANGLE    Image                                          60x60 fill=IMAGE
+      RECTANGLE    Rectangle 20                                   682x225 fill=GRADIENT_LINEAR(#F5F4EE,#F5F4EE) fx=BACKGROUND_BLUR:14.0
+      FRAME        Frame 1618873185                               634x98 [VERTICAL gap=8.0 pad=None,None,None,None align=None/None]
+        TEXT         Text                                           634x30 fill=#1C1917  <<'Sceduled Publishing'>> font=Inter 700 20.0px/lh30.0 ls=0.0 case=None align=LEFT
+        TEXT         Text                                           320x60 fill=#44403C  <<'Set a date and time for content to go live automatically'>> font=Inter 400 20.0px/lh30.0 ls=0.0 case=None align=LEFT
+  FRAME        Frame 1618873226                               1440x1199 [VERTICAL gap=48.0 pad=196.0,32.0,96.0,32.0 align=None/CENTER] fill=#FFFFFF
+    FRAME        Frame 1618873227                               1376x96 [HORIZONTAL gap=32.0 pad=None,None,None,None align=SPACE_BETWEEN/MAX]
+      TEXT         Chat title                                     572x96 fill=#1C1917  <<'Choose a plan that fits you the best'>> font=Inter Display 700 48.0px/lh48.0 ls=0.0 case=None align=LEFT
+      INSTANCE     conloca-segmented-control                      185x43 [HORIZONTAL gap=2.0 pad=2.0,2.0,2.0,2.0 align=CENTER/None] fill=#F5F5F4 r=14.0
+        FRAME        Table view button                              94x39 [HORIZONTAL gap=4.0 pad=6.0,16.0,6.0,16.0 align=CENTER/CENTER] fill=#FFFFFF r=12.0 fx=DROP_SHADOW:4.0
+          TEXT         Tab 01                                         62x27 fill=#1C1917  <<'Monthly'>> font=Inter Variable 500 16.0px/lh27.200000762939453 ls=0.0 case=None align=LEFT
+        FRAME        Json view button                               85x39 [HORIZONTAL gap=4.0 pad=6.0,16.0,6.0,16.0 align=CENTER/CENTER] r=12.0
+          TEXT         Tab 02                                         53x27 fill=#78716C  <<'Annual'>> font=Inter Variable 500 16.0px/lh27.200000762939453 ls=0.0 case=None align=LEFT
+    FRAME        Frame 1618873228                               1376x681 [HORIZONTAL gap=12.0 pad=None,None,None,None align=None/CENTER]
+      FRAME        Bento card                                     451x681 [VERTICAL gap=12.0 pad=8.0,8.0,8.0,8.0 align=None/None] fill=GRADIENT_LINEAR(#F5F5F4,#FFFFFF) r=[24.0, 24.0, 0.0, 0.0]
+        FRAME        Frame 1618873215                               435x296 [VERTICAL gap=24.0 pad=20.0,20.0,20.0,20.0 align=None/None] fill=#FFFFFF r=18.0 fx=DROP_SHADOW:9.730820655822754
+          FRAME        Frame 1618873216                               395x188 [VERTICAL gap=24.0 pad=None,None,None,None align=SPACE_BETWEEN/None]
+            FRAME        Frame 1618873221                               395x36 [HORIZONTAL gap=24.0 pad=None,None,None,None align=None/CENTER]
+              TEXT         Text                                           395x36 fill=#1C1917  <<'Simple'>> font=Inter 500 24.0px/lh36.0 ls=0.0 case=None align=LEFT
+            FRAME        Frame 1618873219                               395x76 [VERTICAL gap=4.0 pad=None,None,None,None align=None/None]
+              FRAME        Frame 1618873218                               395x48 [HORIZONTAL gap=8.0 pad=None,None,None,None align=None/BASELINE]
+                TEXT         Text                                           44x48 fill=#1C1917  <<'$8'>> font=Inter 900 32.0px/lh48.0 ls=0.0 case=None align=LEFT
+                TEXT         Text                                           59x24 fill=#44403C  <<'/ Month'>> font=Inter 400 16.0px/lh24.0 ls=0.0 case=None align=LEFT
+              TEXT         Text                                           395x24 fill=#44403C  <<'For small teams getting their site off the ground'>> font=Inter 400 16.0px/lh24.0 ls=0.0 case=None align=LEFT
+          INSTANCE     conloca-button                                 395x44 [HORIZONTAL gap=6.0 pad=10.0,10.0,10.0,10.0 align=CENTER/CENTER] fill=#FFFFFF stroke=#E7E5E4/1.0 r=12.0
+            INSTANCE     Leading icon                                   14x14
+              VECTOR       Icon                                           8x8 fill=#1C1917
+            TEXT         Button text                                    102x14 fill=#1C1917  <<'Choose simple'>> font=Inter 700 14.0px/lh14.0 ls=0.0 case=None align=LEFT
+            INSTANCE     Leading icon                                   14x14
+              VECTOR       Icon                                           8x8 fill=#1C1917
+        FRAME        Frame 1618873216                               435x357 [VERTICAL gap=16.0 pad=12.0,12.0,12.0,12.0 align=None/None]
+          FRAME        Frame 1618873225                               332x27 [HORIZONTAL gap=6.0 pad=None,None,None,None align=None/CENTER]
+            INSTANCE     check-01                                       16x16
+              VECTOR       Icon                                           12x9 fill=#78716C
+            TEXT         3 seats included ($5 per additional seat)      310x27 fill=#78716C  <<'3 seats included ($5 per additional seat)'>> font=Inter 500 16.0px/lh27.200000762939453 ls=0.0 case=None align=LEFT
+          FRAME        Frame 1618873226                               114x27 [HORIZONTAL gap=6.0 pad=None,None,None,None align=None/CENTER]
+            INSTANCE     check-01                                       16x16
+              VECTOR       Icon                                           12x9 fill=#78716C
+            TEXT         5 seats max                                    92x27 fill=#78716C  <<'5 seats max'>> font=Inter 500 16.0px/lh27.200000762939453 ls=0.0 case=None align=LEFT
+          FRAME        Frame 1618873223                               113x27 [HORIZONTAL gap=6.0 pad=None,None,None,None align=None/CENTER]
+            INSTANCE     check-01                                       16x16
+              VECTOR       Icon                                           12x9 fill=#78716C
+            TEXT         1 repository                                   91x27 fill=#78716C  <<'1 repository'>> font=Inter 500 16.0px/lh27.200000762939453 ls=0.0 case=None align=LEFT
+          FRAME        Frame 1618873222                               198x27 [HORIZONTAL gap=6.0 pad=None,None,None,None align=None/CENTER]
+            INSTANCE     check-01                                       16x16
+              VECTOR       Icon                                           12x9 fill=#78716C
+            TEXT         1GB repository storage                         176x27 fill=#78716C  <<'1GB repository storage'>> font=Inter 500 16.0px/lh27.200000762939453 ls=0.0 case=None align=LEFT
+          FRAME        Frame 1618873224                               166x27 [HORIZONTAL gap=6.0 pad=None,None,None,None align=None/CENTER]
+            INSTANCE     check-01                                       16x16
+              VECTOR       Icon                                           12x9 fill=#78716C
+            TEXT         1GB media storage                              144x27 fill=#78716C  <<'1GB media storage'>> font=Inter 500 16.0px/lh27.200000762939453 ls=0.0 case=None align=LEFT
+      FRAME        Bento card                                     451x681 [VERTICAL gap=10.0 pad=8.0,8.0,8.0,8.0 align=None/None] fill=GRADIENT_LINEAR(#F5F6EF,#FFFFFF) stroke=GRADIENT_LINEAR(#9AE600,#FFFFFF)/2.0 r=[24.0, 24.0, 0.0, 0.0] fx=DROP_SHADOW:48.0
+        FRAME        Frame 1618873215                               435x296 [VERTICAL gap=24.0 pad=20.0,20.0,20.0,20.0 align=None/None] fill=#FFFFFF r=18.0 fx=DROP_SHADOW:9.730820655822754
+          FRAME        Frame 1618873216                               395x188 [VERTICAL gap=24.0 pad=None,None,None,None align=SPACE_BETWEEN/None]
+            FRAME        Frame 1618873220                               395x36 [HORIZONTAL gap=24.0 pad=None,None,None,None align=None/CENTER]
+              TEXT         Text                                           271x36 fill=#1C1917  <<'Pro'>> font=Inter 500 24.0px/lh36.0 ls=0.0 case=None align=LEFT
+              FRAME        Frame 1618873187                               100x31 [VERTICAL gap=10.0 pad=6.0,10.0,6.0,10.0 align=CENTER/CENTER] fill=#BBF451 r=8.0
+                TEXT         Best value                                     80x19 fill=#1C2013  <<'Best value'>> font=Inter 500 16.0px/lh19.363636016845703 ls=0.0 case=None align=LEFT
+            FRAME        Frame 1618873219                               395x76 [VERTICAL gap=4.0 pad=None,None,None,None align=None/None]
+              FRAME        Frame 1618873218                               395x48 [HORIZONTAL gap=8.0 pad=None,None,None,None align=None/BASELINE]
+                TEXT         Text                                           59x48 fill=#1C1917  <<'$15'>> font=Inter 900 32.0px/lh48.0 ls=0.0 case=None align=LEFT
+                TEXT         Text                                           59x24 fill=#44403C  <<'/ Month'>> font=Inter 400 16.0px/lh24.0 ls=0.0 case=None align=LEFT
+              TEXT         Text                                           395x24 fill=#44403C  <<'For growing teams shipping content more often'>> font=Inter 400 16.0px/lh24.0 ls=0.0 case=None align=LEFT
+          INSTANCE     conloca-button                                 395x44 [HORIZONTAL gap=6.0 pad=10.0,10.0,10.0,10.0 align=CENTER/CENTER] fill=#292524 stroke=#292524/1.0 r=12.0
+            INSTANCE     Leading icon                                   14x14
+              VECTOR       Icon                                           8x8 fill=#FAFAF9
+            TEXT         Button text                                    79x14 fill=#FAFAF9  <<'Choose pro'>> font=Inter 700 14.0px/lh14.0 ls=0.0 case=None align=LEFT
+            INSTANCE     Leading icon                                   14x14
+              VECTOR       Icon                                           8x8 fill=#FAFAF9
+        FRAME        Frame 1618873217                               435x359 [VERTICAL gap=16.0 pad=12.0,12.0,12.0,12.0 align=None/None]
+          FRAME        Frame 1618873225                               338x27 [HORIZONTAL gap=6.0 pad=None,None,None,None align=None/CENTER]
+            INSTANCE     check-01                                       16x16
+              VECTOR       Icon                                           12x9 fill=#78716C
+            TEXT         10 seats included ($7 per additional seat)     316x27 fill=#78716C  <<'10 seats included ($7 per additional seat)'>> font=Inter 500 16.0px/lh27.200000762939453 ls=0.0 case=None align=LEFT
+          FRAME        Frame 1618873226                               125x27 [HORIZONTAL gap=6.0 pad=None,None,None,None align=None/CENTER]
+            INSTANCE     check-01                                       16x16
+              VECTOR       Icon                                           12x9 fill=#78716C
+            TEXT         20 seats max                                   103x27 fill=#78716C  <<'20 seats max'>> font=Inter 500 16.0px/lh27.200000762939453 ls=0.0 case=None align=LEFT
+          FRAME        Frame 1618873223                               191x27 [HORIZONTAL gap=6.0 pad=None,None,None,None align=None/CENTER]
+            INSTANCE     check-01                                       16x16
+              VECTOR       Icon                                           12x9 fill=#78716C
+            TEXT         Unlimited repositories                         169x27 fill=#78716C  <<'Unlimited repositories'>> font=Inter 500 16.0px/lh27.200000762939453 ls=0.0 case=None align=LEFT
+          FRAME        Frame 1618873222                               211x27 [HORIZONTAL gap=6.0 pad=None,None,None,None align=None/CENTER]
+            INSTANCE     check-01                                       16x16
+              VECTOR       Icon                                           12x9 fill=#78716C
+            TEXT         20GB repository storage                        189x27 fill=#78716C  <<'20GB repository storage'>> font=Inter 500 16.0px/lh27.200000762939453 ls=0.0 case=None align=LEFT
+          FRAME        Frame 1618873224                               187x27 [HORIZONTAL gap=6.0 pad=None,None,None,None align=None/CENTER]
+            INSTANCE     check-01                                       16x16
+              VECTOR       Icon                                           12x9 fill=#78716C
+            TEXT         100GB media storage                            165x27 fill=#78716C  <<'100GB media storage'>> font=Inter 500 16.0px/lh27.200000762939453 ls=0.0 case=None align=LEFT
+          FRAME        Frame 1618873227                               265x27 [HORIZONTAL gap=6.0 pad=None,None,None,None align=None/CENTER]
+            INSTANCE     check-01                                       16x16
+              VECTOR       Icon                                           12x9 fill=#78716C
+            TEXT         Choose data residency (US/EU)                  243x27 fill=#78716C  <<'Choose data residency (US/EU)'>> font=Inter 500 16.0px/lh27.200000762939453 ls=0.0 case=None align=LEFT
+          FRAME        Frame 1618873228                               180x27 [HORIZONTAL gap=6.0 pad=None,None,None,None align=None/CENTER]
+            INSTANCE     check-01                                       16x16
+              VECTOR       Icon                                           12x9 fill=#78716C
+            TEXT         Basic access control                           158x27 fill=#78716C  <<'Basic access control'>> font=Inter 500 16.0px/lh27.200000762939453 ls=0.0 case=None align=LEFT
+          FRAME        Frame 1618873229                               84x27 [HORIZONTAL gap=6.0 pad=None,None,None,None align=None/CENTER]
+            INSTANCE     check-01                                       16x16
+              VECTOR       Icon                                           12x9 fill=#78716C
+            TEXT         Support                                        62x27 fill=#78716C  <<'Support'>> font=Inter 500 16.0px/lh27.200000762939453 ls=0.0 case=None align=LEFT
+      FRAME        Bento card                                     451x681 [VERTICAL gap=12.0 pad=8.0,8.0,8.0,8.0 align=None/None] fill=GRADIENT_LINEAR(#F5F5F4,#FFFFFF) r=[24.0, 24.0, 0.0, 0.0]
+        FRAME        Frame 1618873215                               435x296 [VERTICAL gap=24.0 pad=20.0,20.0,20.0,20.0 align=None/None] fill=#FFFFFF r=18.0 fx=DROP_SHADOW:9.730820655822754
+          FRAME        Frame 1618873216                               395x188 [VERTICAL gap=24.0 pad=None,None,None,None align=SPACE_BETWEEN/None]
+            FRAME        Frame 1618873220                               395x36 [HORIZONTAL gap=24.0 pad=None,None,None,None align=None/CENTER]
+              TEXT         Text                                           395x36 fill=#1C1917  <<'Business'>> font=Inter 500 24.0px/lh36.0 ls=0.0 case=None align=LEFT
+            FRAME        Frame 1618873219                               395x79 [VERTICAL gap=4.0 pad=None,None,None,None align=None/None]
+              FRAME        Frame 1618873218                               395x48 [HORIZONTAL gap=8.0 pad=None,None,None,None align=None/BASELINE]
+                TEXT         Text                                           89x48 fill=#1C1917  <<'$200'>> font=Inter 900 32.0px/lh48.0 ls=0.0 case=None align=LEFT
+                TEXT         Text                                           59x24 fill=#44403C  <<'/ Month'>> font=Inter 400 16.0px/lh24.0 ls=0.0 case=None align=LEFT
+              TEXT         Text                                           395x27 fill=#44403C  <<'For larger teams managing sites, brands & markets'>> font=Inter 400 16.0px/lh27.200000762939453 ls=0.0 case=None align=LEFT
+          INSTANCE     conloca-button                                 395x44 [HORIZONTAL gap=6.0 pad=10.0,10.0,10.0,10.0 align=CENTER/CENTER] fill=#FFFFFF stroke=#E7E5E4/1.0 r=12.0
+            INSTANCE     Leading icon                                   14x14
+              VECTOR       Icon                                           8x8 fill=#1C1917
+            TEXT         Button text                                    118x14 fill=#1C1917  <<'Choose business'>> font=Inter 700 14.0px/lh14.0 ls=0.0 case=None align=LEFT
+            INSTANCE     Leading icon                                   14x14
+              VECTOR       Icon                                           8x8 fill=#1C1917
+        FRAME        Frame 1618873217                               435x357 [VERTICAL gap=16.0 pad=12.0,12.0,12.0,12.0 align=None/None]
+          FRAME        Frame 1618873225                               350x27 [HORIZONTAL gap=6.0 pad=None,None,None,None align=None/CENTER]
+            INSTANCE     check-01                                       16x16
+              VECTOR       Icon                                           12x9 fill=#78716C
+            TEXT         30 seats included ($10 per additional seat)    328x27 fill=#78716C  <<'30 seats included ($10 per additional seat)'>> font=Inter 500 16.0px/lh27.200000762939453 ls=0.0 case=None align=LEFT
+          FRAME        Frame 1618873226                               118x27 [HORIZONTAL gap=6.0 pad=None,None,None,None align=None/CENTER]
+            INSTANCE     check-01                                       16x16
+              VECTOR       Icon                                           12x9 fill=#78716C
+            TEXT         No seat limit                                  96x27 fill=#78716C  <<'No seat limit'>> font=Inter 500 16.0px/lh27.200000762939453 ls=0.0 case=None align=LEFT
+          FRAME        Frame 1618873223                               191x27 [HORIZONTAL gap=6.0 pad=None,None,None,None align=None/CENTER]
+            INSTANCE     check-01                                       16x16
+              VECTOR       Icon                                           12x9 fill=#78716C
+            TEXT         Unlimited repositories                         169x27 fill=#78716C  <<'Unlimited repositories'>> font=Inter 500 16.0px/lh27.200000762939453 ls=0.0 case=None align=LEFT
+          FRAME        Frame 1618873222                               211x27 [HORIZONTAL gap=6.0 pad=None,None,None,None align=None/CENTER]
+            INSTANCE     check-01                                       16x16
+              VECTOR       Icon                                           12x9 fill=#78716C
+            TEXT         30GB repository storage                        189x27 fill=#78716C  <<'30GB repository storage'>> font=Inter 500 16.0px/lh27.200000762939453 ls=0.0 case=None align=LEFT
+          FRAME        Frame 1618873224                               165x27 [HORIZONTAL gap=6.0 pad=None,None,None,None align=None/CENTER]
+            INSTANCE     check-01                                       16x16
+              VECTOR       Icon                                           12x9 fill=#78716C
+            TEXT         1TB media storage                              143x27 fill=#78716C  <<'1TB media storage'>> font=Inter 500 16.0px/lh27.200000762939453 ls=0.0 case=None align=LEFT
+          FRAME        Frame 1618873227                               265x27 [HORIZONTAL gap=6.0 pad=None,None,None,None align=None/CENTER]
+            INSTANCE     check-01                                       16x16
+              VECTOR       Icon                                           12x9 fill=#78716C
+            TEXT         Choose data residency (US/EU)                  243x27 fill=#78716C  <<'Choose data residency (US/EU)'>> font=Inter 500 16.0px/lh27.200000762939453 ls=0.0 case=None align=LEFT
+          FRAME        Frame 1618873228                               327x27 [HORIZONTAL gap=6.0 pad=None,None,None,None align=None/CENTER]
+            INSTANCE     check-01                                       16x16
+              VECTOR       Icon                                           12x9 fill=#78716C
+            TEXT         Advanced access control and Audit trail        305x27 fill=#78716C  <<'Advanced access control and Audit trail'>> font=Inter 500 16.0px/lh27.200000762939453 ls=0.0 case=None align=LEFT
+          FRAME        Frame 1618873229                               142x27 [HORIZONTAL gap=6.0 pad=None,None,None,None align=None/CENTER]
+            INSTANCE     check-01                                       16x16
+              VECTOR       Icon                                           12x9 fill=#78716C
+            TEXT         Priority support                               120x27 fill=#78716C  <<'Priority support'>> font=Inter 500 16.0px/lh27.200000762939453 ls=0.0 case=None align=LEFT
+    INSTANCE     conloca-button                                 121x34 [HORIZONTAL gap=6.0 pad=10.0,10.0,10.0,10.0 align=CENTER/CENTER] fill=#FFFFFF stroke=#E7E5E4/1.0 r=8.0
+      INSTANCE     Leading icon                                   14x14
+        VECTOR       Icon                                           10x12 fill=#1C1917
+      TEXT         Button text                                    101x14 fill=#1C1917  <<'Compare plans'>> font=Inter 500 14.0px/lh14.0 ls=0.0 case=None align=LEFT
+      INSTANCE     Leading icon                                   14x14
+        VECTOR       Icon                                           8x8 fill=#1C1917
+  FRAME        Frame 1618873228                               1440x92 [VERTICAL gap=10.0 pad=8.0,8.0,8.0,8.0 align=None/None]
+    FRAME        Footer                                         1424x76 [HORIZONTAL gap=77.0 pad=24.0,24.0,24.0,24.0 align=SPACE_BETWEEN/CENTER] fill=#292524 r=24.0
+      INSTANCE     conloca-logo                                   117x28 [VERTICAL gap=10.0 pad=None,None,None,None align=None/None]
+        VECTOR       Union                                          117x28 fill=#FAFAF9
+      FRAME        Frame 568                                      557x28 [HORIZONTAL gap=31.0 pad=None,None,None,None align=None/CENTER]
+        TEXT         Token set title                                98x19 fill=#FAFAF9  <<'How it works'>> font=Inter 400 16.0px/lh19.363636016845703 ls=0.0 case=None align=LEFT
+        TEXT         Token set title                                39x19 fill=#FAFAF9  <<'Docs'>> font=Inter 400 16.0px/lh19.363636016845703 ls=0.0 case=None align=LEFT
+        TEXT         Token set title                                52x19 fill=#FAFAF9  <<'Pricing'>> font=Inter 400 16.0px/lh19.363636016845703 ls=0.0 case=None align=LEFT
+        TEXT         Token set title                                34x19 fill=#FAFAF9  <<'Blog'>> font=Inter 400 16.0px/lh19.363636016845703 ls=0.0 case=None align=LEFT
+        TEXT         Token set title                                97x19 fill=#FAFAF9  <<'Open source'>> font=Inter 400 16.0px/lh19.363636016845703 ls=0.0 case=None align=LEFT
+        INSTANCE     conloca-button                                 82x28 [HORIZONTAL gap=4.0 pad=8.0,8.0,8.0,8.0 align=CENTER/CENTER] fill=#FFFFFF stroke=#E7E5E4/1.0 r=8.0
+          INSTANCE     Leading icon                                   12x12
+            VECTOR       Icon                                           7x4 fill=#1C1917
+          TEXT         Button text                                    66x12 fill=#1C1917  <<'Get started'>> font=Inter 500 12.0px/lh12.0 ls=0.0 case=None align=LEFT
+          INSTANCE     Leading icon                                   12x12
+            VECTOR       Icon                                           7x7 fill=#1C1917
