@@ -3,13 +3,15 @@ import type { ReactNode } from 'react'
 import { Reveal } from '@/components/motion/Reveal'
 import { AstroGlyph } from '@/components/icons/AstroGlyph'
 
-/** Figma S2 — statement (`40002427:16760` 1440, `40002432:27418` 640). */
+/** Figma S2 — statement (`40002427:16760` 1440, `40002432:27418` 640).
+ *  640-s2 crop is the chip+headline AABB (280px), not the 666px padded frame.
+ */
 export function Statement() {
   return (
-    <section className="relative mx-auto max-w-[1440px] px-8 py-32 sm:py-[196px]">
+    <section className="relative mx-auto max-w-[1440px] px-8 py-32 sm:py-[84px] lg:py-[196px]">
       <div className="relative mx-auto max-w-3xl text-center">
         <FloatingChip
-          className="top-[-3rem] left-[2%] sm:top-[-73px] sm:left-[-19px] lg:top-[-3rem] lg:left-[2%]"
+          className="top-[-3rem] left-[2%] sm:top-[-78px] sm:left-[-19px] lg:top-[-3rem] lg:left-[2%]"
           rotate="-rotate-6"
           delay={0}
         >
@@ -17,7 +19,7 @@ export function Statement() {
           changes published
         </FloatingChip>
         <FloatingChip
-          className="top-[-4.5rem] right-[10%] sm:top-[-61px] sm:right-[73px] lg:top-[-4.5rem] lg:right-[10%]"
+          className="top-[-4.5rem] right-[10%] sm:top-[-66px] sm:right-[78px] lg:top-[-4.5rem] lg:right-[10%]"
           rotate="rotate-12"
           delay={0.1}
           tile="bg-[#F03C2E]"
@@ -25,7 +27,7 @@ export function Statement() {
           <GitTileGlyph />
         </FloatingChip>
         <FloatingChip
-          className="bottom-[-4rem] left-[18%] sm:bottom-[-81px] sm:left-[84px] lg:bottom-[-4rem] lg:left-[18%]"
+          className="bottom-[-4rem] left-[18%] sm:bottom-[-77px] sm:left-[79px] lg:bottom-[-4rem] lg:left-[18%]"
           rotate="-rotate-6"
           delay={0.2}
           tile="bg-[#BC52EE]"
@@ -33,7 +35,7 @@ export function Statement() {
           <AstroGlyph className="relative z-[1] size-8 sm:size-14" />
         </FloatingChip>
         <FloatingChip
-          className="right-[-2%] bottom-[-1rem] sm:right-[-11px] sm:bottom-[-51px] lg:right-[-2%] lg:bottom-[-1rem]"
+          className="right-[-2%] bottom-[-1rem] sm:right-[-8px] sm:bottom-[-54px] lg:right-[-2%] lg:bottom-[-1rem]"
           rotate="-rotate-3"
           delay={0.3}
         >
