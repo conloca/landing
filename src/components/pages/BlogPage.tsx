@@ -96,6 +96,10 @@ export function BlogPage() {
           <div className="blog-hero__breadcrumbs-large">
             <Breadcrumbs items={blogHeroContent.largeBreadcrumbs} />
           </div>
+          <span className="blog-hero__badge">
+            <span aria-hidden="true" className="blog-hero__badge-dot" />
+            {blogHeroContent.badgeLabel}
+          </span>
           <div className="blog-hero__breadcrumbs-compact">
             <Breadcrumbs items={blogHeroContent.compactBreadcrumbs} />
           </div>
