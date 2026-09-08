@@ -10,12 +10,19 @@
  * have to identify the same page.
  */
 
-export type AppPage = 'home' | 'how-it-works' | 'blog'
+export type AppPage =
+  | 'home'
+  | 'how-it-works'
+  | 'blog' | 'pricing' | 'blog-one-change' | 'blog-edit-what-you-see' | 'docs'
 
 export function pageFromPath(pathname: string): AppPage {
   const normalized = stripBase(pathname).replace(/\/+$/, '') || '/'
+  if (normalized === '/blog/one-change-shouldnt-get-lost') return 'blog-one-change'
+  if (normalized === '/blog/edit-what-you-see') return 'blog-edit-what-you-see'
   if (normalized === '/blog') return 'blog'
+  if (normalized === '/pricing') return 'pricing'
   if (normalized === '/how-it-works') return 'how-it-works'
+  if (normalized === '/docs') return 'docs'
   return 'home'
 }
 

@@ -1,0 +1,93 @@
+{
+  "source": {
+    "fileKey": "OxxksZFS8hzKoFTeSRdFGs",
+    "sectionNode": "40002391:9972",
+    "sectionNodeNote": "The section the extraction targeted. It is NOT the parent of every render below: the four breakpoint frames are separate top-level nodes, each identified by its own nodeId.",
+    "capturedAt": "2026-08-25",
+    "endpoint": "GET /v1/images/:key (render)",
+    "scale": "1x"
+  },
+  "renders": [
+    {
+      "file": "renders/frame-desktop1440.png",
+      "nodeId": "40002427:16387",
+      "layerName": "Homepage - Developers - >1280",
+      "width": 1440,
+      "height": 6460,
+      "kind": "breakpoint"
+    },
+    {
+      "file": "renders/frame-tablet1024.png",
+      "nodeId": "40002426:4064",
+      "layerName": null,
+      "width": 1024,
+      "height": 7977,
+      "kind": "breakpoint"
+    },
+    {
+      "file": "renders/frame-small640.png",
+      "nodeId": "40002427:20368",
+      "layerName": null,
+      "width": 640,
+      "height": 8758,
+      "kind": "breakpoint"
+    },
+    {
+      "file": "renders/frame-mobile393.png",
+      "nodeId": "40002441:868",
+      "layerName": null,
+      "width": 393,
+      "height": 8311,
+      "kind": "breakpoint"
+    },
+    {
+      "file": "renders/sec-s0-hero.png",
+      "nodeId": "40002427:16388",
+      "layerName": "Frame 610",
+      "width": 1592,
+      "height": 980,
+      "kind": "section",
+      "note": "Wider than the 1440 frame: the rotated hero panel bleeds past the right edge. Crop to the leftmost 1440 columns before using with scripts/visual-diff.ts."
+    },
+    {
+      "file": "renders/sec-s1-three-features.png",
+      "nodeId": "40002427:16418",
+      "layerName": "Frame 609",
+      "width": 1440,
+      "height": 2538,
+      "kind": "section"
+    },
+    {
+      "file": "renders/sec-s2-everything.png",
+      "nodeId": "40002427:16760",
+      "layerName": "Frame 1618873213",
+      "width": 1440,
+      "height": 667,
+      "kind": "section"
+    },
+    {
+      "file": "renders/sec-s3-feature-grid.png",
+      "nodeId": "40002427:16814",
+      "layerName": "Frame 1618873184",
+      "width": 1440,
+      "height": 1004,
+      "kind": "section"
+    },
+    {
+      "file": "renders/sec-s4-pricing.png",
+      "nodeId": "40002427:17148",
+      "layerName": "Frame 1618873226",
+      "width": 1440,
+      "height": 1199,
+      "kind": "section"
+    },
+    {
+      "file": "renders/sec-s5-footer.png",
+      "nodeId": "40002427:17255",
+      "layerName": "Frame 1618873228",
+      "width": 1440,
+      "height": 92,
+      "kind": "section"
+    }
+  ]
+}

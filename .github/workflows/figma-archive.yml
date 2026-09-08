@@ -1,0 +1,39 @@
+# Guards the preserved Figma extraction in docs/figma/.
+#
+# WHY THIS EXISTS: .gitattributes marks that directory `-diff`, so its files
+# show as "Binary files differ" in a pull request and a human reviewer cannot
+# check them by eye. Two properties therefore have to be machine-enforced —
+# that no signed-URL credential is present, and that renders-manifest.json
+# still matches the PNGs on disk. See docs/figma/README.md.
+#
+# TRIGGER CHOICE — `pull_request`, deliberately NOT `pull_request_target`:
+# this job RUNS repository code (a bun script), so it must stay on the
+# unprivileged trigger where a fork PR gets a read-only token and no secrets.
+# The other gates in this directory use `pull_request_target` precisely
+# because they only diff and grep without executing anything; do not copy
+# that pattern here.
+
+name: figma-archive
+
+on:
+  pull_request:
+    paths:
+      - 'docs/figma/**'
+      - 'scripts/check-figma-archive.ts'
+      - '.github/workflows/figma-archive.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  figma-archive:
+    name: figma-archive
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - uses: oven-sh/setup-bun@735343b667d3e6f658f44d0eca948eb6282f2b76 # v2
+        with:
+          bun-version: latest
+      - name: Check the Figma archive
+        run: bun run scripts/check-figma-archive.ts

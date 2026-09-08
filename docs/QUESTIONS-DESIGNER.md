@@ -274,7 +274,19 @@ widths — 1440, 1024, 640, and 393 pixels.
     are fine to keep? We may be able to fix the permission on our side by reissuing the
     token, so this one may resolve without you.
 
-    **Answered by us:** Keep our token names until the Colors page is readable.
+    **Answered by us:** The Colors page is now readable -- fetched via a
+    files-endpoint batching workaround once the per-node endpoint's quota
+    reset (see `docs/figma/COLOR-TOKENS.md` for the full designer-token
+    table and `docs/figma/COLORS-RECONCILIATION-46.md` for the line-by-line
+    check against `tokens/tokens.json`). Every one of our token names that
+    has a designer counterpart already matches: our `foreground` is their
+    `color.fg.strong.default`, our `primary` is their `color.bg.accent.initial`,
+    our `muted-foreground` is their `color.fg.softer.default`, our `border`/
+    `input` is their `color.stroke.strong`. One real mismatch turned up in
+    the process and is *not* silently fixed here: our `destructive` token is
+    `#fe3434`, the exact red this document already says not to use as a UI
+    error colour (see Colors-page question 12 above) because it fails the
+    4.5:1 contrast minimum. That still needs a deliberate fix.
 
 ### We built it this way — please confirm
 
@@ -346,6 +358,79 @@ widths — 1440, 1024, 640, and 393 pixels.
   canvas is 849×1334 — meaning the clip is inherently larger than its container and gets
   cropped on all four sides, shifted slightly upward so the "Locales" panel itself lands
   in the visible window — which is exactly how it's built.
+
+---
+
+## How It Works page
+
+The dedicated `/how-it-works/` page (pull request 215) predates any Figma canvas for
+this page — the extraction that produced `DESIGN-SPEC.md` and `nodes.json` only ever
+found "How it works" as a nav-bar link label, never a page frame, and the code says so
+directly: `HowItWorksPage.tsx` was built by reusing the existing three developer
+feature-card copy (`FEATURE_CARDS_COPY.developer` from the S1 `ThreeFeatures` section)
+behind a hero and a "Get started / Read docs" pair, on the stated assumption that no
+dedicated design existed to follow.
+
+That assumption is now out of date. Five reference exports for a page literally named
+"How it works" now exist in the Figma export set, and they contradict both the current
+page and each other:
+
+- **`How it works - _1280.png`** (a full page, 1440×6448 at 1x) — hero "The content
+  engineering workflow" with a single wide pipeline diagram (Define → Connect →
+  Orchestrate), then four more sections: "Transparent by default. Versioned from the
+  start." (three cards), "Three content layers. Zero structural drift." (three cards),
+  "Two interfaces. Exactly the same state." (a marketer/developer split panel), "The
+  same review path as your code." (four steps: Branch, Review, Merge, Deploy), and a
+  closing "Bridge engineering and marketing." banner.
+- **`How it works - _1280-1.png`** and **`How it works - _1280-2.png`** — identical to
+  each other (1440×5124 at 1x), and a different design from the one above: hero titled
+  plainly "How it Works", then "The Git-Native Pipeline" (three separate step cards
+  instead of one wide diagram), "The Three Layers of Content" (a numbered I/II/III list:
+  MDX Blocks, Page Builder, Structured Data), "The 'No Forked Logic' Engine" (a
+  marketer/developer split panel, differently styled from the split panel in the design
+  above), "Merge & Deploy" (three steps this time — Branching, Review, Deployment, not
+  four), and a closing "Ready to Initialize Your Pipeline?" banner.
+- **`How it works - Minimal - _1280.png`** — a third, shorter design (1440×4592 at 1x)
+  with yet another hero ("A visual edit. A Git commit. The same change."), "One simple
+  loop." (a four-circle Define/Edit/Review/Deploy diagram), "One source. Two ways to
+  work." (a third differently-styled split panel), "Your stack stays yours." (a
+  four-column 01–04 list: Branch, Review, Merge, Deploy), and a closing "Start with Git.
+  Keep moving visually." banner.
+- **`How it works - image.png`** — a high-resolution crop (2880×2165, i.e. a 1440-wide
+  section at 2x) of a fourth treatment of the "three content types" idea: dark
+  full-bleed background, eyebrow "THREE CONTENT LAYERS / ONE REPOSITORY", heading
+  "Different shapes. The same foundation.", with the same three sub-labels as the
+  `_1280-1`/`_1280-2` design (MDX Blocks, Page Builder, Structured Data) but different
+  heading copy and a completely different visual layout (dark full-bleed vs. that
+  design's light two-column grid).
+
+None of these four designs agree with each other on hero copy, section count, section
+order, card count within a section (three vs. four review/deploy steps), or visual
+treatment of the repeated "split panel" and "three content types" motifs, and none of
+them are reachable from the main Figma extraction (`nodes.json`, `DESIGN-SPEC.md`) that
+every other page on this site was built from — they appear to be separate, mutually
+exclusive exploratory frames rather than one settled design with revisions layered on
+top. None of them resembles the current live page's structure (a hero plus one list of
+three cards) at all.
+
+We did not attempt to rebuild the page against any one of these, for two reasons this
+time, not one: first, we cannot tell which (if any) is the canonical direction — picking
+one and building it risks throwing the work away if a different one is actually final;
+second, every one of the four needs several custom illustrated mockups that don't exist
+as exportable assets anywhere in the export set (an animated three-node pipeline
+diagram, a code-editor/git-diff split panel, a "no forked logic" marketer/developer
+comparison panel, and a branch/review/merge/deploy status strip) — these are screenshots
+of finished compositions, not components we can extract and re-lay-out the way the rest
+of the site's assets work.
+
+**Answered by us, for now:** leave the current minimal page in place rather than
+guessing at one of the four conflicting directions. It is internally consistent, reuses
+already-approved copy and the site's existing header/footer/CTA components, and renders
+correctly with no bugs at 393/640/1024/1440 (verified during this pass). Please tell us
+which of the four designs — if any — is the current direction, and send the underlying
+components/screenshots for the custom mockups (the pipeline diagram, all three
+split-panel treatments, and the branch/review/merge/deploy strip) so a real rebuild has
+something to extract instead of hand-redrawing screenshots.
 
 ---
 
@@ -421,6 +506,9 @@ the same thing in two places later).
 10. No dark theme on the marketing page; unused dark tokens stay (layout, question 19).
 11. The yearly price shown as a per-month figure, with no "Billed annually" subtitle
     (pricing, question 2).
+12. The `/how-it-works/` page keeps its current minimal build rather than guessing among
+    four conflicting, unreachable-from-extraction Figma designs (How It Works page,
+    "Answered by us, for now").
 
 Separately, not a confirmation item but a fact: the site's main UI palette — grays plus
 a lime accent color — comes from the landing page design and is used to color every

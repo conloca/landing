@@ -82,7 +82,7 @@
 
 .blog-listing {
   --blog-stack-card-height: 448px;
-  --blog-stack-gap: -390px;
+  --blog-stack-gap: -325px;
   display: flex;
   flex-direction: column;
   align-items: center;

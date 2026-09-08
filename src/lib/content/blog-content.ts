@@ -31,6 +31,8 @@ export interface BlogArticle {
   }
   layout: 'full' | 'split'
   readTime: string
+  /** Slug of the article's detail page under `/blog/<slug>/` — see article-content.ts. */
+  slug: string
   title: string
 }
 
@@ -91,6 +93,7 @@ export const blogListingContent: BlogListingContent = {
       },
       layout: 'full',
       readTime: '4 min read',
+      slug: 'one-change-shouldnt-get-lost',
       title: "One change shouldn't get lost across three systems",
     },
     {
@@ -105,6 +108,7 @@ export const blogListingContent: BlogListingContent = {
       },
       layout: 'split',
       readTime: '4 min read',
+      slug: 'edit-what-you-see',
       title: 'Edit what you see, without losing control of your code',
     },
     {
@@ -118,6 +122,7 @@ export const blogListingContent: BlogListingContent = {
       },
       layout: 'full',
       readTime: '4 min read',
+      slug: 'one-change-shouldnt-get-lost',
       title: "One change shouldn't get lost across three systems",
     },
     {
@@ -132,6 +137,7 @@ export const blogListingContent: BlogListingContent = {
       },
       layout: 'split',
       readTime: '4 min read',
+      slug: 'edit-what-you-see',
       title: 'Edit what you see, without losing control of your code',
     },
   ],

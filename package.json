@@ -1,7 +1,7 @@
 {
   "name": "conloca-landing",
   "private": true,
-  "version": "0.6.16",
+  "version": "0.7.2",
   "type": "module",
   "scripts": {
     "tokens": "bun run scripts/build-tokens.ts",
@@ -14,7 +14,8 @@
     "visual-diff": "bun run scripts/visual-diff.ts",
     "figma:export": "bun run scripts/figma-export.ts",
     "figma:node": "bun run scripts/figma-fetch-node.ts",
-    "worktree:audit": "bun scripts/worktree-audit.ts"
+    "worktree:audit": "bun scripts/worktree-audit.ts",
+    "check:figma": "bun run scripts/check-figma-archive.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",

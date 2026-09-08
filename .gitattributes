@@ -13,3 +13,15 @@
 # in a subdirectory would silently lose the declaration — and then be uncommittable for exactly
 # the reason this exists.
 docs/figma/**/*.json -diff linguist-generated=true
+# outline.txt / copy.txt are extracted dumps, not authored source — same `-diff`
+# reason as the JSON envelopes. renders-manifest.json is the one authored file
+# in this directory (node ids, verified pixel sizes) and must stay reviewable.
+docs/figma/outline.txt -diff linguist-generated=true
+docs/figma/copy.txt -diff linguist-generated=true
+docs/figma/renders-manifest.json diff linguist-generated=false
+# Animation-capture frames are rendered PNGs, same as renders/*.png, and
+# must be treated as opaque binary regardless of git's content-sniffing --
+# a PNG whose compressed stream happens to lack a NUL byte in the first ~8KB
+# git samples can otherwise be misdetected as text, which corrupts diff
+# tooling that assumes UTF-8 output (review diff crashed on exactly this).
+docs/figma/animations/*.png binary

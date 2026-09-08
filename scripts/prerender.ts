@@ -18,6 +18,16 @@ const PAGES = [
   { url: '/', file: 'dist/index.html' },
   { url: '/how-it-works/', file: 'dist/how-it-works/index.html' },
   { url: '/blog/', file: 'dist/blog/index.html' },
+  {
+    url: '/blog/one-change-shouldnt-get-lost/',
+    file: 'dist/blog/one-change-shouldnt-get-lost/index.html',
+  },
+  {
+    url: '/blog/edit-what-you-see/',
+    file: 'dist/blog/edit-what-you-see/index.html',
+  },
+  { url: '/docs/', file: 'dist/docs/index.html' },
+  { url: '/pricing/', file: 'dist/pricing/index.html' },
 ] as const
 
 interface ServerEntry {
