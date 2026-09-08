@@ -41,7 +41,9 @@ export interface ArticleTocEntry {
 }
 
 export interface ArticleContent {
+  author: string
   date: string
+  dek?: string
   image: { height: number; src: string; width: number }
   intro: string[]
   readTime: string
@@ -62,7 +64,9 @@ function paragraph(text: string): ArticleParagraphBlock {
 }
 
 export const oneChangeArticle: ArticleContent = {
+  author: 'Conloca team',
   date: 'September 2026',
+  dek: "On most teams, the code lives in one place, the content in a CMS, the campaign brief in a doc, and the open questions in a chat thread. The published page is where all of it finally meets. No single system holds the whole picture.",
   image: { height: 810, src: contentSystemsUrl, width: 1440 },
   readTime: '4 min read',
   slug: 'one-change-shouldnt-get-lost',
@@ -208,6 +212,7 @@ export const oneChangeArticle: ArticleContent = {
 }
 
 export const editWhatYouSeeArticle: ArticleContent = {
+  author: 'Conloca team',
   date: 'September 2026',
   image: { height: 810, src: editControlUrl, width: 1440 },
   readTime: '4 min read',
@@ -222,4 +227,3 @@ export const editWhatYouSeeArticle: ArticleContent = {
   ],
 }
 
-export const ARTICLES: readonly ArticleContent[] = [oneChangeArticle, editWhatYouSeeArticle]
