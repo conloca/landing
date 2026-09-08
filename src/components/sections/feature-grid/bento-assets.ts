@@ -1,9 +1,18 @@
 /**
- * The single source of truth for each bento illustration's committed file
- * name, its intrinsic pixel size, and the Figma card node it was cropped
- * from. Deliberately has no image imports of its own — `illustrations.tsx`
- * still needs one static `import … from '@/assets/.../*.webp'` per file for
- * Vite to bundle it as an asset, but every *number* here is written once.
+ * The single source of truth for each RASTER bento illustration's committed
+ * file name, its intrinsic pixel size, and the Figma card node it was
+ * cropped from. Deliberately has no image imports of its own —
+ * `illustrations.tsx` still needs one static `import … from
+ * '@/assets/.../*.webp'` per file for Vite to bundle it as an asset, but
+ * every *number* here is written once.
+ *
+ * "Scheduled Publishing" is NOT here: its Figma source is a photo/device-
+ * screenshot composite (no vector layer exists to export), and the raster
+ * crop of it used to clip against the card's fade before reaching the
+ * title. It's now a hand-authored inline SVG living directly in
+ * `illustrations.tsx`, matching the flat line-art convention the other six
+ * illustrations already use — see that file's
+ * `ScheduledPublishingIllustration` for the rationale and the artwork.
  *
  * Being import-free also makes this file safe to import from a `bun:test`
  * file: bun has no Vite-style loader for `.webp`, so a test that imported
@@ -20,12 +29,6 @@ export interface BentoAssetSpec {
 }
 
 export const BENTO_ASSETS = {
-  scheduledPublishing: {
-    file: 'scheduled-publishing.webp',
-    width: 682,
-    height: 533,
-    node: '40002427:17071',
-  },
   branch: { file: 'git-branch.webp', width: 682, height: 192, node: '40002427:16815' },
   markdown: { file: 'markdown.webp', width: 682, height: 192, node: '40002427:16949' },
   mediaLibrary: { file: 'media-library.webp', width: 335, height: 192, node: '40002427:17031' },

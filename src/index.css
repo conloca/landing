@@ -78,7 +78,7 @@
 .bento-grid {
   display: grid;
   gap: 0.75rem;
-  grid-template-areas: "big" "r1" "r2" "c1" "c2" "c3" "c4";
+  grid-template-areas: "big" "r1" "c2" "c3" "c1" "r2" "c4";
 }
 
 @media (min-width: 640px) {

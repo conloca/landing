@@ -60,7 +60,7 @@ function ArticleMetadata({ article }: { article: BlogArticle }) {
   )
 }
 
-function BlogArticleCard({ article }: { article: BlogArticle }) {
+export function BlogArticleCard({ article }: { article: BlogArticle }) {
   return (
     <article className={`blog-card blog-card--${article.layout}`}>
       <a aria-label={article.title} className="blog-card__body" href={publicUrl(`blog/${article.slug}/`)}>
@@ -96,6 +96,10 @@ export function BlogPage() {
           <div className="blog-hero__breadcrumbs-large">
             <Breadcrumbs items={blogHeroContent.largeBreadcrumbs} />
           </div>
+          <span className="blog-hero__badge">
+            <span aria-hidden="true" className="blog-hero__badge-dot" />
+            {blogHeroContent.badgeLabel}
+          </span>
           <div className="blog-hero__breadcrumbs-compact">
             <Breadcrumbs items={blogHeroContent.compactBreadcrumbs} />
           </div>

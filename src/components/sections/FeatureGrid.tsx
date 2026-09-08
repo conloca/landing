@@ -64,13 +64,13 @@ const CARDS = [
 
 /**
  * The first card is the large one, because `.bento-grid > :nth-child(1)` is
- * what claims the `big` grid area. Only `scheduledPublishing`'s crop
- * (`bento-assets.ts`, 682×533) is exported at the big slot's proportions —
- * the other six are 192px-tall strip crops. Moving a different card to the
- * front does NOT "just work": its crop upscales into the large slot at the
- * wrong aspect ratio, and its actual big-card artwork needs a fresh
- * `get_screenshot` export (see `docs/figma/DESIGN-SPEC.md`) before the swap
- * looks right.
+ * what claims the `big` grid area. Only `ScheduledPublishingIllustration`
+ * (a hand-authored 682×533 SVG, see `feature-grid/illustrations.tsx`) is
+ * built at the big slot's proportions — the other six are 192px-tall raster
+ * strip crops. Moving a different card to the front does NOT "just work":
+ * its crop upscales into the large slot at the wrong aspect ratio, and its
+ * actual big-card artwork needs a fresh `get_screenshot` export (see
+ * `docs/figma/DESIGN-SPEC.md`) before the swap looks right.
  *
  * "Full version history"'s body ("Build a block once, reuse it across every
  * page") describes reusable blocks, not version history — a content bug in

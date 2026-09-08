@@ -483,6 +483,21 @@ Each plan stores only its monthly price, and the site works the yearly price out
 - **The buttons on the pricing cards don't lead anywhere yet.** That isn't a pricing
   question — no destinations exist for any of the page's buttons yet, and it's tracked
   separately as issue #1.
+- **The exact seat counts, overage pricing, and support-tier wording per plan are
+  business figures, not Figma's.** The rest of this section documents the annual-vs-
+  monthly price math (the ten-month year, the shared discount rate) but never itemized
+  the seat/overage/support numbers Denny gave us, so here they are, confirmed and
+  current as of this pass:
+  - **Pro:** 15 seats included, $9 per additional seat, 25 seats max, "Priority
+    support" (Figma's stale frame shows 10 seats, $7 per additional seat, 20 seats
+    max, and a "Support" label instead).
+  - **Business:** $12 per additional seat (Figma's stale frame shows $10 per seat).
+
+  These, and every other plan figure, live in one place —
+  `src/lib/content/pricing-plans.ts` — which is the single source of truth per
+  "Pricing figures come from the business, not the design file" in `AGENTS.md`. A
+  fidelity pass should read figures from that file, not from Figma or from this doc,
+  and should not "correct" a mismatch between the two back toward Figma.
 
 ---
 

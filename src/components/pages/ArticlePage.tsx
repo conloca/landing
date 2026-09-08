@@ -6,20 +6,24 @@
  * render this same component with a different `ArticleContent` value — see
  * `src/lib/content/article-content.ts`.
  *
- * Assumptions: no dedicated article Figma frame exists for desktop; layout
- * follows the site's existing typographic scale (font-display headings,
- * stone/lime palette, italic supporting copy) rather than a design frame.
- * The in-page table of contents and numbered sections are grounded in
- * `article.txt`'s own "01 / 02 / 03..." structure, not invented.
+ * Header byline/dek layout, the TOC divider rows, and the Continue reading
+ * band are grounded in Figma frames (`article_top_*`, `toc_column_1024`,
+ * `article_bottom_*`); everything else in this file (in-body sections,
+ * numbered TOC entries) follows `article.txt`'s own "01 / 02 / 03..."
+ * structure and the site's existing typographic scale rather than a
+ * dedicated frame. Continue reading reuses `BlogArticleCard` from
+ * `BlogPage.tsx` so the related-article card matches `.blog-card--split`
+ * pixel-for-pixel instead of duplicating that markup.
  */
 
 import type { ArticleContent } from '@/lib/content/article-content'
-import { ARTICLES } from '@/lib/content/article-content'
+import { blogListingContent } from '@/lib/content/blog-content'
 import { publicUrl } from '@/lib/publicUrl'
+import { BlogArticleCard } from './BlogPage'
 
 function ArticleHeader({ article }: { article: ArticleContent }) {
   return (
-    <header className="mx-auto flex max-w-[720px] flex-col gap-6 px-4 pt-24 sm:px-6 sm:pt-28 lg:px-8">
+    <header className="mx-auto flex max-w-[1440px] flex-col gap-6 px-4 pt-24 sm:px-6 sm:pt-28 lg:px-8">
       <p className="flex items-center gap-4 font-mono text-xs uppercase tracking-wide text-stone-500">
         <a href={publicUrl('blog/')} className="hover:text-stone-700">
           Blog
@@ -32,6 +36,21 @@ function ArticleHeader({ article }: { article: ArticleContent }) {
       <h1 className="font-display max-w-[24ch] text-[32px] leading-[38px] font-bold text-stone-900 sm:text-[40px] sm:leading-[1.2] lg:text-5xl lg:leading-none">
         {article.title}
       </h1>
+      {article.dek ? (
+        <p className="max-w-[65ch] text-base leading-[1.7] text-stone-500 italic lg:hidden">{article.dek}</p>
+      ) : null}
+      <div className="border-t border-stone-200" />
+      <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:gap-12">
+        <div className="flex flex-col gap-1 lg:w-80 lg:flex-none">
+          <p className="font-mono text-xs uppercase tracking-wide text-stone-500">Written by</p>
+          <p className="text-stone-900">{article.author}</p>
+        </div>
+        {article.dek ? (
+          <p className="hidden max-w-[65ch] text-base leading-[1.7] text-stone-500 italic lg:block">
+            {article.dek}
+          </p>
+        ) : null}
+      </div>
     </header>
   )
 }
@@ -55,11 +74,11 @@ function ArticleToc({ article }: { article: ArticleContent }) {
   return (
     <nav aria-label="In this article" className="mx-auto max-w-[720px] px-4 pt-10 sm:px-6 lg:px-8">
       <p className="font-mono text-xs uppercase tracking-wide text-stone-500">In this article</p>
-      <ol className="mt-4 flex flex-col gap-3">
+      <ol className="mt-4 flex flex-col divide-y divide-stone-200 border-t border-stone-200">
         {article.toc.map((entry, index) => (
           <li key={entry.id}>
             <a
-              className="flex items-baseline gap-4 text-stone-600 hover:text-stone-900"
+              className="flex items-baseline gap-4 py-6 text-stone-600 hover:text-stone-900"
               href={`#${entry.id}`}
             >
               <span className="font-mono text-xs text-stone-400">
@@ -147,26 +166,32 @@ function ArticleClosing({ article }: { article: ArticleContent }) {
 }
 
 function ContinueReading({ currentSlug }: { currentSlug: string }) {
-  const others = ARTICLES.filter((article) => article.slug !== currentSlug)
+  const seenSlugs = new Set<string>()
+  const others = blogListingContent.articles.filter((article) => {
+    if (article.slug === currentSlug || seenSlugs.has(article.slug)) return false
+    seenSlugs.add(article.slug)
+    return true
+  })
   if (others.length === 0) return null
+  const splitCards = others.map((article) => Object.assign({}, article, { layout: 'split' as const }))
   return (
-    <div className="mx-auto mt-20 max-w-[720px] px-4 sm:px-6 lg:px-8">
-      <p className="font-mono text-xs uppercase tracking-wide text-stone-500">Continue reading</p>
-      <ul className="mt-4 flex flex-col gap-4 sm:flex-row">
-        {others.map((article) => (
-          <li key={article.slug} className="flex-1">
-            <a
-              className="block rounded-2xl border border-stone-200 p-5 hover:border-stone-400"
-              href={publicUrl(`blog/${article.slug}/`)}
+    <div className="mt-20 bg-stone-100 py-14">
+      <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
+        <div className="flex items-baseline justify-between gap-4">
+          <h2 className="font-display text-3xl font-bold text-stone-900 sm:text-4xl">Continue reading</h2>
+          <p className="font-mono text-xs uppercase tracking-wide text-stone-500">More stories</p>
+        </div>
+        <div className="mt-8 flex flex-col gap-6">
+          {splitCards.map((article) => (
+            <div
+              className="[--blog-stack-card-height:420px] lg:[--blog-stack-card-height:460px]"
+              key={article.slug}
             >
-              <span className="font-mono text-xs uppercase tracking-wide text-stone-500">
-                {article.readTime} / {article.date}
-              </span>
-              <h3 className="font-display mt-2 text-lg font-semibold text-stone-900">{article.title}</h3>
-            </a>
-          </li>
-        ))}
-      </ul>
+              <BlogArticleCard article={article} />
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   )
 }

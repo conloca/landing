@@ -54,7 +54,7 @@ function FeatureRow({ feature }: { feature: PlanFeature }) {
   return (
     <li
       className={cn(
-        'flex items-start gap-1.5 text-base leading-[1.7] font-medium',
+        'flex items-start gap-1.5 text-base leading-[1.7] font-medium italic',
         feature.included ? 'text-stone-700' : 'text-stone-400',
       )}
     >
