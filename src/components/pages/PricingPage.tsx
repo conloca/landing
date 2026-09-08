@@ -83,8 +83,8 @@ export function PricingPage() {
             Three plans. One Git-native workflow.
           </h2>
           <p className="max-w-[32ch] text-base leading-[1.7] text-stone-500 lg:text-right">
-            All prices are billed monthly. Upgrade as your team, repositories, and governance
-            needs grow.
+            Prices shown are per month. Upgrade as your team, repositories, and governance needs
+            grow.
           </p>
         </div>
       </section>
@@ -205,6 +205,7 @@ export function PricingPage() {
             <img
               alt=""
               src={ctaBackdropUrl}
+              loading="lazy"
               className="absolute inset-0 size-full object-cover"
             />
             <p className="relative font-mono text-xs uppercase tracking-wide text-stone-600">
