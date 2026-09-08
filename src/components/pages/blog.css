@@ -249,7 +249,7 @@
 
   .blog-listing {
     --blog-stack-card-height: 718px;
-    --blog-stack-gap: -600px;
+    --blog-stack-gap: -450px;
     padding: 8px;
   }
 
