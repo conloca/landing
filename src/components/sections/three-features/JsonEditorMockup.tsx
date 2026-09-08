@@ -27,9 +27,12 @@ const STR = 'text-[#7CCF00]'
  * Assumptions: the two panes are composed at the desktop illustration
  * size (1095×831) and `scale-*`'d per breakpoint (0.48 / 0.721 / 0.847)
  * so radii, type, and overlap stay in the same proportion as the Figma
- * frames. `origin-top-left` keeps the scaled box anchored to the visual
- * slot; the card's `overflow-hidden` clips the overflow, matching the
- * Figma Section clip (the visual container itself does not clip).
+ * frames. At 393 the slot is 279px with a 21px top offset: Figma's
+ * 393-s1 first-card crop is 574px, copy through the CTAs is ~250px,
+ * `gap-6` is 24px, and card padding is 40px. `origin-top-left` keeps the
+ * scaled box anchored to the visual slot; the card's `overflow-hidden`
+ * clips the overflow, matching the Figma Section clip (the visual
+ * container itself does not clip).
  *
  * `aria-hidden` because every string in here is set dressing, not page
  * content: the filename, the JSON body and the mock article ("Turn text to
@@ -44,10 +47,10 @@ const STR = 'text-[#7CCF00]'
 export function JsonEditorMockup() {
   return (
     <div
-      className="relative h-full min-h-[327px] w-full sm:min-h-[590px] lg:min-h-full"
+      className="relative h-full min-h-[279px] w-full sm:min-h-[590px] lg:min-h-full"
       aria-hidden
     >
-      <div className="absolute top-[13%] left-0 origin-top-left scale-[0.48] sm:top-[22%] sm:scale-[0.721] lg:top-[-1%] lg:left-[-3%] lg:scale-[0.847]">
+      <div className="absolute top-[21px] left-0 origin-top-left scale-[0.48] sm:top-[22%] sm:scale-[0.721] lg:top-[-1%] lg:left-[-3%] lg:scale-[0.847]">
         <div className="relative h-[831px] w-[1095px]">
           <JsonPane />
           <PageBuilderPane />

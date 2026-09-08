@@ -172,7 +172,10 @@ export function FeatureCard({
           )}
           <div
             className={cn(
-              'relative min-h-[327px] rounded-2xl sm:min-h-[590px] lg:min-h-56',
+              // visual-right is card 1: Figma 393-s1 is 574px; copy through
+              // CTAs ~250 + gap-6 24 + padding 40 leaves 279. Cards 2/3 stay 327.
+              'relative rounded-2xl sm:min-h-[590px] lg:min-h-56',
+              layout === 'visual-right' ? 'min-h-[279px]' : 'min-h-[327px]',
               layout === 'visual-right' ? 'overflow-visible' : 'overflow-hidden',
               isStacked ? 'order-last flex-1 lg:order-none' : 'flex-1 lg:self-stretch',
             )}
