@@ -75,6 +75,16 @@ const MUST_NOT_MATCH = [
   'https://figma-alpha-api.s3.us-west-2.amazonaws.com/images/c66a5cfe-dba6',
 ]
 
+// Same fixture-pinning discipline as the signed-URL matcher above: the
+// figd_ token regex is the other half of `checkForCredentials`, and it had
+// no self-test until now, so a "simplification" of it could have silently
+// stopped catching Figma personal access tokens while CI stayed green.
+const TOKEN_MUST_MATCH = ['figd_AbCdEfGh12345678']
+const TOKEN_MUST_NOT_MATCH = [
+  'the `figd_` prefix identifies a Figma personal access token',
+  'figd_short',
+]
+
 interface RenderEntry {
   file: string
   nodeId: string
@@ -109,6 +119,20 @@ function selfTestCredentialMatcher(): void {
   }
   for (const sample of MUST_NOT_MATCH) {
     if (SIGNED_URL_MARKERS.test(sample)) {
+      failures.push(
+        `credential matcher self-test: false positive on safe text (${sample.slice(0, 48)}…)`,
+      )
+    }
+  }
+  for (const sample of TOKEN_MUST_MATCH) {
+    if (!FIGMA_TOKEN.test(sample)) {
+      failures.push(
+        `credential matcher self-test: failed to match a known Figma token (${sample.slice(0, 48)}…) — the regex no longer detects leaks`,
+      )
+    }
+  }
+  for (const sample of TOKEN_MUST_NOT_MATCH) {
+    if (FIGMA_TOKEN.test(sample)) {
       failures.push(
         `credential matcher self-test: false positive on safe text (${sample.slice(0, 48)}…)`,
       )
