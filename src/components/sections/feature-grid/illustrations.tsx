@@ -37,7 +37,7 @@ interface IllustrationProps {
  * Deliberately no `object-fit`: with only a CSS width set, the box's height
  * is derived from the `width`/`height` attributes' ratio via Tailwind
  * preflight's `img { height: auto }` (which overrides the attributes' own
- * presentational `height: 440px` hint with a proportional one) — a load-
+ * presentational `height: 533px` hint with a proportional one) — a load-
  * bearing dependency on that global reset applying to these images. So a
  * future re-export whose real dimensions drift from a stale literal here
  * renders as a visibly stretched image — a bug that is obvious on sight —

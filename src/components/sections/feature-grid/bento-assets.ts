@@ -23,7 +23,7 @@ export const BENTO_ASSETS = {
   scheduledPublishing: {
     file: 'scheduled-publishing.webp',
     width: 682,
-    height: 440,
+    height: 533,
     node: '40002427:17071',
   },
   branch: { file: 'git-branch.webp', width: 682, height: 192, node: '40002427:16815' },

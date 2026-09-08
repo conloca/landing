@@ -65,7 +65,7 @@ const CARDS = [
 /**
  * The first card is the large one, because `.bento-grid > :nth-child(1)` is
  * what claims the `big` grid area. Only `scheduledPublishing`'s crop
- * (`bento-assets.ts`, 682×440) is exported at the big slot's proportions —
+ * (`bento-assets.ts`, 682×533) is exported at the big slot's proportions —
  * the other six are 192px-tall strip crops. Moving a different card to the
  * front does NOT "just work": its crop upscales into the large slot at the
  * wrong aspect ratio, and its actual big-card artwork needs a fresh
