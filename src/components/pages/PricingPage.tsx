@@ -61,8 +61,8 @@ export function PricingPage() {
                 Choose a plan that fits you the best
               </h1>
               <p className="text-base leading-[1.7] text-stone-50/90">
-                Start lean, then scale content operations without changing the way your team
-                works. Every plan keeps Git at the center.
+                Start lean, then scale content operations without changing the way your team works.
+                Every plan keeps Git at the center.
               </p>
             </div>
             <SegmentedControl
@@ -96,7 +96,7 @@ export function PricingPage() {
         ))}
       </div>
 
-      <section className="mx-auto max-w-[1440px] px-1 pt-16 pb-16 sm:px-2">
+      <section id="comparison" className="mx-auto max-w-[1440px] px-1 pt-16 pb-16 sm:px-2">
         <div className="rounded-[20px] bg-stone-50 p-6 sm:rounded-3xl sm:p-8 lg:p-10">
           <div className="flex flex-col items-start justify-between gap-4 pb-8 lg:flex-row lg:items-end">
             <div className="flex flex-col gap-3">
@@ -189,7 +189,10 @@ export function PricingPage() {
                 <tr>
                   <td />
                   {PLANS.map((plan) => (
-                    <td key={plan.name} className={cn('rounded-b-2xl', plan.highlighted && 'bg-lime-50')} />
+                    <td
+                      key={plan.name}
+                      className={cn('rounded-b-2xl', plan.highlighted && 'bg-lime-50')}
+                    />
                   ))}
                 </tr>
               </tfoot>

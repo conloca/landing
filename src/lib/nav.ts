@@ -3,8 +3,8 @@ import { publicUrl } from '@/lib/publicUrl'
 /**
  * Shared primary nav links. Docs now has its own `/docs/` page. Pricing also
  * links to its own standalone `/pricing/` page rather than the homepage
- * section. The homepage still has its own embedded `#pricing` section
- * separately — that's what `CTA_LINKS.comparePlans` points at, unchanged.
+ * section. `CTA_LINKS.comparePlans` points at that standalone page's
+ * detailed comparison table, not the homepage's embedded pricing section.
  */
 export const HOME_HREF = publicUrl('')
 
@@ -32,8 +32,8 @@ export const CTA_LINKS = {
   tryDemo: null,
   readDocs: publicUrl('docs/'),
   choosePlan: null,
-  // The one real destination: the pricing section's own anchor.
-  comparePlans: '#pricing',
+  // The standalone /pricing/ page's detailed comparison table.
+  comparePlans: publicUrl('pricing/#comparison'),
   // `satisfies`, not a type annotation: this still catches a mistyped key at
   // the call site, which `Record<string, …>` would silently accept.
 } satisfies Record<string, string | null>

@@ -32,7 +32,7 @@ const TOPICS: DocsTopic[] = [
   },
   {
     title: 'Content in Git',
-    body: 'Every change is saved to the same Git repository that holds the site\'s code and structure, so copy, components, and the published result never drift apart.',
+    body: "Every change is saved to the same Git repository that holds the site's code and structure, so copy, components, and the published result never drift apart.",
     href: `${publicUrl('blog/one-change-shouldnt-get-lost/')}#git-safety-net`,
     linkLabel: 'See the technical walkthrough',
   },
@@ -45,7 +45,7 @@ const TOPICS: DocsTopic[] = [
   {
     title: 'Fast by default',
     body: 'Astro builds the published page and keeps the JavaScript shipped to visitors to a minimum, so editing visually never costs the site its speed.',
-    href: `${publicUrl('#pricing')}`,
+    href: CTA_LINKS.comparePlans,
     linkLabel: 'Compare plans',
   },
 ]
@@ -73,7 +73,10 @@ export function DocsPage() {
           >
             <h2 className="font-display text-2xl font-bold text-stone-900">{topic.title}</h2>
             <p className="text-base leading-[1.7] text-stone-600">{topic.body}</p>
-            <a className="mt-auto text-sm font-medium text-stone-900 underline underline-offset-4 hover:text-stone-600" href={topic.href}>
+            <a
+              className="mt-auto text-sm font-medium text-stone-900 underline underline-offset-4 hover:text-stone-600"
+              href={topic.href}
+            >
               {topic.linkLabel}
             </a>
           </article>
