@@ -42,6 +42,7 @@ const FIGMA_TOKEN = /\bfigd_[A-Za-z0-9_-]{8}/
 // exact misconception that invites a tidy-up PR to delete data that cannot be
 // refetched without a Figma Dev seat.
 const REQUIRED_FILES = [
+  'DESIGN-ANNOTATIONS.md',
   'DESIGN-SPEC.md',
   'README.md',
   'anim.json',
@@ -52,6 +53,9 @@ const REQUIRED_FILES = [
   'img-sections.json',
   'img-small640.json',
   'img-tablet1024.json',
+  'nodes-breakpoints.json',
+  'nodes-colors.json',
+  'nodes-components.json',
   'nodes.json',
   'outline.txt',
   'renders-manifest.json',
@@ -94,13 +98,16 @@ interface RenderEntry {
 
 const failures: string[] = []
 
-function walkTextFiles(dir: string): string[] {
+function walkScannableFiles(dir: string): string[] {
   const out: string[] = []
   for (const name of readdirSync(dir)) {
     const path = join(dir, name)
     if (statSync(path).isDirectory()) {
-      out.push(...walkTextFiles(path))
-    } else if (/\.(json|txt|md)$/.test(name)) {
+      out.push(...walkScannableFiles(path))
+    } else if (!name.endsWith('.png')) {
+      // Scan every non-PNG file, not just known text extensions: a future
+      // addition under an unrecognized extension (.svg, .url, no extension)
+      // must not silently bypass the credential scan.
       out.push(path)
     }
   }
@@ -141,7 +148,7 @@ function selfTestCredentialMatcher(): void {
 }
 
 function checkForCredentials(): void {
-  for (const path of walkTextFiles(ARCHIVE)) {
+  for (const path of walkScannableFiles(ARCHIVE)) {
     const text = readFileSync(path, 'utf8')
     for (const [index, line] of text.split('\n').entries()) {
       if (SIGNED_URL_MARKERS.test(line)) {
