@@ -1,7 +1,5 @@
 import contentSystemsUrl from '@/assets/blog/content-systems.webp'
 import editControlUrl from '@/assets/blog/edit-control.webp'
-import editRepeatUrl from '@/assets/blog/edit-repeat.webp'
-import systemsRepeatUrl from '@/assets/blog/systems-repeat.webp'
 
 /**
  * Blog listing copy and images.
@@ -11,6 +9,9 @@ import systemsRepeatUrl from '@/assets/blog/systems-repeat.webp'
  *
  * Assumptions: individual article routes are not built yet, so cards are
  * not links. Images are the saba raster exports, recompressed to WebP.
+ *
+ * Only 2 real articles exist (see article-content.ts) — the listing
+ * renders exactly those 2, it does not pad the feed with repeats.
  */
 
 export interface BlogDescription {
@@ -106,35 +107,6 @@ export const blogListingContent: BlogListingContent = {
       image: {
         height: 810,
         src: editControlUrl,
-        width: 1440,
-      },
-      layout: 'split',
-      readTime: '4 min read',
-      slug: 'edit-what-you-see',
-      title: 'Edit what you see, without losing control of your code',
-    },
-    {
-      date: 'September 2026',
-      description: systemsDescription,
-      id: 'systems-repeat',
-      image: {
-        height: 810,
-        src: systemsRepeatUrl,
-        width: 1440,
-      },
-      layout: 'full',
-      readTime: '4 min read',
-      slug: 'one-change-shouldnt-get-lost',
-      title: "One change shouldn't get lost across three systems",
-    },
-    {
-      compactDescription: visualEditingDescription,
-      date: 'September 2026',
-      description: visualEditingDescription,
-      id: 'edit-repeat',
-      image: {
-        height: 810,
-        src: editRepeatUrl,
         width: 1440,
       },
       layout: 'split',
