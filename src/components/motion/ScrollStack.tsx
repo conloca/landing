@@ -163,13 +163,6 @@ export function ScrollStackRoot({
   const [interactiveIndex, setInteractiveIndex] = useState(0)
   const thresholds = useMemo(() => slotThresholds(count), [count])
 
-  const syncActiveIndex = (value: number) => {
-    setActiveIndex(activeIndexFor(value, thresholds))
-    setInteractiveIndex(interactiveIndexFor(value, thresholds))
-  }
-
-  useMotionValueEvent(scrollYProgress, 'change', syncActiveIndex)
-
   const reducedMotion = useReducedMotion()
   // See the file header point 1, and the original design note this file
   // inherits: the spring is tuned quick rather than floaty, and reduced
@@ -183,6 +176,22 @@ export function ScrollStackRoot({
   })
   const progress = reducedMotion ? scrollYProgress : smoothProgress
 
+  useMotionValueEvent(scrollYProgress, 'change', (value) => {
+    setActiveIndex(activeIndexFor(value, thresholds))
+  })
+  // Gated on `progress` (the same sprung value `MotionCard` animates
+  // opacity from), not the raw `scrollYProgress` above: a fast flick can
+  // jump raw progress straight past an arriving slide's opacity handover
+  // while the spring is still easing toward it, and `interactiveIndex`
+  // decides which slide is `inert` (see `StackSlide`) — handing that off
+  // on the raw value would make the still-transparent arriving slide take
+  // clicks/focus while the visibly-opaque one beneath it goes dead. Same
+  // reasoning `StackSlide`'s own `hasReachedReveal` already follows for the
+  // same pair of values.
+  useMotionValueEvent(progress, 'change', (value) => {
+    setInteractiveIndex(interactiveIndexFor(value, thresholds))
+  })
+
   // Two mount-time syncs against the already-measured scroll position, both for
   // loads that start inside or past this section — a deep link to `#pricing`,
   // a restored scroll position, a back-navigation. See `StackSlide` for why
@@ -191,7 +200,8 @@ export function ScrollStackRoot({
   // animate to the first measurement.
   useEffect(() => {
     const measured = scrollYProgress.get()
-    syncActiveIndex(measured)
+    setActiveIndex(activeIndexFor(measured, thresholds))
+    setInteractiveIndex(interactiveIndexFor(measured, thresholds))
     smoothProgress.jump(measured)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- one-time sync against the mounted measurement, not a reactive dependency
   }, [])
@@ -276,9 +286,9 @@ export function StackSlide({ children, index }: StackSlideProps) {
   // actually see are in the Tab order or receive clicks.
   //
   // Gated on `interactiveIndex`, not `activeIndex`: an arriving state is drawn
-  // above the active one and is fully opaque from half-way through its reveal
-  // window (see `MotionCard`), a whole half-window before `activeIndex`
-  // reaches it. Gating on `activeIndex` left that arriving state — the one
+  // above the active one and is fully opaque from `REVEAL_OPAQUE_AT` of the
+  // way through its reveal window (see `MotionCard`), well before
+  // `activeIndex` reaches it. Gating on `activeIndex` left that arriving state — the one
   // the visitor is looking at — `inert`, so a visitor who stopped scrolling
   // mid-transition (a normal resting position) got a dead CTA. The window and
   // its opacity handover point come from `scroll-stack-geometry.ts`
