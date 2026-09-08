@@ -8,7 +8,7 @@ import { AstroGlyph } from '@/components/icons/AstroGlyph'
  */
 export function Statement() {
   return (
-    <section className="relative mx-auto max-w-[1440px] px-8 py-32 sm:py-[84px] lg:py-[196px]">
+    <section className="relative mx-auto max-w-[1440px] px-8 py-32 sm:py-[84px] lg:py-[70px] xl:py-[196px]">
       <div className="relative mx-auto max-w-3xl text-center">
         <FloatingChip
           className="top-[-3rem] left-[2%] sm:top-[-78px] sm:left-[-19px] lg:top-[-3rem] lg:left-[2%]"
