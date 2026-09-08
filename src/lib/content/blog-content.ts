@@ -37,6 +37,7 @@ export interface BlogArticle {
 }
 
 export interface BlogHeroContent {
+  badgeLabel: string
   compactBreadcrumbs: readonly string[]
   description: string
   largeBreadcrumbs: readonly string[]
@@ -56,11 +57,12 @@ export const blogMetadata = {
 }
 
 export const blogHeroContent: BlogHeroContent = {
+  badgeLabel: 'Conloca dispatch',
   compactBreadcrumbs: ['Stories', 'Insights', 'Updates'],
   description:
     'Field notes, practical guides, and honest conversations about building visual editing into modern developer workflows.',
   largeBreadcrumbs: ['Home', 'Stories', 'Updates'],
-  mobileHeading: 'Notes from space between code and content',
+  mobileHeading: 'Notes on content, code, and the space between',
   heading: 'Notes on content, code, and the space between',
 }
 
@@ -97,7 +99,7 @@ export const blogListingContent: BlogListingContent = {
       title: "One change shouldn't get lost across three systems",
     },
     {
-      compactDescription: systemsDescription,
+      compactDescription: visualEditingDescription,
       date: 'September 2026',
       description: visualEditingDescription,
       id: 'edit-control',
@@ -126,7 +128,7 @@ export const blogListingContent: BlogListingContent = {
       title: "One change shouldn't get lost across three systems",
     },
     {
-      compactDescription: systemsDescription,
+      compactDescription: visualEditingDescription,
       date: 'September 2026',
       description: visualEditingDescription,
       id: 'edit-repeat',
