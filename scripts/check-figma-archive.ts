@@ -17,6 +17,7 @@
 import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs'
 import { join, resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { PNG } from 'pngjs'
 
 const ARCHIVE = resolve(
   dirname(fileURLToPath(import.meta.url)),
@@ -46,6 +47,28 @@ const REQUIRED_FILES = [
   'DESIGN-SPEC.md',
   'README.md',
   'anim.json',
+  'animations/README.md',
+  'animations/frame-00.png',
+  'animations/frame-01.png',
+  'animations/frame-02.png',
+  'animations/frame-03.png',
+  'animations/frame-04.png',
+  'animations/frame-05.png',
+  'animations/frame-06.png',
+  'animations/frame-07.png',
+  'animations/frame-08.png',
+  'animations/frame-09.png',
+  'animations/frame-10.png',
+  'animations/frame-11.png',
+  'animations/frame-12.png',
+  'animations/frame-13.png',
+  'animations/frame-14.png',
+  'animations/frame-15.png',
+  'animations/frame-16.png',
+  'animations/frame-17.png',
+  'animations/frame-18.png',
+  'animations/frame-19.png',
+  'COLORS-RECONCILIATION-46.md',
   'copy.txt',
   'file-depth2.json',
   'img-desktop1440.json',
@@ -53,6 +76,7 @@ const REQUIRED_FILES = [
   'img-sections.json',
   'img-small640.json',
   'img-tablet1024.json',
+  'node-2548-13160.json',
   'nodes-breakpoints.json',
   'nodes-colors.json',
   'nodes-components.json',
@@ -98,16 +122,29 @@ interface RenderEntry {
 
 const failures: string[] = []
 
+const PNG_SIGNATURE = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])
+
+// Extension is not a trustworthy type boundary: a text file renamed to
+// `.png` would otherwise both skip the credential scan below (which trusts
+// the extension) and pass `checkRequiredFilesPresent` (which only checks
+// existence). Checking the real signature closes both gaps with one read.
+function looksLikeRealPng(path: string): boolean {
+  const header = readFileSync(path).subarray(0, 8)
+  return header.length === 8 && header.equals(PNG_SIGNATURE)
+}
+
 function walkScannableFiles(dir: string): string[] {
   const out: string[] = []
   for (const name of readdirSync(dir)) {
     const path = join(dir, name)
     if (statSync(path).isDirectory()) {
       out.push(...walkScannableFiles(path))
-    } else if (!name.endsWith('.png')) {
+    } else if (!name.endsWith('.png') || !looksLikeRealPng(path)) {
       // Scan every non-PNG file, not just known text extensions: a future
       // addition under an unrecognized extension (.svg, .url, no extension)
-      // must not silently bypass the credential scan.
+      // must not silently bypass the credential scan. A `.png` file that
+      // is not actually a PNG (wrong signature) is scanned too, rather than
+      // trusted on its extension alone.
       out.push(path)
     }
   }
@@ -171,7 +208,31 @@ function checkRequiredFilesPresent(): void {
   }
 }
 
-const PNG_SIGNATURE = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])
+// Existence alone doesn't prove a required `.png` is actually a usable
+// image — this caught a real bug during development, where a screenshot
+// pipeline silently wrote non-PNG bytes under a `.png` name and every other
+// check here still passed. A signature check alone is not enough either: a
+// truncated file (real 8-byte header, then arbitrary bytes) still "looks
+// like" a PNG by signature but is not decodable. Every required PNG is
+// therefore fully decoded with `pngjs` (already a project dependency, used
+// by `scripts/visual-diff.ts`), not just signature-checked, and not just the
+// ones `checkManifest` already covers via renders-manifest.json.
+function checkRequiredPngsAreReal(): void {
+  for (const name of REQUIRED_FILES) {
+    if (!name.endsWith('.png')) continue
+    const path = join(ARCHIVE, name)
+    if (!existsSync(path)) continue // already reported by checkRequiredFilesPresent
+    if (!looksLikeRealPng(path)) {
+      failures.push(`${name} exists but is not a valid PNG (wrong signature)`)
+      continue
+    }
+    try {
+      PNG.sync.read(readFileSync(path))
+    } catch (error) {
+      failures.push(`${name} has a valid PNG signature but fails to decode: ${String(error)}`)
+    }
+  }
+}
 
 // PNG dimensions live in the IHDR chunk: 8-byte signature, 4-byte length,
 // 4-byte type, then width and height as big-endian uint32. The signature and
@@ -230,6 +291,7 @@ function checkManifest(): void {
 selfTestCredentialMatcher()
 checkForCredentials()
 checkRequiredFilesPresent()
+checkRequiredPngsAreReal()
 // A malformed manifest throws rather than reporting; catching it keeps the
 // accumulated diagnostics readable instead of losing them to a stack trace.
 try {
