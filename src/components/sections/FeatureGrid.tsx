@@ -77,12 +77,12 @@ const CARDS = [
  * the Figma source, not a build error. Kept verbatim pending real copy from
  * the designer, see docs/QUESTIONS-DESIGNER.md.
  *
- * Horizontal inset follows the Figma frames: 8px at 1024 (`lg:px-2`, the
- * 1024 bento is full-bleed with 8px grid padding) and 32px at 1440 (`xl:px-8`).
+ * Horizontal inset follows the Figma frames: 8px from 640 through 1024
+ * (`sm:px-2`, both grids are 8px padded) and 32px at 1440 (`xl:px-8`).
  */
 export function FeatureGrid() {
   return (
-    <section className="mx-auto max-w-[1440px] px-8 py-16 lg:px-2 xl:px-8">
+    <section className="mx-auto max-w-[1440px] px-8 py-16 sm:px-2 xl:px-8">
       <div className="bento-grid">
         {CARDS.map((card, index) => (
           <BentoCard key={card.title} {...card} delay={index * 0.08} />

@@ -84,13 +84,15 @@
 @media (min-width: 640px) {
   .bento-grid {
     grid-template-columns: repeat(2, 1fr);
+    /* Figma 640: six rows, scheduled spans two 200px tracks (412 with gap). */
+    grid-template-rows: 200px 200px 326.67px 326.67px 326.67px 326.67px;
     grid-template-areas:
       "big big"
       "big big"
+      "c2 c3"
       "r1 r1"
-      "r2 r2"
-      "c1 c2"
-      "c3 c4";
+      "c1 c4"
+      "r2 r2";
   }
 }
 
