@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { ArrowRight } from 'lucide-react'
 import heroBackdropUrl from '@/assets/figma/hero-backdrop.webp'
-import ctaBackdropUrl from '@/assets/figma/hero-backdrop-b.webp'
 import { CtaButton } from '@/components/CtaButton'
 import { SegmentedControl, type SegmentIndex } from '@/components/ui/segmented-control'
 import { Badge } from '@/components/ui/badge'
@@ -204,7 +203,7 @@ export function PricingPage() {
           <div className="relative flex flex-col justify-end gap-3 p-8 sm:p-10 lg:p-14">
             <img
               alt=""
-              src={ctaBackdropUrl}
+              src={heroBackdropUrl}
               loading="lazy"
               className="absolute inset-0 size-full object-cover"
             />
