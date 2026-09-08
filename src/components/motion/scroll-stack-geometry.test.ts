@@ -156,6 +156,15 @@ describe('revealWindow', () => {
     expect(revealOpaqueAt(thresholds, 2)).toBeCloseTo(1 / 3 + (1 / 3) * REVEAL_OPAQUE_AT, 12)
   })
 
+  // Pins the chosen shape of the fade, not just its validity: a value like
+  // 0.5 (the pre-fix constant) is still `(0, 1]` and would pass every other
+  // test in this file, but it re-introduces the half-window-long hazy
+  // double-exposure this constant exists to keep short (see its own doc
+  // comment in scroll-stack-geometry.ts).
+  test('REVEAL_OPAQUE_AT is pinned to the short-crossfade value', () => {
+    expect(REVEAL_OPAQUE_AT).toBe(0.18)
+  })
+
   // Regression for a shipped bug: the floor was 0.7, so from the first frame
   // of every window the *next* slide was drawn at 70 % over the current one
   // and the first two states of the stack never read as a single card
@@ -195,15 +204,15 @@ describe('interactiveIndexFor', () => {
   })
 
   // The bug this guards: gating `inert` on `activeIndex` leaves the arriving
-  // slide inert for the second half of its reveal window, while it is opaque
-  // and drawn on top — the only thing the visitor can see.
-  test('is one ahead of activeIndex for the opaque half of every reveal window, never elsewhere', () => {
+  // slide inert for the opaque portion of its reveal window, while it is
+  // opaque and drawn on top — the only thing the visitor can see.
+  test('is one ahead of activeIndex for the opaque portion of every reveal window, never elsewhere', () => {
     for (let progress = 0; progress <= 1; progress += 0.001) {
       const active = activeIndexFor(progress, thresholds)
       const interactive = interactiveIndexFor(progress, thresholds)
       const next = active + 1
-      const inOpaqueHalf = next < thresholds.length && progress >= opaqueAt(next)
-      expect(interactive).toBe(inOpaqueHalf ? next : active)
+      const inOpaquePortion = next < thresholds.length && progress >= opaqueAt(next)
+      expect(interactive).toBe(inOpaquePortion ? next : active)
     }
   })
 

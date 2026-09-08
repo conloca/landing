@@ -135,8 +135,19 @@ export function revealWindow(
  * opaque and drawn on top but a thin margin of the slide beneath is still
  * exposed around its edges — margin only, no control of the slide beneath
  * lives there.
+ *
+ * Kept small deliberately: this is the only stretch of scroll where the
+ * arriving slide is translucent over the still-fully-opaque outgoing one
+ * (see `REVEAL_OPACITY_FLOOR`'s note on why the outgoing slide itself never
+ * fades), so its length *is* the duration of the double-exposure look. At
+ * 0.5 that translucent stretch was half of the slide's entire reveal
+ * window — roughly half a viewport of scrolling — which read as two cards
+ * hazily cross-dissolving into each other rather than one frame changing.
+ * Shrinking it shortens only the translucent portion; the zoom/rise settle
+ * (see `scale`/`y` in `MotionCard`) still runs the full window either
+ * side of it, so the motion stays continuous rather than snapping.
  */
-export const REVEAL_OPAQUE_AT = 0.5
+export const REVEAL_OPAQUE_AT = 0.18
 
 /** Progress at which slide `index` becomes fully opaque (see `REVEAL_OPAQUE_AT`). */
 export function revealOpaqueAt(thresholds: readonly number[], index: number): number {
@@ -152,8 +163,8 @@ export function revealOpaqueAt(thresholds: readonly number[], index: number): nu
  * but the arriving slide is drawn above the active one (higher z-index) and is
  * fully opaque from `revealOpaqueAt` onwards. Gating `inert` on `activeIndex`
  * alone therefore left the arriving slide — the one the visitor is looking
- * at — dead to clicks and Tab for the second half of every transition, and a
- * visitor who stops scrolling there hits a dead button. This flips at the
+ * at — dead to clicks and Tab for the remainder of every transition once it
+ * became opaque, and a visitor who stops scrolling there hits a dead button. This flips at the
  * opacity handover instead, so exactly one slide is interactive at every
  * scroll position and it is always the one on top. Before the handover the
  * arriving slide is still translucent, the slide beneath shows through, and
