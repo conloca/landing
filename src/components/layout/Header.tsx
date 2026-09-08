@@ -51,7 +51,7 @@ export function Header() {
                 Try editor
               </CtaButton>
               <CtaButton className="h-[34px]" href={CTA_LINKS.getStarted}>
-                Get Started
+                Get started
               </CtaButton>
             </div>
             <MobileNav />
