@@ -398,18 +398,6 @@ Each plan stores only its monthly price, and the site works the yearly price out
 - **The buttons on the pricing cards don't lead anywhere yet.** That isn't a pricing
   question — no destinations exist for any of the page's buttons yet, and it's tracked
   separately as issue #1.
-- **Three of the four "Pricing" exports we were given (`Conloca Pricing.png`,
-  `Conloca Pricing-1.png`, `Canal — Pricing.png`) are a standalone pricing page** — a
-  hero banner reading "Choose a plan that fits you the best", a "Three plans. One
-  Git-native workflow" heading, a full feature-by-feature comparison table, a "Start
-  with the plan that fits today" call-to-action band, and a second, fuller page footer
-  with legal-style links. This site has no such page and no route for one; the only
-  built pricing surface is the `#pricing` section on the single-page homepage
-  (`s4-pricing.png` is the matching crop for that section, and it does match). This
-  isn't a fidelity gap to close — it already follows from question 6 above ("Compare
-  plans" stays an anchor to `#pricing`, not a link to a separate page) — flagged here so
-  a future fidelity pass doesn't re-open it against a page that was never scoped to be
-  built.
 
 ---
 
