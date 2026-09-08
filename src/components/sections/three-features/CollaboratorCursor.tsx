@@ -18,21 +18,53 @@ const CURSOR_COLORS = {
   kyle: { bg: 'bg-cursor-kyle', fg: 'text-cursor-kyle' },
 } as const
 
+/**
+ * Two shapes in the Figma frame, not one. Mariam (page-builder canvas) and
+ * Danny (PR diff) are GUI-surface mouse cursors: an arrow perched above-left,
+ * its tip overlapping the name tag's top-left corner, tag rounded on both
+ * ends. Niko sits inside the JSON text editor instead, where the source
+ * frame draws a text-caret convention — no arrow at all, a flat-left/
+ * rounded-right flag flush against a thin caret bar that runs on past the
+ * flag's bottom edge, cropped by the editor's own overflow in the source
+ * export. Reusing the pointer arrow for every collaborator was the
+ * off-design bug; `variant` selects the shape the surface actually draws.
+ */
 export function CollaboratorCursor({
   name,
+  variant = 'pointer',
   className,
 }: {
   name: keyof typeof CURSOR_COLORS
+  variant?: 'pointer' | 'flag'
   className?: string
 }) {
   const { bg, fg } = CURSOR_COLORS[name]
+
+  if (variant === 'flag') {
+    return (
+      <span className={cn('relative inline-flex flex-col items-start', className)} aria-hidden>
+        <span
+          className={cn(
+            'rounded-r-full py-0.5 pr-2.5 pl-2 text-xs font-medium text-white whitespace-nowrap capitalize',
+            bg,
+          )}
+        >
+          {name}
+        </span>
+        <span className={cn('h-2 w-1', bg)} />
+      </span>
+    )
+  }
+
   return (
-    <span
-      className={cn('inline-flex items-center gap-1', className)}
-      aria-hidden
-    >
-      <MousePointer2 className={cn('size-3.5 fill-current', fg)} />
-      <span className={cn('rounded-full px-2 py-0.5 text-xs font-medium text-white capitalize', bg)}>
+    <span className={cn('relative inline-block', className)} aria-hidden>
+      <MousePointer2 className={cn('size-4 fill-current stroke-white', fg)} strokeWidth={1.5} />
+      <span
+        className={cn(
+          'absolute top-2.5 left-2.5 rounded-full px-2 py-0.5 text-xs font-medium text-white whitespace-nowrap capitalize',
+          bg,
+        )}
+      >
         {name}
       </span>
     </span>
