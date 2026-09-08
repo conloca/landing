@@ -17,7 +17,7 @@ import { AstroGlyph } from '@/components/icons/AstroGlyph'
  */
 export function AstroBadge() {
   return (
-    <div className="inline-flex items-center gap-2 rounded-xl bg-lime-400/20 py-2 pr-3 pl-2 lg:bg-lime-50">
+    <div className="inline-flex h-[33px] items-center gap-2 rounded-xl bg-lime-400/20 py-2 pr-3 pl-2 lg:h-auto lg:bg-lime-50">
       <span className="relative flex size-5 items-center justify-center">
         <span
           className="absolute inset-0 rounded-full bg-lime-400/30 blur-[17px] lg:bg-lime-600"
@@ -25,7 +25,7 @@ export function AstroBadge() {
         />
         <AstroGlyph className="relative size-4 text-lime-400 lg:text-lime-600" />
       </span>
-      <span className="text-sm font-bold tracking-normal text-lime-400 uppercase lg:tracking-wide lg:text-lime-600">
+      <span className="text-sm leading-[17px] font-bold tracking-normal text-lime-400 uppercase lg:leading-normal lg:tracking-wide lg:text-lime-600">
         Built for astro
       </span>
     </div>
