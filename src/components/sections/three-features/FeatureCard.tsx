@@ -35,16 +35,16 @@ export interface FeatureCardProps {
 }
 
 /** Figma S1 card headline per breakpoint frame: 32/38.4 (393), 40/48 (640),
- * 48/48 (1024 and 1440); body 16/27.2 throughout. Shared by `CardCopy` and
+ * 48/48 (1024 and 1440); body Inter Italic 16/27.2 throughout. Shared by `CardCopy` and
  * `StackedCopy` so a future typography tweak only needs one edit. */
 const FEATURE_CARD_TITLE_CLASS =
   'font-display text-[2rem] leading-[1.2] font-bold text-stone-50 sm:text-[2.5rem] sm:leading-[1.2] lg:text-5xl lg:leading-none'
 
 function CardCopy({ title, body, className }: { title: string; body: string; className?: string }) {
   return (
-    <div className={className}>
+    <div className={cn('flex flex-col gap-5 sm:gap-6', className)}>
       <h3 className={FEATURE_CARD_TITLE_CLASS}>{title}</h3>
-      <p className="mt-6 text-base leading-[1.7] text-white">{body}</p>
+      <p className="text-base leading-[1.7] text-white italic">{body}</p>
     </div>
   )
 }
@@ -81,7 +81,7 @@ function StackedCopy({
     <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
       <div className="flex flex-col gap-6 lg:flex-1 lg:flex-row lg:items-end">
         <h3 className={cn('max-w-[520px]', FEATURE_CARD_TITLE_CLASS)}>{title}</h3>
-        <p className="max-w-[520px] text-base leading-[1.7] text-white">{body}</p>
+        <p className="max-w-[520px] text-base leading-[1.7] text-white italic">{body}</p>
       </div>
       <CardActions secondaryCta={secondaryCta} secondaryCtaHref={secondaryCtaHref} />
     </div>
@@ -162,7 +162,7 @@ export function FeatureCard({
           {isStacked ? null : (
             <div
               className={cn(
-                'flex flex-col gap-6 lg:shrink-0',
+                'flex flex-col gap-5 sm:gap-6 lg:shrink-0',
                 layout === 'visual-left' ? 'lg:max-w-[687px]' : 'max-w-[440px]',
               )}
             >
