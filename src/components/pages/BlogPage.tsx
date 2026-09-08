@@ -60,7 +60,7 @@ function ArticleMetadata({ article }: { article: BlogArticle }) {
   )
 }
 
-function BlogArticleCard({ article }: { article: BlogArticle }) {
+export function BlogArticleCard({ article }: { article: BlogArticle }) {
   return (
     <article className={`blog-card blog-card--${article.layout}`}>
       <a aria-label={article.title} className="blog-card__body" href={publicUrl(`blog/${article.slug}/`)}>
