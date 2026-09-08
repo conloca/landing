@@ -91,9 +91,12 @@ export function HeroVisual() {
  * not a viewport breakpoint: the real invariant is "when I am at my Figma
  * width, render Figma geometry", and expressing it that way keeps this file
  * from having to know the parent's columns, gaps and padding. Below 800px the
- * shot sits fully inside the container with nothing cropping it — rounding
- * is uniform on all four corners at every width either way; only the right
- * edge ever gets clipped, and only once the `@min-[800px]` mask is active.
+ * shot's un-rotated footprint sits fully inside the container; the -1.5deg
+ * rotation applied at every width pushes its axis-aligned corners a few px
+ * past that edge, same as it always has from 640px up — nothing clips them,
+ * intentionally. Rounding is uniform on all four corners at every width
+ * either way; only the right edge ever gets deliberately clipped, and only
+ * once the `@min-[800px]` mask is active.
  */
 function DashboardShot() {
   // Scales on hover of the whole `group` (HeroVisual), not just this div —
@@ -105,7 +108,7 @@ function DashboardShot() {
   // has nothing to clear it without a real link to navigate away to, so an
   // ungated version sticks the shot scaled up until the user taps elsewhere.
   return (
-    <div className="absolute top-0 left-0 size-full rounded-[20px] shadow-[0_4px_6px_rgba(16,24,40,0.03),0_12px_16px_rgba(16,24,40,0.08),0_4px_64px_rgba(0,0,0,0.15)] transition-transform duration-300 ease-out [@media(hover:hover)]:group-hover:scale-110 sm:-rotate-[1.5deg] lg:top-[4.773%] lg:left-[-15.221%] lg:h-[90.453%] lg:w-[114%] @min-[800px]:-left-[15.221%] @min-[800px]:w-[114%]">
+    <div className="absolute top-0 left-0 size-full rounded-[20px] shadow-[0_4px_6px_rgba(16,24,40,0.03),0_12px_16px_rgba(16,24,40,0.08),0_4px_64px_rgba(0,0,0,0.15)] transition-transform duration-300 ease-out [@media(hover:hover)]:group-hover:scale-110 -rotate-[1.5deg] lg:top-[4.773%] lg:left-[-15.221%] lg:h-[90.453%] lg:w-[114%] @min-[800px]:-left-[15.221%] @min-[800px]:w-[114%]">
       <img
         src={dashboardUrl}
         alt="Conloca dashboard showing recent content activity for a staging site"
