@@ -51,7 +51,7 @@ export function Statement() {
           <br />
           <Reveal
             as="span"
-            className="inline-block whitespace-nowrap text-[#BBF451] lg:text-[#9AE600]"
+            className="inline-block whitespace-nowrap text-[#BBF451]"
             delay={0.08}
           >
             nothing you don&apos;t
