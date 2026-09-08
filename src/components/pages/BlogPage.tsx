@@ -4,13 +4,16 @@
  * Accessed via: App when `pageFromPath` resolves to `blog`. Header/Footer
  * stay the shared chrome; this file owns the main column only.
  *
- * Assumptions: article routes do not exist yet, so cards are `<article>`s
- * rather than links (a href to a missing post would 404). Layout CSS is
+ * Each card's `.blog-card__body` is the real link to that article's detail
+ * page (`/blog/<slug>/`, see article-content.ts) — it already carried
+ * `:focus-visible` styling in blog.css before it was wired up, since the
+ * stacking layout was always meant to end in a clickable card. Layout CSS is
  * `blog.css`, ported from landing-saba.
  */
 
 import type { BlogArticle, BlogDescription } from '@/lib/content/blog-content'
 import { blogHeroContent, blogListingContent } from '@/lib/content/blog-content'
+import { publicUrl } from '@/lib/publicUrl'
 import './blog.css'
 
 function Breadcrumbs({ items }: { items: readonly string[] }) {
@@ -60,7 +63,7 @@ function ArticleMetadata({ article }: { article: BlogArticle }) {
 function BlogArticleCard({ article }: { article: BlogArticle }) {
   return (
     <article className={`blog-card blog-card--${article.layout}`}>
-      <div className="blog-card__body">
+      <a aria-label={article.title} className="blog-card__body" href={publicUrl(`blog/${article.slug}/`)}>
         <img
           alt=""
           className="blog-card__image"
@@ -80,7 +83,7 @@ function BlogArticleCard({ article }: { article: BlogArticle }) {
             <Description content={article.compactDescription ?? article.description} />
           </p>
         </div>
-      </div>
+      </a>
     </article>
   )
 }
