@@ -69,16 +69,9 @@ const WANTED: readonly WantedAsset[] = [
     quality: 90,
   },
   {
-    ref: 'a1762f3486f62a5c',
-    name: 'hero-backdrop-a',
-    note: 'Hero video container backdrop, 800x838',
-    designWidth: 800,
-    quality: 80,
-  },
-  {
     ref: 'c86040899b8d1030',
-    name: 'hero-backdrop-b',
-    note: 'Hero video container backdrop, 800x838',
+    name: 'hero-backdrop',
+    note: 'Hero video container backdrop, 800x838. Figma composites this photo layer with a duplicate of the other extracted layer above and below it for a grain/blend effect a flat single-fill export cannot reproduce; this is the correctly-identified base photo layer. Replaces a prior hero-backdrop.webp that was wired to the wrong layer (a dark green/black swirl absent from every rendered reference frame) and the now-deleted hero-backdrop-a.webp extraction of that same wrong layer.',
     designWidth: 800,
     quality: 80,
   },
