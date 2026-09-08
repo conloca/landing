@@ -19,7 +19,7 @@ server at runtime — `bun run build` emits a `dist/` directory of static files.
 | Linter          | `oxlint` (Oxc). There is no ESLint.                               |
 | UI framework    | React 19                                                          |
 | Styling         | Tailwind CSS v4, CSS-first config inside `src/index.css`          |
-| Components      | shadcn/ui (radix base, nova preset) in `src/components/ui`        |
+| Components      | shadcn/ui (base-ui base, nova preset) in `src/components/ui`      |
 | Animation       | `motion` (Framer Motion v13) + `@lottiefiles/dotlottie-react`     |
 | Types           | TypeScript, `strict` plus `exactOptionalPropertyTypes`            |
 
@@ -174,7 +174,7 @@ the fix in a worktree in the same session. Then send `tg --tag report`
 describing what code is changing and why, in full sentences a person can read
 on a phone — not a table of mismatch percentages. Do not treat a high mismatch
 as "expected designer divergence" and stop. Named exceptions (pricing
-*figures* vs the design file; full-bleed pin at `lg+` vs a flattened three-card
+_figures_ vs the design file; full-bleed pin at `lg+` vs a flattened three-card
 crop) belong in that report; every other mismatch still gets a fixer.
 
 ### `agent-browser` caveats
