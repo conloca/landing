@@ -3,6 +3,7 @@ import {
   ChevronUp,
   ChevronDown,
   Monitor,
+  MoreHorizontal,
   MoreVertical,
   Redo2,
   Smartphone,
@@ -71,7 +72,7 @@ function JsonPane() {
           <span className="truncate font-mono text-base text-stone-900">hero-section.vx.json</span>
           <X className="size-3.5 shrink-0 text-stone-400" />
         </div>
-        <MoreVertical className="size-5 shrink-0 text-stone-400" />
+        <MoreHorizontal className="size-5 shrink-0 text-stone-400" />
       </div>
       <pre className="overflow-hidden rounded-md bg-white px-3 py-3 font-mono text-base leading-[1.5] text-stone-900">
         <JsonLine n={1}>{'{'}</JsonLine>
@@ -112,7 +113,7 @@ function JsonPane() {
             {': '}
             <span className={STR}>&quot;Open source&quot;</span>
           </JsonLine>
-          <CollaboratorCursor name="niko" className="absolute top-7 left-[55%]" />
+          <CollaboratorCursor name="niko" variant="flag" className="absolute top-7 left-[55%]" />
         </div>
         <JsonLine n={9}>{'    },'}</JsonLine>
         <JsonLine n={10}>{'    {'}</JsonLine>
