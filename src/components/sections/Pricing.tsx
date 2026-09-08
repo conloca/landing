@@ -2,72 +2,13 @@ import { useState } from 'react'
 import { CtaButton } from '@/components/CtaButton'
 import { SegmentedControl, type SegmentIndex } from '@/components/ui/segmented-control'
 import { Reveal } from '@/components/motion/Reveal'
-import { PricingCard, type Plan, type PlanFeature } from '@/components/sections/pricing/PricingCard'
+import { PricingCard } from '@/components/sections/pricing/PricingCard'
 import { CTA_LINKS } from '@/lib/nav'
 import type { BillingPeriod } from '@/lib/pricing'
+import { PLANS } from '@/lib/content/pricing-plans'
 
 const BILLING_OPTIONS: [string, string] = ['Monthly', 'Annual']
 const BILLING_PERIODS: readonly [BillingPeriod, BillingPeriod] = ['monthly', 'annual']
-
-const has = (label: string): PlanFeature => ({ label, included: true })
-
-/**
- * Simple lists only the five included checks from Figma S4. Pro and Business
- * add residency, access control, and support. Capabilities Simple does not
- * offer are omitted rather than shown as dashes — the design never draws
- * those rows.
- */
-const PLANS: Plan[] = [
-  {
-    name: 'Simple',
-    pricing: { monthlyRate: 8 },
-    pitch: 'For small teams getting their site off the ground',
-    cta: 'Choose simple',
-    ctaHref: CTA_LINKS.choosePlan,
-    features: [
-      has('3 seats included ($5 per additional seat)'),
-      has('5 seats max'),
-      has('1 repository'),
-      has('1GB repository storage'),
-      has('1GB media storage'),
-    ],
-  },
-  {
-    name: 'Pro',
-    pricing: { monthlyRate: 15 },
-    pitch: 'For growing teams shipping content more often',
-    cta: 'Choose pro',
-    ctaHref: CTA_LINKS.choosePlan,
-    highlighted: true,
-    features: [
-      has('15 seats included ($9 per additional seat)'),
-      has('25 seats max'),
-      has('Unlimited repositories'),
-      has('20GB repository storage'),
-      has('100GB media storage'),
-      has('Choose data residency (US/EU)'),
-      has('Basic access control'),
-      has('Priority support'),
-    ],
-  },
-  {
-    name: 'Business',
-    pricing: { monthlyRate: 200 },
-    pitch: 'For larger teams managing sites, brands & markets',
-    cta: 'Choose business',
-    ctaHref: CTA_LINKS.choosePlan,
-    features: [
-      has('30 seats included ($12 per additional seat)'),
-      has('No seat limit'),
-      has('Unlimited repositories'),
-      has('30GB repository storage'),
-      has('1TB media storage'),
-      has('Choose data residency (US/EU)'),
-      has('Advanced access control and Audit trail'),
-      has('Priority support'),
-    ],
-  },
-]
 
 /**
  * Figma S4 — pricing (`40002427:17148` on desktop, `40002448:4479` at 393).

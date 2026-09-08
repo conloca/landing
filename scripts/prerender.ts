@@ -27,6 +27,7 @@ const PAGES = [
     file: 'dist/blog/edit-what-you-see/index.html',
   },
   { url: '/docs/', file: 'dist/docs/index.html' },
+  { url: '/pricing/', file: 'dist/pricing/index.html' },
 ] as const
 
 interface ServerEntry {
