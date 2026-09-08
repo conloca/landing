@@ -17,9 +17,12 @@ import { Statement } from '@/components/sections/Statement'
 import { FeatureGrid } from '@/components/sections/FeatureGrid'
 import { Pricing } from '@/components/sections/Pricing'
 import { Footer } from '@/components/layout/Footer'
+import { ArticlePage } from '@/components/pages/ArticlePage'
 import { BlogPage } from '@/components/pages/BlogPage'
+import { DocsPage } from '@/components/pages/DocsPage'
 import { HowItWorksPage } from '@/components/pages/HowItWorksPage'
 import { AudienceProvider } from '@/lib/audience-context'
+import { editWhatYouSeeArticle, oneChangeArticle } from '@/lib/content/article-content'
 import { pageFromPath } from '@/lib/pages'
 
 export function App({ url }: { url?: string } = {}) {
@@ -32,8 +35,14 @@ export function App({ url }: { url?: string } = {}) {
       <Header />
       {page === 'blog' ? (
         <BlogPage />
+      ) : page === 'blog-one-change' ? (
+        <ArticlePage article={oneChangeArticle} />
+      ) : page === 'blog-edit-what-you-see' ? (
+        <ArticlePage article={editWhatYouSeeArticle} />
       ) : page === 'how-it-works' ? (
         <HowItWorksPage />
+      ) : page === 'docs' ? (
+        <DocsPage />
       ) : (
         <main className="min-h-dvh">
           <Hero />

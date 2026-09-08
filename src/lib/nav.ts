@@ -1,15 +1,15 @@
 import { publicUrl } from '@/lib/publicUrl'
 
 /**
- * Shared primary nav links. Docs still has no page (`href="#"`). Pricing is
- * the homepage `#pricing` section — `publicUrl('#pricing')` keeps that
- * working from `/blog/` and `/how-it-works/` as well as from `/`.
+ * Shared primary nav links. Pricing is the homepage `#pricing` section —
+ * `publicUrl('#pricing')` keeps that working from `/blog/` and
+ * `/how-it-works/` as well as from `/`.
  */
 export const HOME_HREF = publicUrl('')
 
 export const NAV_LINKS = [
   { label: 'How it works', href: publicUrl('how-it-works/') },
-  { label: 'Docs', href: '#' },
+  { label: 'Docs', href: publicUrl('docs/') },
   { label: 'Pricing', href: publicUrl('#pricing') },
   { label: 'Blog', href: publicUrl('blog/') },
 ]
@@ -29,7 +29,7 @@ export const NAV_LINKS = [
 export const CTA_LINKS = {
   getStarted: null,
   tryDemo: null,
-  readDocs: null,
+  readDocs: publicUrl('docs/'),
   choosePlan: null,
   // The one real destination: the pricing section's own anchor.
   comparePlans: '#pricing',

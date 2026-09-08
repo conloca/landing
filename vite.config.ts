@@ -44,6 +44,13 @@ const htmlEntries = {
   main: fileURLToPath(new URL('./index.html', import.meta.url)),
   howItWorks: fileURLToPath(new URL('./how-it-works/index.html', import.meta.url)),
   blog: fileURLToPath(new URL('./blog/index.html', import.meta.url)),
+  blogOneChange: fileURLToPath(
+    new URL('./blog/one-change-shouldnt-get-lost/index.html', import.meta.url),
+  ),
+  blogEditWhatYouSee: fileURLToPath(
+    new URL('./blog/edit-what-you-see/index.html', import.meta.url),
+  ),
+  docs: fileURLToPath(new URL('./docs/index.html', import.meta.url)),
 }
 
 export default defineConfig(({ isSsrBuild }) => ({
