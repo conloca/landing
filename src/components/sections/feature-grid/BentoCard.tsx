@@ -35,17 +35,15 @@ interface BentoCardProps {
  */
 export function BentoCard({ title, body, illustration, delay = 0 }: BentoCardProps) {
   return (
-    <Reveal as="div" delay={delay} className="min-h-0">
+    <Reveal as="div" delay={delay} className="h-full min-h-0">
       <div className="bento-card flex h-full flex-col overflow-hidden rounded-[24px] bg-sand-200">
-        <div className="overflow-hidden">
+        <div className="min-h-0 flex-1 overflow-hidden">
           <div className="bento-card-visual">{illustration}</div>
         </div>
-        {/* `mt-auto`: the card still stretches to its grid row's full height
-            (`h-full` above), and nothing else absorbs the slack now that the
-            illustration is a natural-height `<img>` rather than a `flex-1`
-            filler — without it, a row taller than the image + text leaves
-            visible empty space below the text instead of the text sitting
-            flush at the card's bottom, as Figma's `Rectangle 20` does. */}
+        {/* Illustration wrapper is flex-1 + overflow-hidden so a crop taller
+            than the remaining cell clips the artwork instead of pushing the
+            title off the bottom. Text stays flush at the card's bottom, as
+            Figma's Rectangle 20 does. */}
         <div className="mt-auto p-6 pt-0">
           <h4 className="bento-card-title text-xl leading-[30px] font-bold text-stone-900">
             {title}

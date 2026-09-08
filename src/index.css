@@ -69,7 +69,8 @@
 
 /*
  * Bento grid (S3): single column below 640 per the Figma 393 stack, 2-col ×
- * 6-row at 640–1023 (Figma 640 frame), 4-col × 3-row from lg. Kept as a real
+ * 6-row at 640–1023 (Figma 640 frame), 3-col × 5-row at 1024–1279 (Figma
+ * 1024 frame), 4-col × 3-row from 1280 (Figma 1440 frame). Kept as a real
  * CSS rule rather than a Tailwind arbitrary-value class — grid-template-areas
  * needs literal quoted strings that don't survive Tailwind's bracket syntax
  * cleanly.
@@ -95,8 +96,22 @@
 
 @media (min-width: 1024px) {
   .bento-grid {
+    grid-template-columns: repeat(3, 1fr);
+    /* Figma 1024: five 326.67px rows, 12px gaps. Scheduled spans two rows. */
+    grid-template-rows: repeat(5, 326.67px);
+    grid-template-areas:
+      "big big big"
+      "big big big"
+      "c2 c3 c4"
+      "r1 r1 r1"
+      "c1 r2 r2";
+  }
+}
+
+@media (min-width: 1280px) {
+  .bento-grid {
     grid-template-columns: repeat(4, 1fr);
-    /* Figma rows: 324 / 324 / 320, so the spanning card reads 660 tall. */
+    /* Figma 1440 rows: 324 / 324 / 320, so the spanning card reads 660 tall. */
     grid-template-rows: minmax(20.25rem, auto) minmax(20.25rem, auto) minmax(
         20rem,
         auto
