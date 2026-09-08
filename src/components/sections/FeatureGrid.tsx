@@ -67,7 +67,7 @@ const CARDS = [
  * what claims the `big` grid area. Only `scheduledPublishing`'s crop
  * (`bento-assets.ts`, 682×440) is exported at the big slot's proportions —
  * the other six are 192px-tall strip crops. Moving a different card to the
- * front does NOT "just work": its crop upscales into the 2x2 area at the
+ * front does NOT "just work": its crop upscales into the large slot at the
  * wrong aspect ratio, and its actual big-card artwork needs a fresh
  * `get_screenshot` export (see `docs/figma/DESIGN-SPEC.md`) before the swap
  * looks right.
@@ -76,10 +76,13 @@ const CARDS = [
  * page") describes reusable blocks, not version history — a content bug in
  * the Figma source, not a build error. Kept verbatim pending real copy from
  * the designer, see docs/QUESTIONS-DESIGNER.md.
+ *
+ * Horizontal inset follows the Figma frames: 8px at 1024 (`lg:px-2`, the
+ * 1024 bento is full-bleed with 8px grid padding) and 32px at 1440 (`xl:px-8`).
  */
 export function FeatureGrid() {
   return (
-    <section className="mx-auto max-w-[1440px] px-8 py-16">
+    <section className="mx-auto max-w-[1440px] px-8 py-16 lg:px-2 xl:px-8">
       <div className="bento-grid">
         {CARDS.map((card, index) => (
           <BentoCard key={card.title} {...card} delay={index * 0.08} />
