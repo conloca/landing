@@ -18,6 +18,7 @@ const PAGES = [
   { url: '/', file: 'dist/index.html' },
   { url: '/how-it-works/', file: 'dist/how-it-works/index.html' },
   { url: '/blog/', file: 'dist/blog/index.html' },
+  { url: '/pricing/', file: 'dist/pricing/index.html' },
 ] as const
 
 interface ServerEntry {

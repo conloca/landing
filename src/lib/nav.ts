@@ -1,16 +1,17 @@
 import { publicUrl } from '@/lib/publicUrl'
 
 /**
- * Shared primary nav links. Docs still has no page (`href="#"`). Pricing is
- * the homepage `#pricing` section — `publicUrl('#pricing')` keeps that
- * working from `/blog/` and `/how-it-works/` as well as from `/`.
+ * Shared primary nav links. Docs still has no page (`href="#"`). Pricing now
+ * links to its own standalone `/pricing/` page rather than the homepage
+ * section. The homepage still has its own embedded `#pricing` section
+ * separately — that's what `CTA_LINKS.comparePlans` points at, unchanged.
  */
 export const HOME_HREF = publicUrl('')
 
 export const NAV_LINKS = [
   { label: 'How it works', href: publicUrl('how-it-works/') },
   { label: 'Docs', href: '#' },
-  { label: 'Pricing', href: publicUrl('#pricing') },
+  { label: 'Pricing', href: publicUrl('pricing/') },
   { label: 'Blog', href: publicUrl('blog/') },
 ]
 

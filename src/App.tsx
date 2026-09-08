@@ -19,6 +19,7 @@ import { Pricing } from '@/components/sections/Pricing'
 import { Footer } from '@/components/layout/Footer'
 import { BlogPage } from '@/components/pages/BlogPage'
 import { HowItWorksPage } from '@/components/pages/HowItWorksPage'
+import { PricingPage } from '@/components/pages/PricingPage'
 import { AudienceProvider } from '@/lib/audience-context'
 import { pageFromPath } from '@/lib/pages'
 
@@ -34,6 +35,8 @@ export function App({ url }: { url?: string } = {}) {
         <BlogPage />
       ) : page === 'how-it-works' ? (
         <HowItWorksPage />
+      ) : page === 'pricing' ? (
+        <PricingPage />
       ) : (
         <main className="min-h-dvh">
           <Hero />
