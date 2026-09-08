@@ -331,9 +331,17 @@ export function StackSlide({ children, index }: StackSlideProps) {
   // Resync when the threshold this slide reads changes: the 'change'
   // listener only fires on scroll, so a count/index update with the scroll
   // position held still would otherwise leave `hasReachedReveal` stale.
-  useEffect(() => {
-    setHasReachedReveal(hasRevealStarted(activeIndexFor(smoothedProgress.get(), thresholds), index))
-  }, [thresholds, index, smoothedProgress])
+  // Computed and applied here during render, not inside a useEffect: an
+  // effect-driven resync derives state from render-time values alone
+  // (`thresholds`, `index`, `smoothedProgress`) and lands one render late,
+  // exposing the stale value for a frame — exactly what set-state-in-effect
+  // and no-deriving-state-in-effects flag. Guarding the setState on an
+  // actual value change (not a plain unconditional call) keeps this from
+  // looping: the next render recomputes the same value and the guard skips.
+  const resyncedReveal = hasRevealStarted(activeIndexFor(smoothedProgress.get(), thresholds), index)
+  if (resyncedReveal !== hasReachedReveal) {
+    setHasReachedReveal(resyncedReveal)
+  }
   const notYetArrived = pinned && !hasReachedReveal
   const zIndexStyle = useMemo(() => (pinned ? { zIndex: index + 1 } : undefined), [pinned, index])
   // Pinned `lg:p-0` is a property of the pinned presentation, not of the

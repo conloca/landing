@@ -104,7 +104,7 @@ function SheetContent({
             ? () => {
                 const event = new Event('closeAutoFocus', { cancelable: true })
                 onCloseAutoFocus(event)
-                return event.defaultPrevented ? false : true
+                return !event.defaultPrevented
               }
             : props.finalFocus
         }
